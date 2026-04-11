@@ -256,6 +256,8 @@ const CleaningJobDetailsForm = ({
             )}
           </div>
         </div>
+
+        {/* Static fields have been moved to a new step */}
       </div>
 
       <ServiceCommonSections

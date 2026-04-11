@@ -51,6 +51,10 @@ const PostNewJobPage = () => {
     frequency: 'One-time',
     categoryId: '',
     serviceTypeId: '',
+    hasPlans: '',
+    hasCouncilApproval: '',
+    budget: '',
+    jobStage: '',
   });
 
   // File upload states
@@ -475,7 +479,7 @@ const PostNewJobPage = () => {
   };
 
   const handleContinue = () => {
-    if (currentStep < 2) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -603,7 +607,7 @@ const PostNewJobPage = () => {
         localStorage.removeItem('postJobFormState');
 
         setCreatedJobId(response.data._id);
-        setCurrentStep(3);
+        setCurrentStep(4);
       } else {
         setError(response.message || 'Failed to post job');
       }
@@ -636,8 +640,10 @@ const PostNewJobPage = () => {
       case 1:
         return renderJobDetails();
       case 2:
-        return renderFinalDetails();
+        return renderAdditionalDetails();
       case 3:
+        return renderFinalDetails();
+      case 4:
         return renderSuccessScreen();
       default:
         return renderJobDetails();
@@ -679,6 +685,137 @@ const PostNewJobPage = () => {
           />
 
           {/* Continue Button */}
+          <div className="mt-8 sm:mt-12 flex justify-end">
+            <Button
+              type="submit"
+              className="rounded-full sm:rounded-full text-base sm:text-lg bg-[#1A73E8]"
+            >
+              Continue
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
+  const renderAdditionalDetails = () => (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-2 sm:pt-4 pb-4">
+      <PageHeader
+        title="Post New Job"
+        onBack={handleBack}
+        className="mb-4"
+        backButtonClassName="cursor-pointer"
+      />
+
+      <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-custom">
+        <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }}>
+          <div className="space-y-8">
+            {/* Do you have plans for this job? */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  Do you have plans for this job?
+                </h2>
+                <p className="text-sm sm:text-base text-gray-500">
+                  Select one
+                </p>
+              </div>
+              <div className="space-y-4">
+                {['Yes', 'No', 'Not required', 'Not sure whether I need plans'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="hasPlans"
+                      value={option}
+                      checked={formData.hasPlans === option}
+                      onChange={(e) => handleInputChange('hasPlans', e.target.value)}
+                      className="w-5 h-5 cursor-pointer accent-[#EA580C]"
+                    />
+                    <span className="text-[15px] sm:text-base text-[#374151]">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Do you have council approval for this job? */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  Do you have council approval for this job?
+                </h2>
+                <p className="text-sm sm:text-base text-gray-500">
+                  Select one
+                </p>
+              </div>
+              <div className="space-y-4">
+                {['Yes', 'No', 'Not required', "Not sure whether it's needed"].map((option) => (
+                  <label key={option} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="hasCouncilApproval"
+                      value={option}
+                      checked={formData.hasCouncilApproval === option}
+                      onChange={(e) => handleInputChange('hasCouncilApproval', e.target.value)}
+                      className="w-5 h-5 cursor-pointer accent-[#EA580C]"
+                    />
+                    <span className="text-[15px] sm:text-base text-[#374151]">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Budget */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  Budget
+                </h2>
+                <p className="text-sm sm:text-base text-gray-500">
+                  Select one
+                </p>
+              </div>
+              <div className="space-y-4">
+                {['Under $20,000', '$20,000 - $50,000', '$50,000 - $100,000', 'More than $100,000', 'Not sure'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="budget"
+                      value={option}
+                      checked={formData.budget === option}
+                      onChange={(e) => handleInputChange('budget', e.target.value)}
+                      className="w-5 h-5 cursor-pointer accent-[#EA580C]"
+                    />
+                    <span className="text-[15px] sm:text-base text-[#374151]">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* What stage is your job at? */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  What stage is your job at?
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {['Ready to hire', 'Planning & Budgeting'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="jobStage"
+                      value={option}
+                      checked={formData.jobStage === option}
+                      onChange={(e) => handleInputChange('jobStage', e.target.value)}
+                      className="w-5 h-5 cursor-pointer accent-[#EA580C]"
+                    />
+                    <span className="text-[15px] sm:text-base text-[#374151]">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="mt-8 sm:mt-12 flex justify-end">
             <Button
               type="submit"
