@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { userAPI } from '../../services/api';
+import { userAPI, notificationsAPI } from '../../services/api';
 import logo from '../../assets/logo.svg';
-import ProfileIcon from '../../assets/Profile.svg';
-import NotificationIcon from '../../assets/notification.svg';
+import ProfileIcon from '../../assets/User Rounded.svg';
+import NotificationIcon from '../../assets/notification2.svg';
 import HeaderLocationIcon from '../../assets/headerlocation.svg';
+import { socketService } from '../../services/socketService';
 import CardBG8 from '../../assets/CardBG8.png';
 import CardBG9 from '../../assets/CardBG9.png';
 
@@ -16,6 +17,7 @@ const Header = () => {
     address: 'Location not set',
     city: 'Please set your location'
   });
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
   useEffect(() => {
     // Get user location from backend and localStorage
@@ -67,9 +69,41 @@ const Header = () => {
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('locationUpdated', handleLocationUpdate);
 
+    // Initial check for unread notifications
+    const checkNotifications = async () => {
+      try {
+        if (user) {
+          const response = await notificationsAPI.getNotifications();
+          if (response.success && response.data) {
+            const unread = response.data.some(n => !n.isRead);
+            setHasUnreadNotifications(unread);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    checkNotifications();
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('locationUpdated', handleLocationUpdate);
+    window.addEventListener('notificationsUpdated', checkNotifications);
+
+    // Socket listeners for real-time updates
+    const handleSocketNotification = () => {
+      checkNotifications();
+    };
+
+    socketService.on('chatNotification', handleSocketNotification);
+    socketService.on('adminChatNotification', handleSocketNotification);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('locationUpdated', handleLocationUpdate);
+      window.removeEventListener('notificationsUpdated', checkNotifications);
+      socketService.off('chatNotification', handleSocketNotification);
+      socketService.off('adminChatNotification', handleSocketNotification);
     };
   }, [user]);
 
@@ -136,21 +170,24 @@ const Header = () => {
         </div>
 
         {/* Right: Icons */}
-        <div className="flex-1 flex items-center justify-end space-x-2 md:space-x-3" >
+        <div className="flex-1 flex items-center justify-end space-x-2" >
           {/* Notification Icon */}
           <button 
             onClick={() => navigate('/notifications')}
-            className="relative  hover:bg-gray-100 rounded-lg! transition-colors cursor-pointer"
+            className="relative hover:bg-gray-100 rounded-full! transition-colors cursor-pointer"
           >
-            <img src={NotificationIcon} alt="Notifications" className="w-7 h-7 sm:w-7 sm:h-7 md:w-9 md:h-9" />
+            <img src={NotificationIcon} alt="Notifications" className="w-9 h-9 sm:w-7 sm:h-7 md:w-11 md:h-11" />
+            {hasUnreadNotifications && (
+              <span className="absolute top-[8px] right-[8px] sm:top-[6px] sm:right-[6px] md:top-[10px] md:right-[10px] w-2.5 h-2.5 sm:w-2 sm:h-2 md:w-3 md:h-3 bg-[#1D69ED] border-2 border-white rounded-full"></span>
+            )}
           </button>
 
           {/* Profile Icon or Login/Register */}
           {user ? (
-            <div className="flex items-center space-x-2 md:space-x-">
+            <div className="flex items-center space-x-1">
               <Link 
                 to="/profile" 
-                className="p-1.5 hover:bg-gray-100 rounded-lg! transition-colors"
+                className="p-2.5 hover:bg-gray-100 rounded-full! transition-colors"
               >
                 <img src={ProfileIcon} alt="Profile" className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
               </Link>

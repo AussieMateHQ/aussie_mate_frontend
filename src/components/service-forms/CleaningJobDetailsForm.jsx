@@ -63,23 +63,7 @@ const CleaningJobDetailsForm = ({
     fetchServiceTypes();
   }, [formData.categoryId]);
 
-  // Set default category from dashboard if provided
-  useEffect(() => {
-    if (prefilledCategory && categories.length > 0) {
-      const match = categories.find(
-        (c) => 
-          c.name.toLowerCase() === prefilledCategory.toLowerCase() ||
-          c.name.toLowerCase().includes(prefilledCategory.toLowerCase().split(' ')[0])
-      );
-      
-      if (match && match._id !== formData.categoryId) {
-        onInputChange('categoryId', match._id);
-        onInputChange('propertyType', match.name);
-        onInputChange('serviceTypeId', '');
-        onInputChange('serviceDetail', '');
-      }
-    }
-  }, [categories, prefilledCategory, formData.categoryId, onInputChange]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

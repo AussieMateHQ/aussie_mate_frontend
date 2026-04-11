@@ -18,6 +18,7 @@ const NotificationPage = () => {
       const response = await notificationsAPI.getNotifications()
       if (response.success) {
         setNotifications(response.data || [])
+        window.dispatchEvent(new CustomEvent('notificationsUpdated'));
       }
     } catch (error) {
       console.error(handleAPIError(error))
@@ -35,6 +36,7 @@ const NotificationPage = () => {
         setNotifications(prev => 
           prev.map(n => (n._id === notificationId || n.id === notificationId) ? { ...n, isRead: true } : n)
         )
+        window.dispatchEvent(new CustomEvent('notificationsUpdated'));
       }
       
       console.log('Notification clicked:', notification)
@@ -70,6 +72,7 @@ const NotificationPage = () => {
         setNotifications(prev => 
           prev.map(n => (n._id === notificationId || n.id === notificationId) ? { ...n, isRead: true } : n)
         )
+        window.dispatchEvent(new CustomEvent('notificationsUpdated'));
       } catch (error) {
         console.error('Error marking as read:', error)
       }
@@ -89,6 +92,7 @@ const NotificationPage = () => {
     try {
       await notificationsAPI.markAllAsRead()
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+      window.dispatchEvent(new CustomEvent('notificationsUpdated'));
     } catch (error) {
       console.error('Error marking all as read:', error)
     }
