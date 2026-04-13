@@ -1,8 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import arrowDownIcon from '../../assets/down2.svg';
-import searchIcon from '../../assets/search.svg';
 import ServiceCommonSections from './common/ServiceCommonSections';
 import { categoriesAPI } from '../../services/api';
+import RadioButton from '../form-controls/RadioButton';
+import Checkbox from '../form-controls/Checkbox';
+import arrowDownIcon from '../../assets/down2.svg';
+import { useEffect, useRef, useState } from 'react';
+import { SearchIcon } from 'lucide-react';
+
+const CATEGORY_IDS = {
+  COMMERCIAL: '69b2988b174465a98bbf4102',
+  DOMESTIC: '69b29874174465a98bbf40fe',
+  BOND: '69b2989e174465a98bbf410a',
+  OTHER: '69b29894174465a98bbf4106',
+};
 
 const CleaningJobDetailsForm = ({
   formData,
@@ -21,9 +30,13 @@ const CleaningJobDetailsForm = ({
   const [categories, setCategories] = useState([]);
   const [serviceTypes, setServiceTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [commercialJobTypes, setCommercialJobTypes] = useState([]);
+  const [extraServiceItems, setExtraServiceItems] = useState([]);
+  const [isCommercialTypeOpen, setIsCommercialTypeOpen] = useState(false);
   
   const categoryRef = useRef(null);
   const serviceRef = useRef(null);
+  const commercialTypeRef = useRef(null);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -63,12 +76,46 @@ const CleaningJobDetailsForm = ({
     fetchServiceTypes();
   }, [formData.categoryId]);
 
+  // Fetch commercial job types if commercial category selected
+  useEffect(() => {
+    const fetchCommercialJobTypes = async () => {
+      if (formData.categoryId !== CATEGORY_IDS.COMMERCIAL) return;
+      try {
+        const response = await categoriesAPI.getCommercialJobTypes();
+        if (response.success) {
+          setCommercialJobTypes(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching commercial job types:', error);
+      }
+    };
+    fetchCommercialJobTypes();
+  }, [formData.categoryId]);
+
+  // Fetch extra service items if domestic/bond/other category selected
+  useEffect(() => {
+    const isDomesticOrRelated = [CATEGORY_IDS.DOMESTIC, CATEGORY_IDS.BOND, CATEGORY_IDS.OTHER].includes(formData.categoryId);
+    const fetchExtraServiceItems = async () => {
+      if (!isDomesticOrRelated) return;
+      try {
+        const response = await categoriesAPI.getExtraServiceItems();
+        if (response.success) {
+          setExtraServiceItems(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching extra service items:', error);
+      }
+    };
+    fetchExtraServiceItems();
+  }, [formData.categoryId]);
+
 
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (categoryRef.current && !categoryRef.current.contains(event.target)) setIsCategoryOpen(false);
       if (serviceRef.current && !serviceRef.current.contains(event.target)) setIsServiceOpen(false);
+      if (commercialTypeRef.current && !commercialTypeRef.current.contains(event.target)) setIsCommercialTypeOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -115,6 +162,26 @@ const CleaningJobDetailsForm = ({
   const getServiceName = () => {
     const service = serviceTypes.find(s => s._id === formData.serviceTypeId);
     return service ? service.name : (formData.serviceDetail || 'Select Type Of Service');
+  };
+
+  const getCommercialTypeName = () => {
+    const type = commercialJobTypes.find(t => t._id === formData.commercialJobTypeId);
+    return type ? type.name : 'Select Job Type';
+  };
+
+  const isCommercial = formData.categoryId === CATEGORY_IDS.COMMERCIAL;
+  const isDomesticOrRelated = [CATEGORY_IDS.DOMESTIC, CATEGORY_IDS.BOND, CATEGORY_IDS.OTHER].includes(formData.categoryId);
+
+  const handleNeedCleaningChange = (value) => {
+    onInputChange('needCleaning', value);
+  };
+
+  const handleExtraServiceToggle = (itemId) => {
+    const currentItems = formData.extraServiceItems || [];
+    const newItems = currentItems.includes(itemId)
+      ? currentItems.filter(id => id !== itemId)
+      : [...currentItems, itemId];
+    onInputChange('extraServiceItems', newItems);
   };
 
   return (
@@ -201,10 +268,9 @@ const CleaningJobDetailsForm = ({
               <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-80 overflow-hidden flex flex-col">
                 <div className="px-4 py-2 border-b border-gray-50">
                   <div className="relative">
-                    <img 
-                      src={searchIcon} 
+                    <SearchIcon 
                       className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-40" 
-                      alt="search" 
+                      alt="search"  
                     />
                     <input
                       type="text"
@@ -257,7 +323,212 @@ const CleaningJobDetailsForm = ({
           </div>
         </div>
 
-        {/* Static fields have been moved to a new step */}
+        {/* Commercial Job Type Dropdown (Conditional) */}
+        {isCommercial && (
+          <div className="space-y-2">
+            <label className="block text-sm sm:text-base font-medium text-[#111827]">
+             Type Of Job 
+            </label>
+            <div className="relative" ref={commercialTypeRef}>
+              <div
+                onClick={() => setIsCommercialTypeOpen(!isCommercialTypeOpen)}
+                className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+              >
+                <span className={formData.commercialJobTypeId ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                  {getCommercialTypeName()}
+                </span>
+                <img
+                  src={arrowDownIcon}
+                  alt="Dropdown"
+                  className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isCommercialTypeOpen ? 'rotate-180' : ''}`}
+                />
+              </div>
+              {isCommercialTypeOpen && (
+                <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                  {commercialJobTypes.map((type) => (
+                    <div
+                      key={type._id}
+                      className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                      onClick={() => {
+                        onInputChange('commercialJobTypeId', type._id);
+                        setIsCommercialTypeOpen(false);
+                      }}
+                    >
+                      {type.name}
+                    </div>
+                  ))}
+                  {commercialJobTypes.length === 0 && (
+                    <div className="px-6 py-3 text-gray-400 text-sm italic">No job types found</div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Need Cleaning Radio Options (Conditional) */}
+        {isDomesticOrRelated && (
+          <div className="space-y-4 py-2">
+            <div>
+              <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                How many need cleaning?
+              </h2>
+              <p className="text-sm sm:text-base text-gray-500">
+                Select one
+              </p>
+            </div>
+            <div className="space-y-3">
+              {['1', '2', '3', '4 or more'].map((option) => (
+                <RadioButton
+                  key={option}
+                  name="needCleaning"
+                  value={option}
+                  label={option}
+                  checked={formData.needCleaning === option}
+                  onChange={(e) => handleNeedCleaningChange(e.target.value)}
+                  labelClassName="text-[15px] sm:text-base font-medium"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Extra Service Items (Conditional) */}
+        {isDomesticOrRelated && extraServiceItems.length > 0 && (
+          <div className="space-y-4 pt-4">
+            <label className="block text-[20px] font-semibold text-[#111827]">
+              What else needs cleaning?
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {extraServiceItems.map((item) => {
+                const isSelected = (formData.extraServiceItems || []).includes(item._id);
+                return (
+                  <div
+                    key={item._id}
+                    onClick={() => handleExtraServiceToggle(item._id)}
+                    className={`flex items-center gap-3 px-6 py-4 rounded-3xl border-2 cursor-pointer transition-all ${
+                      isSelected 
+                        ? 'border-primary-500 bg-primary-50 shadow-sm' 
+                        : 'border-gray-100 hover:border-primary-200 bg-white'
+                    }`}
+                  >
+                    <Checkbox
+                      name={`extra-${item._id}`}
+                      checked={isSelected}
+                      onChange={() => {}} // Toggle handled by parent div
+                      label={item.name}
+                      labelClassName="font-medium text-[15px] text-[#111827]"
+                      className="pointer-events-none" // Parent div handles click
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Conditional Additional Fields (Was Step 2) */}
+        <div className="space-y-8 pt-4">
+          {/* Commercial Specific Fields */}
+          {isCommercial && (
+            <div className="space-y-8">
+              {/* Do you have plans for this job? */}
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                    Do you have plans for this job?
+                  </h2>
+                  <p className="text-sm sm:text-base text-gray-500">
+                    Select one
+                  </p>
+                </div>
+                <div className="space-y-4">
+                {['Yes', 'No', 'Not required', 'Not sure whether I need plans'].map((option) => (
+                  <RadioButton
+                    key={option}
+                    name="hasPlans"
+                    value={option}
+                    label={option}
+                    checked={formData.hasPlans === option}
+                    onChange={(e) => onInputChange('hasPlans', e.target.value)}
+                  />
+                ))}
+              </div>
+              </div>
+
+              {/* Do you have council approval for this job? */}
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                    Do you have council approval for this job?
+                  </h2>
+                  <p className="text-sm sm:text-base text-gray-500">
+                    Select one
+                  </p>
+                </div>
+                <div className="space-y-4">
+                {['Yes', 'No', 'Not required', "Not sure whether it's needed"].map((option) => (
+                  <RadioButton
+                    key={option}
+                    name="hasCouncilApproval"
+                    value={option}
+                    label={option}
+                    checked={formData.hasCouncilApproval === option}
+                    onChange={(e) => onInputChange('hasCouncilApproval', e.target.value)}
+                  />
+                ))}
+              </div>
+              </div>
+
+              {/* Budget */}
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                    Budget
+                  </h2>
+                  <p className="text-sm sm:text-base text-gray-400">
+                    Select one
+                  </p>
+                </div>
+                <div className="space-y-4">
+                {['Under $20,000', '$20,000 - $50,000', '$50,000 - $100,000', 'More than $100,000', 'Not sure'].map((option) => (
+                  <RadioButton
+                    key={option}
+                    name="budget"
+                    value={option}
+                    label={option}
+                    checked={formData.budget === option}
+                    onChange={(e) => onInputChange('budget', e.target.value)}
+                  />
+                ))}
+              </div>
+              </div>
+            </div>
+          )}
+
+          {/* What stage is your job at? (Shown for all cleaning) */}
+          {(isCommercial || isDomesticOrRelated) && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  What stage is your job at?
+                </h2>
+              </div>
+              <div className="space-y-4">
+              {['Ready to hire', 'Planning & Budgeting'].map((option) => (
+                <RadioButton
+                  key={option}
+                  name="jobStage"
+                  value={option}
+                  label={option}
+                  checked={formData.jobStage === option}
+                  onChange={(e) => onInputChange('jobStage', e.target.value)}
+                />
+              ))}
+            </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <ServiceCommonSections

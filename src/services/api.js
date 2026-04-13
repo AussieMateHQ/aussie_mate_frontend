@@ -364,7 +364,7 @@ export const jobsAPI = {
     if (categoryId) params.set('categoryId', categoryId);
     if (location) params.set('location', location);
     if (isUrgent) params.set('isUrgent', 'true');
-    
+
     const qs = params.toString();
     return apiRequest(`/jobs/feed/cleaner${qs ? `?${qs}` : ''}`);
   },
@@ -932,11 +932,11 @@ export const userAPI = {
     try {
       const token = getAuthToken();
       const isFormData = data instanceof FormData;
-      
+
       const headers = {
         'Authorization': `Bearer ${token}`,
       };
-      
+
       if (!isFormData) {
         headers['Content-Type'] = 'application/json';
       }
@@ -1262,7 +1262,7 @@ export const subscriptionsAPI = {
   getMyStatus: async (planId) => {
     const options = { method: 'GET' };
 
-    
+
     return apiRequest('/subscriptions/my-status', options);
   },
 
@@ -1344,6 +1344,16 @@ export const categoriesAPI = {
   // Get service types for a category
   getServiceTypes: async (categoryId) => {
     return apiRequest(`/categories/${categoryId}/service-types`);
+  },
+
+  // Get commercial job types
+  getCommercialJobTypes: async () => {
+    return apiRequest('/categories/commercial-job-types');
+  },
+
+  // Get extra service items
+  getExtraServiceItems: async () => {
+    return apiRequest('/categories/extra-service-items');
   },
 };
 
