@@ -406,9 +406,9 @@ const CleaningJobDetailsForm = ({
                   <div
                     key={item._id}
                     onClick={() => handleExtraServiceToggle(item._id)}
-                    className={`flex items-center gap-3 px-6 py-4 rounded-3xl border-2 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all ${
                       isSelected 
-                        ? 'border-primary-500 bg-primary-50 shadow-sm' 
+                        ? 'border-primary-500 bg-primary-50' 
                         : 'border-gray-100 hover:border-primary-200 bg-white'
                     }`}
                   >
