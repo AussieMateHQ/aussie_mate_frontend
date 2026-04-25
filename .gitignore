@@ -31,7 +31,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-.env.production        
+.env.production
 
 # Optional: lock files if you don’t want to commit them
 package-lock.json
