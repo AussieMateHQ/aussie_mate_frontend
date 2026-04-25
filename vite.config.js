@@ -8,7 +8,9 @@ export default defineConfig({
     svgr(),
     react({
       jsxImportSource: undefined,
-      babel: { plugins: [] }
+      babel: {
+        plugins: []
+      }
     }),
     tailwindcss()
   ],
@@ -18,15 +20,14 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'https://api.aussiemate.com.au',
-        changeOrigin: true,
-        secure: false,
-      },
+    hmr: {
+      overlay: true,
+      port: 5173
     },
-    hmr: { overlay: true, port: 5173 },
-    watch: { usePolling: false, interval: 100 }
+    watch: {
+      usePolling: false,
+      interval: 100
+    }
   },
   build: {
     chunkSizeWarningLimit: 1500,
