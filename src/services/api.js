@@ -78,7 +78,7 @@ const apiRequest = async (endpoint, options = {}) => {
     try {
       data = await response.json();
     } catch (jsonError) {
-      const textResponse = await response.text();
+      const textResponse = await response.json();
       throw new Error(`Invalid JSON response: ${textResponse}`);
     }
 
@@ -909,7 +909,7 @@ export const userAPI = {
       const contentType = response.headers.get('content-type');
 
       if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
+        const textResponse = await response.json();
         throw new Error(`Server returned HTML instead of JSON (Status: ${response.status}). This is a backend error - check server logs.`);
       }
 
