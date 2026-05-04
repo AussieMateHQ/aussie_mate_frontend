@@ -375,6 +375,9 @@ const EditProfilePage = () => {
         // Update localStorage
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
+        // Update context
+        updateUser(updatedUser);
+
         // Dispatch custom event to update other components
         window.dispatchEvent(new CustomEvent('userUpdated'));
 
@@ -581,29 +584,17 @@ const EditProfilePage = () => {
               />
             </div>
 
-            {/* Phone Number - Read Only */}
+            {/* Phone Number */}
             <div>
-              <div className="relative">
-                <input
-                  type="tel"
-                  value={`${formData.phone}`}
-                  readOnly
-                  disabled
-                  className="w-full px-4 py-4 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed"
-                  placeholder="Phone number"
-                />
-                <label className="absolute left-3 px-1 bg-white text-gray-500 text-xs top-0 -translate-y-1/2">
-                  Phone number
-                </label>
-              </div>
-              <div className="flex items-center mt-2">
-                <div className="flex-shrink-0">
-                  <img src={InfoIcon} alt="Info" className="w-4 h-4 text-blue-600" />
-                </div>
-                <p className="ml-2 text-xs sm:text-sm text-primary-200 font-medium">
-                  Phone number can't be changed once verified. Contact support if required.
-                </p>
-              </div>
+              <FloatingLabelInput
+                id="phone"
+                name="phone"
+                label="Phone number"
+                type="tel"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder=""
+              />
             </div>
           </div>
         </div>

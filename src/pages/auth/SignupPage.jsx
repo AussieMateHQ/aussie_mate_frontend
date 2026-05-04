@@ -14,8 +14,7 @@ const SignupPage = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
-    phone: '',
+    emailOrPhone: '',
     role: '',
     password: '',
     confirmPassword: '',
@@ -46,26 +45,6 @@ const SignupPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    // Special handling for phone number - only allow digits, ignore leading 0, limit to 9 characters
-    if (name === 'phone') {
-      let digitsOnly = value.replace(/[^\d]/g, '');
-
-      // Remove leading 0 if present
-      if (digitsOnly.startsWith('0')) {
-        digitsOnly = digitsOnly.substring(1);
-      }
-
-      // Limit to 9 characters maximum
-      if (digitsOnly.length <= 9) {
-        setFormData({
-          ...formData,
-          [name]: digitsOnly
-        });
-      }
-      return;
-    }
-
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value
@@ -99,11 +78,13 @@ const SignupPage = () => {
       const selectedMapping = roleMapping[userData.role] || { userType: userData.role.toLowerCase(), role: userData.role };
 
       // Create clean API data with only required fields
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailOrPhone);
+      
       const apiData = {
         firstName: userData.firstName.trim(),
         lastName: userData.lastName.trim(),
-        email: userData.email.trim().toLowerCase(),
-        phone: formatPhoneNumber(userData.phone.trim()),
+        email: isEmail ? formData.emailOrPhone.trim().toLowerCase() : undefined,
+        phone: !isEmail ? formatPhoneNumber(formData.emailOrPhone.trim()) : undefined,
         password: userData.password,
         confirmPassword: userData.confirmPassword,
         userType: selectedMapping.userType,
@@ -226,45 +207,14 @@ const SignupPage = () => {
               </div>
 
               <FloatingLabelInput
-                id="email"
-                name="email"
-                label="Email Address"
-                type="email"
-                value={formData.email}
+                id="emailOrPhone"
+                name="emailOrPhone"
+                label="Email or Phone"
+                type="text"
+                value={formData.emailOrPhone}
                 onChange={handleInputChange}
                 required
               />
-
-              {/* Phone Number with Country Code */}
-              <div className="relative">
-                <div className="flex gap-2">
-                  {/* Country Code Dropdown (Static) */}
-                  <div className="relative w-16 flex-shrink-0">
-                    <select
-                      className="w-full h-14 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium focus:outline-none focus:border-primary-500 appearance-none cursor-pointer"
-                      disabled
-                      value="+61"
-                    >
-                      <option value="+61">+61</option>
-                    </select>
-                  </div>
-
-                  {/* Phone Number Input */}
-                  <div className="flex-1">
-                    <FloatingLabelInput
-                      id="phone"
-                      name="phone"
-                      label="Phone Number"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="479040431"
-                      maxLength={9}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
               <FloatingLabelInput
                 id="password"
                 name="password"

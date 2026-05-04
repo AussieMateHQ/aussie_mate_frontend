@@ -33,12 +33,16 @@ export const signupSchema = yup.object().shape({
   lastName: yup.string()
     .required('Last name is required')
     .min(2, 'Last name must be at least 2 characters'),
-  email: yup.string()
-    .email('Please enter a valid email address')
-    .required('Email is required'),
-  phone: yup.string()
-    .matches(/^\d{9}$/, 'Phone number must be exactly 9 digits')
-    .required('Phone number is required'),
+  emailOrPhone: yup.string()
+    .required('Email or phone is required')
+    .test('email-or-phone', 'Please enter a valid email or phone number', (value) => {
+      if (!value) return true;
+      const isEmail = emailRegex.test(value);
+      // Clean for phone check
+      const cleaned = value.replace(/[^\d+]/g, '');
+      const isPhone = phoneRegex.test(cleaned) || australianPhoneRegex.test(cleaned) || /^\d{10}$/.test(cleaned);
+      return isEmail || isPhone;
+    }),
   role: yup.string()
     .required('Role is required'),
   password: yup.string()
@@ -56,7 +60,10 @@ export const loginSchema = yup.object().shape({
   email: yup.string()
     .test('email-or-phone', 'Please enter a valid email or phone number', (value) => {
       if (!value) return true;
-      return emailRegex.test(value) || phoneRegex.test(value) || australianPhoneRegex.test(value);
+      const isEmail = emailRegex.test(value);
+      const cleaned = value.replace(/[^\d+]/g, '');
+      const isPhone = phoneRegex.test(cleaned) || australianPhoneRegex.test(cleaned) || /^\d{10}$/.test(cleaned);
+      return isEmail || isPhone;
     })
     .required('Email or phone is required'),
   password: yup.string()
@@ -135,9 +142,9 @@ export const ndisJobSchema = yup.object().shape({
 });
 
 // Common Field Validations (reusable)
-export const phoneRegex = /^\d{9}$/;
+export const phoneRegex = /^(\+?61|0)?[2-478](\d{8})$/;
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-export const australianPhoneRegex = /^\+61\s?\d{9}$/; 
+export const australianPhoneRegex = /^(\+?61|0)?4\d{8}$/; // Specifically for mobile
 
 // Helper Functions
 export const validateField = async (schema, data) => {

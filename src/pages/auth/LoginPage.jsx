@@ -60,7 +60,7 @@ const LoginPage = () => {
         try {
           const { subscriptionsAPI } = await import('../../services/api');
           const statusRes = await subscriptionsAPI.getMyStatus().catch(() => ({ success: false }));
-          
+
           if (statusRes.success && statusRes.data?.subscription?.status === 'active') {
             navigate('/cleaner-dashboard');
           } else {
@@ -116,7 +116,7 @@ const LoginPage = () => {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -140,7 +140,7 @@ const LoginPage = () => {
 
         {/* Login Form */}
         <div className="bg-white rounded-xl p-6 md:p-8 border-2 border-[#8B92A620]">
-       
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <h2 className="text-2xl md:text-3xl font-bold text-primary-500 mb-2 text-center">Welcome Back</h2>
             <p className="text-sm md:text-base text-primary-200 font-medium text-center">
@@ -149,7 +149,7 @@ const LoginPage = () => {
             <FloatingLabelInput
               id="email"
               name="email"
-              label="Phone or email"
+              label="Email Or Phone"
               type="text"
               value={formData.email}
               onChange={handleInputChange}
@@ -178,11 +178,11 @@ const LoginPage = () => {
               </button>
             </FloatingLabelInput>
             {error && (
-            <div className=" text-red-500 font-medium rounded-lg text-sm leading-4 mt-0">
-              {error}
-            </div>
-          )}
-            
+              <div className=" text-red-500 font-medium rounded-lg text-sm leading-4 mt-0">
+                {error}
+              </div>
+            )}
+
             <div className="text-right">
               <Link to="/forgot-password" className="text-primary-500 hover:text-primary-600 font-medium cursor-pointer">
                 Forgot password?
