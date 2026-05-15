@@ -52,7 +52,7 @@ const CleanerJobsPage = () => {
   // Filters / other state kept same
   const [distance, setDistance] = useState(25);
   const [customDistance, setCustomDistance] = useState('');
-  const [budget, setBudget] = useState('');
+
   const [isUrgent, setIsUrgent] = useState(false);
   const [userLocation, setUserLocation] = useState({
     address: 'Location not set',
