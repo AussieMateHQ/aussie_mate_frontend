@@ -41,6 +41,7 @@ const CleanerJobsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [requireVerification, setRequireVerification] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -171,7 +172,11 @@ const CleanerJobsPage = () => {
     // normalize response
     const jobsArray = result?.data?.jobs || result?.data || [];
     const total = result?.data?.totalAvailable || result?.totalAvailable || jobsArray.length;
-    const payload = { jobs: jobsArray, total };
+    const payload = { 
+      jobs: jobsArray, 
+      total, 
+      requireVerification: result?.requireVerification || false 
+    };
     apiCache.current[cacheKey] = payload;
     return payload;
   };
@@ -225,6 +230,7 @@ const CleanerJobsPage = () => {
         setJobs(filteredAll);
         setTotalJobs(result.total || filteredAll.length);
         setTotalPages(Math.max(1, Math.ceil((result.total || filteredAll.length) / jobsPerPage)));
+        setRequireVerification(result.requireVerification);
       } catch (err) {
         if (err.name === 'AbortError') {
           // request aborted - ignore
@@ -424,7 +430,21 @@ const CleanerJobsPage = () => {
             ) : error ? (
               <div className="flex items-center justify-center py-8"><div className="text-red-500">{error}</div></div>
             ) : filteredJobs.length === 0 ? (
-              <div className="flex items-center justify-center py-8"><div className="text-gray-500">No jobs found</div></div>
+              <div className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-3xl border border-dashed border-gray-200">
+                {requireVerification ? (
+                  <>
+                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                      <img src={CalendarIcon} alt="Pending" className="w-8 h-8 opacity-50" />
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Verification Pending</h4>
+                    <p className="text-gray-500 text-center text-sm max-w-xs leading-relaxed">
+                      Your documents are being reviewed. Jobs will show up here once you are verified by our team.
+                    </p>
+                  </>
+                ) : (
+                  <div className="text-gray-500 font-medium">No jobs found</div>
+                )}
+              </div>
             ) : (
               <div className="grid grid-cols-1 gap-3">
                 {filteredJobs.map(job => (

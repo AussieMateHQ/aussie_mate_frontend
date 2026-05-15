@@ -38,6 +38,7 @@ const CleanerDashboard = () => {
   const [dashboardError, setDashboardError] = useState("");
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [loadingSubscription, setLoadingSubscription] = useState(true);
+  const [requireVerification, setRequireVerification] = useState(false);
 
   const formatLabel = (str) =>
     (str || "")
@@ -231,6 +232,13 @@ const CleanerDashboard = () => {
         const allJobsResponse = await jobsAPI
           .getCleanerJobFeed({ tab: "posted", page: 1, limit: 200 })
           .catch(() => null);
+        
+        if (allJobsResponse?.requireVerification) {
+          setRequireVerification(true);
+        } else {
+          setRequireVerification(false);
+        }
+
         const allJobs = extractJobs(allJobsResponse);
 
         const inProgressJobs = allJobs
@@ -787,9 +795,44 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
                 </SwiperSlide>
               ))}
             </Swiper>
+          ) : requireVerification ? (
+            <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+              <div className="max-w-sm mx-auto px-6">
+                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CalendarDays className="w-8 h-8 text-blue-500" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Verification Pending</h4>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  Your documents are being reviewed. Jobs will show up here once you are verified by our team.
+                </p>
+              </div>
+            </div>
+          ) : !subscriptionStatus ? (
+            <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+              <div className="max-w-sm mx-auto px-6">
+                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-8 h-8 text-primary-500" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Plan Required</h4>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                  You are verified! Now purchase a plan to unlock customer leads and start earning.
+                </p>
+                <Button 
+                  variant="primary" 
+                  size="sm" 
+                  className="rounded-xl px-8"
+                  onClick={() => navigate('/my-subscription')}
+                >
+                  Browse Plans
+                </Button>
+              </div>
+            </div>
           ) : (
-            <div className="py-8 text-center text-primary-200 font-medium text-sm sm:text-base">
-              No active jobs right now. Explore live jobs to get started.
+            <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+              <div className="max-w-sm mx-auto px-6">
+                <p className="text-gray-400 font-medium">No active jobs right now.</p>
+                <p className="text-gray-500 text-sm mt-1">Explore live jobs to get started.</p>
+              </div>
             </div>
           )}
           
