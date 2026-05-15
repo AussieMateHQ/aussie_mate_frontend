@@ -285,8 +285,19 @@
         navigate(userRole === "NDIS Assistant" ? "/cleaner/compliance-quiz" : "/location");
       } 
       catch (err) {
-        setError(err.inner?.[0]?.message || err.message || "Upload failed.");
-      } 
+        // Handle Yup validation errors
+        if (err.inner && err.inner.length > 0) {
+          setError(err.inner[0].message);
+          return;
+        }
+
+        // Handle Backend validation errors
+        const backendError = err.response?.errors?.[0]?.msg;
+        const errorMessage = backendError || err.message || "Upload failed.";
+        
+        setError(errorMessage);
+        console.error('Submit Error:', err);
+      }
       finally {
         setIsLoading(false);
       }

@@ -93,9 +93,12 @@ export const createVerifyDocumentsSchema = (userRole) => {
     abnNumber: yup.string()
       .matches(/^\d{11}$/, 'ABN Number must be exactly 11 digits')
       .required('ABN Number is required'),
-    policeCheck: yup.mixed()
-      .nullable(),
-    P: yup.mixed().nullable(),
+    bio: yup.string()
+      .required('Bio is required')
+      .min(10, 'Bio must be at least 10 characters')
+      .max(1000, 'Bio cannot exceed 1000 characters'),
+    policeCheck: yup.mixed().nullable(),
+    photoId: yup.mixed().nullable(),
     trainingCertificates: yup.mixed().nullable()
   });
 };
