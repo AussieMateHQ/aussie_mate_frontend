@@ -9,20 +9,20 @@ import { userAPI } from '../../../services/api';
 
 const Pill = ({ label, tone = 'gray' }) => {
     const toneClasses = {
-        green: 'bg-green-50 text-green-600 border-green-200',
-        yellow: 'bg-yellow-50 text-yellow-600 border-yellow-200',
-        red: 'bg-red-50 text-red-600 border-red-200',
-        gray: 'bg-gray-50 text-gray-600 border-gray-200',
+        green: 'bg-green-100 text-green-700 border-green-200',
+        yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+        red: 'bg-red-100 text-red-700 border-red-200',
+        gray: 'bg-gray-100 text-gray-700 border-gray-200',
     }[tone];
 
     return (
-        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold border ${toneClasses}`}>{label}</span>
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold border uppercase tracking-wider ${toneClasses}`}>{label}</span>
     );
 };
 
 const RowMeta = ({ icon, text }) => (
-    <div className="flex items-center gap-2 text-xs text-primary-200 font-medium">
-        <img src={icon} alt="" className="w-4 h-4" />
+    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+        <img src={icon} alt="" className="w-3.5 h-3.5 opacity-60" />
         <span>{text}</span>
     </div>
 );
@@ -42,26 +42,32 @@ const DocumentRow = ({ name, status, uploadedAt, expiry, tone, actionText = 'Rep
     };
 
     return (
-        <div className="w-full rounded-xl border border-[#F3F3F3] bg-white p-4 sm:p-5 flex flex-col gap-3 shadow-custom">
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                    <img src={PdfIcon} alt="PDF" className="w-5 h-5" />
-                    <span className="text-sm sm:text-base font-medium text-primary-500">{name}</span>
+        <div className="w-full rounded-2xl border border-gray-100 bg-white p-4 sm:p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                        <img src={PdfIcon} alt="PDF" className="w-5 h-5" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-sm sm:text-base font-semibold text-gray-900 truncate">{name}</span>
+                        <div className="flex items-center gap-3 mt-1 overflow-x-auto no-scrollbar">
+                            {uploadedAt && <RowMeta icon={CalendarIcon} text={`Uploaded: ${uploadedAt}`} />}
+                            {expiry && <RowMeta icon={CalendarIcon} text={`Expiry: ${expiry}`} />}
+                        </div>
+                    </div>
                 </div>
                 <Pill label={status} tone={tone} />
             </div>
-            <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-4 flex-wrap">
-                    {uploadedAt && <RowMeta icon={CalendarIcon} text={`Uploaded: ${uploadedAt}`} />}
-                    {expiry && <RowMeta icon={CalendarIcon} text={`Expiry: ${expiry}`} />}
-                </div>
+            
+            <div className="flex items-center justify-between border-t border-gray-50 pt-3 mt-1">
                 <button
                     type="button"
                     onClick={handleReplaceClick}
-                    className="text-sm font-medium text-primary-600 hover:text-[#1d4ed8] underline cursor-pointer self-start"
+                    className="text-xs font-bold text-primary-600 hover:text-primary-700 transition-colors cursor-pointer uppercase tracking-wide"
                 >
                     {actionText}
                 </button>
+                
                 <input
                     ref={inputRef}
                     type="file"
@@ -204,23 +210,23 @@ const VerificationStatusPage = () => {
     };
 
     return (
-        <PageLayout className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <PageHeader
-                title="Verification & Documents"
-                onBack={() => navigate(-1)}
-                className=" h-16"
-                titleClassName="text-lg sm:text-xl font-semibold text-primary-500"
-            />
+        <PageLayout className="bg-[#FAFAFA] min-h-screen">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <PageHeader
+                    title="Verification & Documents"
+                    onBack={() => navigate(-1)}
+                    className="mb-6 bg-transparent"
+                    titleClassName="text-xl sm:text-2xl font-bold text-gray-900"
+                />
 
-            {/* Common rounded container */}
-            <div className="bg-white rounded-2xl border border-[#F3F3F3] p-4 sm:p-5 space-y-6">
+                <div className="space-y-6">
                 {/* ABN verified card */}
                 {documents?.documents?.abnNumber !== undefined && (
-                    <div className="rounded-2xl border border-[#F3F3F3] bg-white p-4 sm:p-5 shadow-custom">
-                        <div className="flex flex-col gap-3">
+                    <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-sm">
+                        <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm sm:text-base font-medium text-primary-500">ABN Number</span>
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">ABN Details</h3>
                                     {!isEditingAbn && (
                                         (documents?.documents?.abnVerified || documents?.verificationStatus === 'verified') ? (
                                             <Pill label="Verified" tone="green" />
@@ -235,38 +241,38 @@ const VerificationStatusPage = () => {
                                             setTempAbn(documents?.documents?.abnNumber || '');
                                             setIsEditingAbn(true);
                                         }}
-                                        className="text-xs cursor-pointer font-medium text-primary-600 underline"
+                                        className="text-xs font-bold text-primary-600 hover:text-primary-700 underline cursor-pointer"
                                     >
                                         Edit
                                     </button>
                                 )}
                             </div>
                             {isEditingAbn ? (
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col gap-3">
                                     <input
                                         type="text"
                                         value={tempAbn}
                                         onChange={(e) => setTempAbn(e.target.value)}
-                                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
                                         placeholder="Enter ABN Number"
                                     />
                                     <div className="flex gap-2 justify-end">
                                         <button
                                             onClick={() => setIsEditingAbn(false)}
-                                            className="px-3 py-1 text-xs cursor-pointer font-medium text-gray-500 border border-gray-300 rounded-xl"
+                                            className="px-4 py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             onClick={handleSaveAbn}
-                                            className="px-3 py-1 text-xs cursor-pointer font-medium text-white bg-primary-500 rounded-xl"
+                                            className="px-4 py-2 text-xs font-bold text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition-colors"
                                         >
-                                            Save
+                                            Save Changes
                                         </button>
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-sm sm:text-base text-primary-200 font-medium">
+                                <p className="text-base text-gray-600 font-medium">
                                     {documents?.documents?.abnNumber || 'Not specified'}
                                 </p>
                             )}
@@ -276,48 +282,48 @@ const VerificationStatusPage = () => {
 
                 {/* Bio Section */}
                 {documents?.documents?.bio !== undefined && (
-                    <div className="rounded-2xl border border-[#F3F3F3] bg-white p-4 sm:p-5 shadow-custom">
-                        <div className="flex flex-col gap-3">
+                    <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-sm">
+                        <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm sm:text-base font-medium text-primary-500">Bio</span>
+                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Bio / Introduction</h3>
                                 {!isEditingBio && (
                                     <button
                                         onClick={() => {
                                             setTempBio(documents?.documents?.bio || '');
                                             setIsEditingBio(true);
                                         }}
-                                        className="text-xs cursor-pointer font-medium text-primary-600 underline"
+                                        className="text-xs font-bold text-primary-600 hover:text-primary-700 underline cursor-pointer"
                                     >
                                         Edit
                                     </button>
                                 )}
                             </div>
                             {isEditingBio ? (
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col gap-3">
                                     <textarea
                                         value={tempBio}
                                         onChange={(e) => setTempBio(e.target.value)}
-                                        className="w-full p-2 border border-gray-300 !rounded-xl text-sm min-h-[100px]"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm min-h-[120px] focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
                                         placeholder="Enter your Bio"
                                     />
                                     <div className="flex gap-2 justify-end">
                                         <button
                                             onClick={() => setIsEditingBio(false)}
-                                            className="px-3 py-1 text-xs font-medium text-gray-500 border border-gray-300 rounded-xl"
+                                            className="px-4 py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             onClick={handleSaveBio}
-                                            className="px-3 py-1 text-xs font-medium text-white bg-primary-500 rounded-xl"
+                                            className="px-4 py-2 text-xs font-bold text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition-colors"
                                         >
-                                            Save
+                                            Save Changes
                                         </button>
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-sm text-primary-200 font-medium leading-relaxed">
-                                    {documents?.documents?.bio || 'Not specified'}
+                                <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                                    {documents?.documents?.bio || 'No bio provided yet.'}
                                 </p>
                             )}
                         </div>
@@ -337,16 +343,16 @@ const VerificationStatusPage = () => {
                     <Loader message="Refreshing verification status..." />
                 )}
 
-                {/* Sections */}
+                {/* Document Sections */}
                 {!loading && documents && (
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 gap-6">
                         {/* Police Check */}
                         {(() => {
                             const policeDoc = documents.documents?.policeCheck;
                             const policeStatus = getDocumentStatus('policeCheck');
                             return (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-primary-500">Police Check</h3>
+                                <div className="space-y-2">
+                                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider px-1">Police Check</h3>
                                     <DocumentRow
                                         name={policeDoc?.fileName || 'Police Check.pdf'}
                                         status={policeStatus.status}
@@ -356,8 +362,8 @@ const VerificationStatusPage = () => {
                                         docType="policeCheck"
                                     />
                                     {policeStatus.status === 'Rejected' && policeDoc?.rejectionReason && (
-                                        <div className="mt-1 flex items-start gap-2 text-xs text-primary-200 font-medium">
-                                            <img src={InfoIcon} alt="Info" className="w-4 h-4" />
+                                        <div className="mx-1 flex items-start gap-2 text-xs text-red-600 font-medium bg-red-50 p-2 rounded-lg border border-red-100">
+                                            <img src={InfoIcon} alt="Info" className="w-3.5 h-3.5 mt-0.5" />
                                             <span>{policeDoc.rejectionReason}</span>
                                         </div>
                                     )}
@@ -370,8 +376,8 @@ const VerificationStatusPage = () => {
                             const visaDoc = documents.documents?.visaWorkRights;
                             const visaStatus = getDocumentStatus('visaWorkRights');
                             return (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-primary-500">Visa</h3>
+                                <div className="space-y-2">
+                                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider px-1">Visa Status</h3>
                                     <DocumentRow
                                         name={visaDoc?.fileName || 'Visa.pdf'}
                                         status={visaStatus.status}
@@ -381,8 +387,8 @@ const VerificationStatusPage = () => {
                                         docType="visaWorkRights"
                                     />
                                     {visaStatus.status === 'Rejected' && visaDoc?.rejectionReason && (
-                                        <div className="mt-1 flex items-start gap-2 text-xs text-primary-200 font-medium">
-                                            <img src={InfoIcon} alt="Info" className="w-4 h-4" />
+                                        <div className="mx-1 flex items-start gap-2 text-xs text-red-600 font-medium bg-red-50 p-2 rounded-lg border border-red-100">
+                                            <img src={InfoIcon} alt="Info" className="w-3.5 h-3.5 mt-0.5" />
                                             <span>{visaDoc.rejectionReason}</span>
                                         </div>
                                     )}
@@ -395,8 +401,8 @@ const VerificationStatusPage = () => {
                             const trainingDoc = documents.documents?.trainingCertificates;
                             const trainingStatus = getDocumentStatus('trainingCertificates');
                             return (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-primary-500 mb-3">Training Certificates</h3>
+                                <div className="space-y-2">
+                                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider px-1">Training Certificates</h3>
                                     <DocumentRow
                                         name={trainingDoc?.fileName || 'Training Certificates.pdf'}
                                         status={trainingStatus.status}
@@ -406,8 +412,8 @@ const VerificationStatusPage = () => {
                                         docType="trainingCertificates"
                                     />
                                     {trainingStatus.status === 'Rejected' && trainingDoc?.rejectionReason && (
-                                        <div className="mt-1 flex items-start gap-2 text-xs text-primary-200 font-medium">
-                                            <img src={InfoIcon} alt="Info" className="w-4 h-4" />
+                                        <div className="mx-1 flex items-start gap-2 text-xs text-red-600 font-medium bg-red-50 p-2 rounded-lg border border-red-100">
+                                            <img src={InfoIcon} alt="Info" className="w-3.5 h-3.5 mt-0.5" />
                                             <span>{trainingDoc.rejectionReason}</span>
                                         </div>
                                     )}
@@ -420,8 +426,8 @@ const VerificationStatusPage = () => {
                             const photoIdDoc = documents.documents?.photoId;
                             const photoIdStatus = getDocumentStatus('photoId');
                             return (
-                                <div>
-                                    <h3 className="text-sm font-semibold text-primary-500 mb-3">Photo ID</h3>
+                                <div className="space-y-2">
+                                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider px-1">Photo ID</h3>
                                     <DocumentRow
                                         name={photoIdDoc?.fileName || 'Photo ID.pdf'}
                                         status={photoIdStatus.status}
@@ -431,8 +437,8 @@ const VerificationStatusPage = () => {
                                         docType="photoId"
                                     />
                                     {photoIdStatus.status === 'Rejected' && photoIdDoc?.rejectionReason && (
-                                        <div className="mt-1 flex items-start gap-2 text-xs text-primary-200 font-medium">
-                                            <img src={InfoIcon} alt="Info" className="w-4 h-4" />
+                                        <div className="mx-1 flex items-start gap-2 text-xs text-red-600 font-medium bg-red-50 p-2 rounded-lg border border-red-100">
+                                            <img src={InfoIcon} alt="Info" className="w-3.5 h-3.5 mt-0.5" />
                                             <span>{photoIdDoc.rejectionReason}</span>
                                         </div>
                                     )}
@@ -444,22 +450,25 @@ const VerificationStatusPage = () => {
 
                 {/* Verification Success / Next Steps */}
                 {documents?.isVerified && (
-                    <div className="mt-6 p-5 bg-green-50 border border-green-200 rounded-2xl shadow-custom">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                                <AlertCircle className="w-6 h-6" />
+                    <div className="mt-8 p-6 bg-green-50 border border-green-100 rounded-2xl shadow-sm">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                <AlertCircle className="w-7 h-7" />
                             </div>
                             <div>
-                                <h3 className="text-base font-bold text-green-800">Verification Successful!</h3>
+                                <h3 className="text-sm font-medium text-green-900">Verification Successful!</h3>
                                 <p className="text-sm text-green-700">You are now verified and can start working.</p>
                             </div>
                         </div>
                         {documents?.nextSteps?.length > 0 && (
-                            <div className="space-y-2">
-                                <p className="text-sm font-semibold text-green-800">Next Steps:</p>
-                                <ul className="list-disc list-inside text-sm text-green-700 space-y-1">
+                            <div className="space-y-3 bg-white p-4 rounded-xl border border-green-100">
+                                <p className="text-sm font-medium text-green-900">Next Steps:</p>
+                                <ul className="space-y-2">
                                     {documents.nextSteps.map((step, index) => (
-                                        <li key={index}>{step}</li>
+                                        <li key={index} className="flex items-start gap-2 text-sm text-green-800">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                                            {step}
+                                        </li>
                                     ))}
                                 </ul>
                             </div>
@@ -467,24 +476,26 @@ const VerificationStatusPage = () => {
                     </div>
                 )}
 
-                {/* Expiry Warning (Static or Conditional) */}
+                {/* Expiry Warning */}
                 {!documents?.isVerified && (
-                    <div className="mt-6 p-4 bg-yellow-50 shadow-custom border border-yellow-200 rounded-xl">
-                        <div className="flex items-start gap-3">
-                            <div className="w-5 h-5 flex-shrink-0 text-yellow-800">
-                                <AlertCircle className="w-full h-full" strokeWidth={2} />
+                    <div className="mt-8 p-5 bg-blue-50 border border-blue-100 rounded-2xl shadow-sm">
+                        <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 flex-shrink-0">
+                                <img src={InfoIcon} className="w-6 h-6" alt="Info" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-yellow-800">
-                                    Your Photo ID will expire in 14 days. Please upload a new one to avoid suspension.
+                                <h4 className="text-base font-bold text-blue-900 mb-1">Verification Status</h4>
+                                <p className="text-sm text-blue-800 leading-relaxed">
+                                    Please ensure all documents are up to date. Verified cleaners get more jobs and higher trust ratings from customers.
                                 </p>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-        </PageLayout>
-    );
+        </div>
+    </PageLayout>
+);
 };
 
 export default VerificationStatusPage;
