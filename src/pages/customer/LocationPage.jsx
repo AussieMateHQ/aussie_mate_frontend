@@ -631,18 +631,18 @@ const LocationPage = () => {
               )}
 
               {/* Confirm Button for Customer */}
-              {/* {!isCleaner && (
+              {!isCleaner && (
                 <Button
                   onClick={handleConfirmLocation}
                   fullWidth
                   size="lg"
                   loading={isLoading}
                   disabled={isLoading || !selectedLocation}
-                  className="rounded-full"
+                  className="rounded-full mt-6"
                 >
                   Confirm Location
                 </Button>
-              )} */}
+              )}
             </div>
           )}
 

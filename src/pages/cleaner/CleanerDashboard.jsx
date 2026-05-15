@@ -435,9 +435,10 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
   }, [user]);
 
   const swiperJobs = useMemo(() => {
+    if (!subscriptionStatus) return liveJobs;
     if (activeJobs.length === 0 && completedJobs.length === 0) return liveJobs;
     return [...activeJobs, ...completedJobs];
-  }, [activeJobs, completedJobs, liveJobs]);
+  }, [activeJobs, completedJobs, liveJobs, subscriptionStatus]);
 
   return (
     <div className="pb-6">
@@ -609,10 +610,7 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
                 </div>
               </div>
             )}
-          </div>
-        )}
-        {subscriptionStatus && (
-          <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm">
+        <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
                 <img
@@ -630,15 +628,13 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
               {liveJobsLabel}
             </div>
           </div>
-        )}
 
 
         {/* Active Jobs - Only if Subscribed */}
-        {subscriptionStatus && (
-          <div className="mt-6 mb-12">
+        <div className="mt-6 mb-12">
             <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
               <h3 className="text-xl font-semibold text-gray-900">
-                Your Assigned Jobs
+                {subscriptionStatus ? "Your Assigned Jobs" : "Available Jobs"}
               </h3>
 
             {/* Navigation Buttons */}
@@ -798,9 +794,10 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
           )}
           
         </div>
-      )}
-    </div>
+      </div>
+    )}
   </div>
+</div>
 );
 };
 

@@ -56,21 +56,7 @@ const LoginPage = () => {
       if (userRole === 'Customer') {
         navigate('/customer-dashboard');
       } else if (CLEANER_ROLES.includes(userRole)) {
-        // Check subscription status for cleaners
-        try {
-          const { subscriptionsAPI } = await import('../../services/api');
-          const statusRes = await subscriptionsAPI.getMyStatus().catch(() => ({ success: false }));
-
-          if (statusRes.success && statusRes.data?.subscription?.status === 'active') {
-            navigate('/cleaner-dashboard');
-          } else {
-            // Redirect to subscription screen if no active plan
-            navigate('/my-subscription');
-          }
-        } catch (err) {
-          console.error('Subscription check failed:', err);
-          navigate('/cleaner-dashboard'); // Fallback to dashboard
-        }
+        navigate('/cleaner-dashboard');
       } else {
         navigate('/');
       }

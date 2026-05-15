@@ -17,8 +17,7 @@ const JobDetailsPage = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [modalError, setModalError] = useState('');
-  const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
-  const [loadingSubscription, setLoadingSubscription] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(true);
   const [isWaitlisted, setIsWaitlisted] = useState(false);
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
   const [isWaitlistLoading, setIsWaitlistLoading] = useState(false);
@@ -33,9 +32,10 @@ const JobDetailsPage = () => {
         const response = await jobsAPI.getJobById(jobId);
 
 
-        if (response.success && response.data) {
+          if (response.success && response.data) {
           const jobData = response.data;
           setJob(jobData);
+          setIsSubscribed(jobData.isSubscribed);
 
           // Check if current cleaner has already contacted or is connected
           const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -64,23 +64,8 @@ const JobDetailsPage = () => {
       }
     };
 
-    const fetchSubscriptionStatus = async () => {
-      try {
-        setLoadingSubscription(true);
-        const res = await subscriptionsAPI.getMyStatus().catch(() => ({ success: false }));
-        if (res.success && res.data?.subscription?.currentPeriodEnd) {
-          setIsSubscriptionExpired(new Date(res.data.subscription.currentPeriodEnd) < new Date());
-        }
-      } catch (err) {
-        console.error('Error fetching subscription status:', err);
-      } finally {
-        setLoadingSubscription(false);
-      }
-    };
-
     if (jobId) {
       fetchJobDetails();
-      fetchSubscriptionStatus();
     }
   }, [jobId]);
 
@@ -292,7 +277,7 @@ const JobDetailsPage = () => {
 
   // Figma/Web: Chat should open directly (no intro popup)
   const handleChatWithCustomer = () => {
-    if (isSubscriptionExpired && !isContacted) {
+    if (!isSubscribed && !isContacted) {
       navigate('/my-subscription');
       return;
     }
@@ -421,13 +406,13 @@ const JobDetailsPage = () => {
                     className={`flex items-center gap-3 px-4 py-2 rounded-full font-semibold text-sm border transition-colors ${
                       (job.contactedCount >= 3 && !isContacted)
                         ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed'
-                        : (isSubscriptionExpired && !isContacted)
+                        : (!isSubscribed && !isContacted)
                           ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100 cursor-pointer'
                           : 'bg-[#F1F6FF] text-primary-600 border-[#E0EAFF] hover:bg-blue-50 cursor-pointer'
                     }`}
                   >
                     <img src={ChatIcon} alt="Chat" className={`w-4 h-4 ${(job.contactedCount >= 3 && !isContacted) ? 'grayscale opacity-50' : ''}`} />
-                     {isSubscriptionExpired && !isContacted ? 'Renew to Chat' : 'Chat'}
+                     {!isSubscribed && !isContacted ? 'Subscribe to Chat' : 'Chat'}
                   </button>
                   {/* Call button - only if phone is available (usually hidden until booking) */}
                   {/* {isConnected && job.customerId.phone && (
@@ -461,10 +446,16 @@ const JobDetailsPage = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => setShowWaitlistModal(true)}
+                        onClick={() => {
+                          if (!isSubscribed) {
+                            navigate('/my-subscription');
+                            return;
+                          }
+                          setShowWaitlistModal(true);
+                        }}
                         className="w-full py-3.5 bg-primary-500 text-white rounded-xl font-bold text-base hover:bg-primary-600 transition-all shadow-lg shadow-primary-100 cursor-pointer active:scale-[0.98]"
                       >
-                        Join Waitlist
+                        {!isSubscribed ? 'Subscribe to Join Waitlist' : 'Join Waitlist'}
                       </button>
                     </>
                    ) : (
