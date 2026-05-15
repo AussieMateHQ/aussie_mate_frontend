@@ -22,6 +22,7 @@ const EditProfilePage = () => {
     phone: '',
     countryCode: '+61'
   });
+  const [errors, setErrors] = useState({});
   const [userLocation, setUserLocation] = useState({
     address: '',
     city: ''
@@ -223,6 +224,14 @@ const EditProfilePage = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   // Photo upload handlers
@@ -388,8 +397,19 @@ const EditProfilePage = () => {
       }
     } catch (error) {
       console.error('Error saving profile:', error);
-      // You can add error handling UI here
-      alert('Failed to update profile. Please try again.');
+      
+      // Handle validation errors from backend
+      if (error.response && error.response.errors) {
+        const validationErrors = {};
+        error.response.errors.forEach(err => {
+          // Map backend 'path' to frontend field names
+          const field = err.path === 'phoneNumber' ? 'phone' : err.path;
+          validationErrors[field] = err.msg;
+        });
+        setErrors(validationErrors);
+      } else {
+        alert(error.message || 'Failed to update profile. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -551,6 +571,7 @@ const EditProfilePage = () => {
                 type="text"
                 value={formData.firstName}
                 onChange={handleInputChange}
+                error={errors.firstName || errors.name}
                 placeholder=""
                 required
               />
@@ -565,6 +586,7 @@ const EditProfilePage = () => {
                 type="text"
                 value={formData.lastName}
                 onChange={handleInputChange}
+                error={errors.lastName || errors.name}
                 placeholder=""
                 required
               />
@@ -579,6 +601,7 @@ const EditProfilePage = () => {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                error={errors.email}
                 placeholder=""
                 required
               />
@@ -593,6 +616,7 @@ const EditProfilePage = () => {
                 type="tel"
                 value={formData.phone}
                 onChange={handleInputChange}
+                error={errors.phone || errors.phoneNumber}
                 placeholder=""
               />
             </div>
