@@ -11,7 +11,7 @@ import Calendar from '../../components/form-controls/Calendar';
 import CalendarIcon from '../../assets/Calendar.svg';
 import JobLiveAnimation from '../../assets/joblive.gif';
 import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from '@react-google-maps/api';
-import { MapPin, Navigation } from 'lucide-react';
+import { MapPin, Navigation, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 
@@ -64,6 +64,8 @@ const PostNewJobPage = () => {
     jobStage: '',
     commercialJobTypeId: '',
     needCleaning: '',
+    roomsNeedCleaning: '',
+    bathroomsNeedCleaning: '',
     extraServiceItems: []
   });
 
@@ -127,6 +129,16 @@ const PostNewJobPage = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Auto-dismiss error toast after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   // Restore step and form data when returning from location page
   useEffect(() => {
@@ -489,6 +501,20 @@ const PostNewJobPage = () => {
   };
 
   const handleContinue = () => {
+    if (currentStep === 1) {
+      if (!formData.categoryId) {
+        setError('Please select a cleaning category');
+        return;
+      }
+      if (!formData.serviceTypeId) {
+        setError('Please specify the type of service you need');
+        return;
+      }
+      if (!formData.instructions || !formData.instructions.trim()) {
+        setError('Please add task instructions & special requirements');
+        return;
+      }
+    }
     if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
     }
@@ -508,12 +534,6 @@ const PostNewJobPage = () => {
     // Removed strict propertyType validation here as it defaults to 'house'
 
 
-    if (!selectedDate) {
-      setError('Please select a date for the service');
-      setIsLoading(false);
-      return;
-    }
-
     if (!formData.categoryId) {
       setError('Please select a cleaning category');
       setIsLoading(false);
@@ -522,6 +542,18 @@ const PostNewJobPage = () => {
 
     if (!formData.serviceTypeId) {
       setError('Please specify the type of service you need');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.instructions || !formData.instructions.trim()) {
+      setError('Please add task instructions & special requirements');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!selectedDate) {
+      setError('Please select a date for the service');
       setIsLoading(false);
       return;
     }
@@ -571,6 +603,7 @@ const PostNewJobPage = () => {
     }
 
     if (!effectiveLocation?.address || effectiveLocation.address === 'Location not set') {
+      setError('Please set your address in profile or change it before posting the job');
       setAddressError('Please set your address in profile before posting jobs');
       setIsLoading(false);
       return;
@@ -613,6 +646,8 @@ const PostNewJobPage = () => {
           jobStage: formData.jobStage
         } : {
           needCleaning: formData.needCleaning,
+          roomsNeedCleaning: formData.roomsNeedCleaning,
+          bathroomsNeedCleaning: formData.bathroomsNeedCleaning,
           extraServiceItems: formData.extraServiceItems,
           jobStage: formData.jobStage
         })
@@ -729,7 +764,6 @@ const PostNewJobPage = () => {
 
       <div className="space-y-4 bg-white rounded-2xl p-6 sm:p-8 shadow-custom">
         {/* Error Messaging */}
-        {error && <div className="text-red-500 font-medium px-4 py-3 bg-red-50 rounded-xl">{error}</div>}
         {addressError && (
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-xl flex items-center justify-between">
             <span>{addressError}</span>
@@ -919,7 +953,7 @@ const PostNewJobPage = () => {
         <div className="pt-4 flex justify-end">
           <Button
             onClick={handlePostJob}
-            disabled={isLoading || !formData.categoryId || !formData.serviceTypeId || (!selectedLocation.address || selectedLocation.address === 'Location not set')}
+            disabled={isLoading}
             loading={isLoading}
             className="rounded-full text-lg font-medium bg-[#1A73E8]"
           >
@@ -966,6 +1000,46 @@ const PostNewJobPage = () => {
 
   return (
     <>
+      {error && (
+        <>
+          <style>{`
+            @keyframes slideDown {
+              from {
+                transform: translate(-50%, -20px);
+                opacity: 0;
+              }
+              to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+              }
+            }
+          `}</style>
+          <div 
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md bg-white border border-red-100 shadow-2xl rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 transform translate-y-0"
+            style={{
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              animation: 'slideDown 0.3s ease-out'
+            }}
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="flex-grow">
+              <h4 className="text-sm font-semibold text-gray-900">Job Posting Requirement</h4>
+              <p className="text-xs text-gray-600 mt-0.5">{error}</p>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setError('')}
+              className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-50 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </>
+      )}
       {renderStepContent()}
     </>
   );

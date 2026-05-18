@@ -33,6 +33,8 @@ const JobOverviewCard = ({
   metaInfo = [],
   roleSections = {},
   serviceTypeId,
+  roomsNeedCleaning,
+  bathroomsNeedCleaning,
 }) => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
 
@@ -177,6 +179,21 @@ const JobOverviewCard = ({
             </div>
           )}
         </div>
+
+        {(roomsNeedCleaning || bathroomsNeedCleaning) && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {roomsNeedCleaning && (
+              <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                <span className="text-[#1A73E8]">🛏️</span> {roomsNeedCleaning} Room{roomsNeedCleaning !== '1' ? 's' : ''}
+              </div>
+            )}
+            {bathroomsNeedCleaning && (
+              <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                <span className="text-[#1A73E8]">🚿</span> {bathroomsNeedCleaning} Bathroom{bathroomsNeedCleaning !== '1' ? 's' : ''}
+              </div>
+            )}
+          </div>
+        )}
 
         {roleItems.length > 0 && (
           <div className="space-y-2">
@@ -362,6 +379,8 @@ JobOverviewCard.propTypes = {
       }),
     ])
   ),
+  roomsNeedCleaning: PropTypes.string,
+  bathroomsNeedCleaning: PropTypes.string,
 };
 
 JobOverviewCard.defaultProps = {
@@ -382,6 +401,8 @@ JobOverviewCard.defaultProps = {
   viewerRole: 'customer',
   metaInfo: [],
   roleSections: {},
+  roomsNeedCleaning: null,
+  bathroomsNeedCleaning: null,
 };
 
 export default JobOverviewCard;

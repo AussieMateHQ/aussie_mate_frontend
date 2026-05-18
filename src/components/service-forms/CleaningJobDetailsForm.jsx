@@ -368,27 +368,53 @@ const CleaningJobDetailsForm = ({
 
         {/* Need Cleaning Radio Options (Conditional) */}
         {isDomesticOrRelated && (
-          <div className="space-y-4 py-2">
-            <div>
-              <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
-                How many need cleaning?
-              </h2>
-              <p className="text-sm sm:text-base text-gray-500">
-                Select one
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  How many rooms need cleaning?
+                </h2>
+                <p className="text-sm sm:text-base text-gray-500">
+                  Select one
+                </p>
+              </div>
+              <div className="space-y-3">
+                {['1', '2', '3', '4 or more'].map((option) => (
+                  <RadioButton
+                    key={`rooms-${option}`}
+                    name="roomsNeedCleaning"
+                    value={option}
+                    label={option}
+                    checked={formData.roomsNeedCleaning === option}
+                    onChange={(e) => onInputChange('roomsNeedCleaning', e.target.value)}
+                    labelClassName="text-[15px] sm:text-base font-medium"
+                  />
+                ))}
+              </div>
             </div>
-            <div className="space-y-3">
-              {['1', '2', '3', '4 or more'].map((option) => (
-                <RadioButton
-                  key={option}
-                  name="needCleaning"
-                  value={option}
-                  label={option}
-                  checked={formData.needCleaning === option}
-                  onChange={(e) => handleNeedCleaningChange(e.target.value)}
-                  labelClassName="text-[15px] sm:text-base font-medium"
-                />
-              ))}
+
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
+                  How many bathrooms need cleaning?
+                </h2>
+                <p className="text-sm sm:text-base text-gray-500">
+                  Select one
+                </p>
+              </div>
+              <div className="space-y-3">
+                {['1', '2', '3', '4 or more'].map((option) => (
+                  <RadioButton
+                    key={`bathrooms-${option}`}
+                    name="bathroomsNeedCleaning"
+                    value={option}
+                    label={option}
+                    checked={formData.bathroomsNeedCleaning === option}
+                    onChange={(e) => onInputChange('bathroomsNeedCleaning', e.target.value)}
+                    labelClassName="text-[15px] sm:text-base font-medium"
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -549,6 +575,7 @@ const CleaningJobDetailsForm = ({
         selectedFiles={selectedFiles}
         onRemoveFile={onRemoveFile}
         instructionsTitle="Task Instructions & Special Requirements"
+        instructionsSubtitle="(Required)"
         instructionsValue={formData.instructions || ''}
         onInstructionsChange={(value) => onInputChange('instructions', value)}
         instructionsPlaceholder="Write your instructions here...."

@@ -763,9 +763,22 @@ const CustomerInProgressJobDetailsPage = () => {
                 <MapPinIcon className="w-4 h-4 mr-3 opacity-60" />
                 <span>{job.displayLocation}</span>
               </div>
-
-
             </div>
+
+            {(job.roomsNeedCleaning || job.bathroomsNeedCleaning) && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {job.roomsNeedCleaning && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🛏️</span> {job.roomsNeedCleaning} Room{job.roomsNeedCleaning !== '1' ? 's' : ''}
+                  </div>
+                )}
+                {job.bathroomsNeedCleaning && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🚿</span> {job.bathroomsNeedCleaning} Bathroom{job.bathroomsNeedCleaning !== '1' ? 's' : ''}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Photo Grid */}
             {jobPhotos.length > 0 && (

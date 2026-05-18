@@ -724,8 +724,22 @@ const CustomerJobDetailsPage = () => {
                 <MapPin className="w-5 h-5 mr-3 mt-0.5 text-[#111827] flex-shrink-0" strokeWidth={1.5} />
                 <span className="text-sm leading-snug">{job.location?.address || job.address || 'Location not specified'}</span>
               </div>
-
             </div>
+
+            {(job.roomsNeedCleaning || job.bathroomsNeedCleaning) && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {job.roomsNeedCleaning && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🛏️</span> {job.roomsNeedCleaning} Room{job.roomsNeedCleaning !== '1' ? 's' : ''}
+                  </div>
+                )}
+                {job.bathroomsNeedCleaning && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🚿</span> {job.bathroomsNeedCleaning} Bathroom{job.bathroomsNeedCleaning !== '1' ? 's' : ''}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Photo Grid */}

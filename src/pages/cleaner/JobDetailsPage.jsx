@@ -380,6 +380,8 @@ const JobDetailsPage = () => {
               photos={jobPhotos}
               viewerRole="cleaner"
               metaInfo={jobOverviewMeta}
+              roomsNeedCleaning={job?.roomsNeedCleaning}
+              bathroomsNeedCleaning={job?.bathroomsNeedCleaning}
             />
           </div>
 

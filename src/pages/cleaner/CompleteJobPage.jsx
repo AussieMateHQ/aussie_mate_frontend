@@ -483,6 +483,8 @@ const CompleteJobPage = () => {
             location={job?.location?.address || job?.location?.fullAddress || job?.address || job?.locationDescription}
             photos={job?.photos?.map(p => typeof p === 'string' ? p : p.url || p.src) || []}
             viewerRole="cleaner"
+            roomsNeedCleaning={job?.roomsNeedCleaning}
+            bathroomsNeedCleaning={job?.bathroomsNeedCleaning}
           />
 
           {/* Review Property Section - Hide after 5 minutes */}
