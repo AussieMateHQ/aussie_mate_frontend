@@ -31,12 +31,6 @@ const defaultCenter = {
 // Google Maps libraries
 const libraries = ['places'];
 
-const CATEGORY_IDS = {
-  COMMERCIAL: '69b2988b174465a98bbf4102',
-  DOMESTIC: '69b29874174465a98bbf40fe',
-  BOND: '69b2989e174465a98bbf410a',
-  OTHER: '69b29894174465a98bbf4106',
-};
 
 const PostNewJobPage = () => {
   const navigate = useNavigate();
@@ -637,8 +631,8 @@ const PostNewJobPage = () => {
           }
         },
         customerId,
-        // Add dynamic fields
-        ...(formData.categoryId === CATEGORY_IDS.COMMERCIAL ? {
+        // Add dynamic fields dynamically based on category name
+        ...((formData.propertyType || '').toLowerCase().includes('commercial') ? {
           commercialJobTypeId: formData.commercialJobTypeId,
           hasPlans: formData.hasPlans,
           hasCouncilApproval: formData.hasCouncilApproval,

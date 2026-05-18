@@ -6,13 +6,6 @@ import arrowDownIcon from '../../assets/down2.svg';
 import { useEffect, useRef, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
 
-const CATEGORY_IDS = {
-  COMMERCIAL: '69b2988b174465a98bbf4102',
-  DOMESTIC: '69b29874174465a98bbf40fe',
-  BOND: '69b2989e174465a98bbf410a',
-  OTHER: '69b29894174465a98bbf4106',
-};
-
 const CleaningJobDetailsForm = ({
   formData,
   onInputChange,
@@ -78,8 +71,11 @@ const CleaningJobDetailsForm = ({
 
   // Fetch commercial job types if commercial category selected
   useEffect(() => {
+    const selectedCategory = categories.find((c) => c._id === formData.categoryId);
+    const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
+    if (!categoryName.includes('commercial')) return;
+
     const fetchCommercialJobTypes = async () => {
-      if (formData.categoryId !== CATEGORY_IDS.COMMERCIAL) return;
       try {
         const response = await categoriesAPI.getCommercialJobTypes();
         if (response.success) {
@@ -90,11 +86,18 @@ const CleaningJobDetailsForm = ({
       }
     };
     fetchCommercialJobTypes();
-  }, [formData.categoryId]);
+  }, [formData.categoryId, categories]);
 
   // Fetch extra service items if domestic/bond/other category selected
   useEffect(() => {
-    const isDomesticOrRelated = [CATEGORY_IDS.DOMESTIC, CATEGORY_IDS.BOND, CATEGORY_IDS.OTHER].includes(formData.categoryId);
+    const selectedCategory = categories.find((c) => c._id === formData.categoryId);
+    const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
+    const isDomesticOrRelated = categoryName.includes('domestic') || 
+                                categoryName.includes('general') || 
+                                categoryName.includes('bond') || 
+                                categoryName.includes('lease') || 
+                                categoryName.includes('other');
+
     const fetchExtraServiceItems = async () => {
       if (!isDomesticOrRelated) return;
       try {
@@ -107,7 +110,7 @@ const CleaningJobDetailsForm = ({
       }
     };
     fetchExtraServiceItems();
-  }, [formData.categoryId]);
+  }, [formData.categoryId, categories]);
 
 
 
@@ -169,8 +172,15 @@ const CleaningJobDetailsForm = ({
     return type ? type.name : 'Select Job Type';
   };
 
-  const isCommercial = formData.categoryId === CATEGORY_IDS.COMMERCIAL;
-  const isDomesticOrRelated = [CATEGORY_IDS.DOMESTIC, CATEGORY_IDS.BOND, CATEGORY_IDS.OTHER].includes(formData.categoryId);
+  const selectedCategory = categories.find((c) => c._id === formData.categoryId);
+  const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
+
+  const isCommercial = categoryName.includes('commercial');
+  const isDomesticOrRelated = categoryName.includes('domestic') || 
+                              categoryName.includes('general') || 
+                              categoryName.includes('bond') || 
+                              categoryName.includes('lease') || 
+                              categoryName.includes('other');
 
   const handleNeedCleaningChange = (value) => {
     onInputChange('needCleaning', value);
