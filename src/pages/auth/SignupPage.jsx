@@ -184,7 +184,7 @@ const SignupPage = () => {
             <p className="text-sm sm:text-base text-primary-200 font-medium px-2 text-center">
               Please provide the following details to set up your Aussie Mate account.
             </p>
-            <div className="space-y-6">
+            <div className="flex flex-col gap-3 mt-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <FloatingLabelInput
                   id="firstName"

@@ -132,37 +132,40 @@ const LoginPage = () => {
             <p className="text-sm md:text-base text-primary-200 font-medium text-center">
               Log in to continue booking and managing your cleaning services with ease.
             </p>
-            <FloatingLabelInput
-              id="email"
-              name="email"
-              label="Email Or Phone"
-              type="text"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
 
-            <FloatingLabelInput
-              id="password"
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-            >
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
+            <div className="flex flex-col gap-3 mt-6">
+              <FloatingLabelInput
+                id="email"
+                name="email"
+                label="Email Or Phone"
+                type="text"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+
+              <FloatingLabelInput
+                id="password"
+                name="password"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleInputChange}
+                required
               >
-                {showPassword ? (
-                  <img src={eyeIcon} alt="Show password" className="w-5 h-5" />
-                ) : (
-                  <img src={eyeOffIcon} alt="Hide password" className="w-5 h-5" />
-                )}
-              </button>
-            </FloatingLabelInput>
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
+                >
+                  {showPassword ? (
+                    <img src={eyeIcon} alt="Show password" className="w-5 h-5" />
+                  ) : (
+                    <img src={eyeOffIcon} alt="Hide password" className="w-5 h-5" />
+                  )}
+                </button>
+              </FloatingLabelInput>
+            </div>
             {error && (
               <div className=" text-red-500 font-medium rounded-lg text-sm leading-4 mt-0">
                 {error}
