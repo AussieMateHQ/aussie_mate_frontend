@@ -1015,10 +1015,11 @@ const PostNewJobPage = () => {
             }
           `}</style>
           <div 
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md bg-white border border-red-100 shadow-2xl rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 transform translate-y-0"
+            className="fixed top-6 left-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md bg-white border border-red-100 shadow-2xl rounded-2xl p-4 flex items-center gap-3"
             style={{
+              transform: 'translateX(-50%)',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              animation: 'slideDown 0.3s ease-out'
+              animation: 'slideDown 0.3s ease-out forwards'
             }}
           >
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
