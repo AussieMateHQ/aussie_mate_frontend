@@ -87,6 +87,7 @@ const CustomerInProgressJobDetailsPage = () => {
   const [workProgress, setWorkProgress] = useState(null);
   const [occurrences, setOccurrences] = useState([]);
   const [weeklySchedule, setWeeklySchedule] = useState([]);
+  const [avatarError, setAvatarError] = useState(false);
   const scrollPositionRef = useRef(null);
 
   useEffect(() => {
@@ -648,63 +649,66 @@ const CustomerInProgressJobDetailsPage = () => {
           {/* Cleaner Info Card (Top) */}
           <div className="mb-6 mt-4">
             {cleaner ? (
-              <div className="bg-white rounded-2xl p-4 shadow-custom border border-[#F3F3F3] relative">
-                {/* Status Chip (Top Right) */}
-                <div className="absolute top-4 right-4">
-                  <span className="text-[10px] font-semibold px-2 py-1.5 rounded-full bg-[#FFEBCA] text-[#FF8800] border border-[#FFEBCA]">
-                    In Progress
-                  </span>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="w-14 h-14 rounded-full mr-4 overflow-hidden flex-shrink-0 border border-gray-100">
-                    {cleaner.profilePhoto?.url ? (
-                      <img
-                        src={cleaner.profilePhoto.url}
-                        alt="Cleaner"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <UserRound className="w-8 h-8 text-gray-400" strokeWidth={1.5} />
-                      </div>
-                    )}
-                  </div>
-                  <div className="pr-16 space-y-1">
-                    <h4 className="font-semibold text-gray-900 text-lg leading-tight">{cleaner.firstName} {cleaner.lastName}</h4>
-                    <div className="flex items-center text-sm text-gray-500 text-[13px]">
-                      <img src={PhoneIcon2} alt="Phone" className="w-3.5 h-3.5 mr-1.5 opacity-60" />
-                      {cleaner.phone || cleaner.phoneNumber || cleaner.mobile || 'Phone not available'}
-                    </div>
-                    <div className="text-[12px] text-gray-400 font-medium !mt-1.5">
-                      {routeInfo ? `${routeInfo.distance} away — En route` : '2.4 km away — En route'}
-                    </div>
-
-                    {/* Tier Badge inside the info section */}
-                    {getCleanerTier() && getCleanerTier().toLowerCase() !== 'none' && (
-                      <div className={`inline-flex items-center font-semibold px-2 py-1 mt-1 rounded-lg text-[11px] border-[0.6px] ${getCleanerTier().toLowerCase() === 'gold'
-                        ? 'bg-amber-50 text-amber-700 border-amber-200'
-                        : getCleanerTier().toLowerCase() === 'silver'
-                          ? 'bg-gray-100 text-gray-700 border-gray-300'
-                          : 'bg-orange-50 text-orange-700 border-orange-200'
-                        }`}>
-
+              <div className="bg-white rounded-2xl p-4 shadow-custom border border-[#F3F3F3]">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    {/* Avatar */}
+                    <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 border border-gray-100">
+                      {cleaner.profilePhoto?.url && !avatarError ? (
                         <img
-                          src={
-                            getCleanerTier() === 'gold'
-                              ? GoldBadgeIcon
-                              : getCleanerTier() === 'silver'
-                                ? SilverBadgeIcon
-                                : BronzeBadgeIcon
-                          }
-                          alt="Badge"
-                          className="w-3.5 h-3.5 mr-1.5"
+                          src={cleaner.profilePhoto.url}
+                          alt="Cleaner"
+                          className="w-full h-full object-cover"
+                          onError={() => setAvatarError(true)}
                         />
-                        <span className="capitalize">{getCleanerTier()} Tier</span>
+                      ) : (
+                        <div className="w-full h-full bg-primary-500 flex items-center justify-center text-white text-xl font-bold uppercase">
+                          {cleaner.firstName ? cleaner.firstName.charAt(0).toUpperCase() : 'C'}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-1 flex-1">
+                      <h4 className="font-semibold text-gray-900 text-lg leading-tight capitalize">{cleaner.firstName} {cleaner.lastName}</h4>
+                      <div className="flex items-center text-sm text-gray-500 text-[13px]">
+                        <img src={PhoneIcon2} alt="Phone" className="w-3.5 h-3.5 mr-1.5 opacity-60" />
+                        {cleaner.phone || cleaner.phoneNumber || cleaner.mobile || 'Phone not available'}
                       </div>
-                    )}
+                      <div className="text-[12px] text-gray-400 font-medium !mt-1">
+                        {routeInfo ? `${routeInfo.distance} away — En route` : '2.4 km away — En route'}
+                      </div>
+
+                      {/* Tier Badge inside the info section */}
+                      {getCleanerTier() && getCleanerTier().toLowerCase() !== 'none' && (
+                        <div className={`inline-flex items-center font-semibold px-2 py-1 mt-1 rounded-lg text-[11px] border-[0.6px] self-start ${getCleanerTier().toLowerCase() === 'gold'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200'
+                          : getCleanerTier().toLowerCase() === 'silver'
+                            ? 'bg-gray-100 text-gray-700 border-gray-300'
+                            : 'bg-orange-50 text-orange-700 border-orange-200'
+                          }`}>
+                          <img
+                            src={
+                              getCleanerTier() === 'gold'
+                                ? GoldBadgeIcon
+                                : getCleanerTier() === 'silver'
+                                  ? SilverBadgeIcon
+                                  : BronzeBadgeIcon
+                            }
+                            alt="Badge"
+                            className="w-3.5 h-3.5 mr-1.5"
+                          />
+                          <span className="capitalize">{getCleanerTier()} Tier</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
+                  {/* Status Chip (Top Right on Desktop, Stacked on Mobile) */}
+                  <div className="flex sm:flex-col sm:items-end justify-between sm:self-stretch mt-1 sm:mt-0">
+                    <span className="text-[10px] font-bold px-2.5 py-1.5 rounded-full bg-[#FFEBCA] text-[#FF8800] border border-[#FFEBCA] inline-block self-start sm:self-auto">
+                      In Progress
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-end">

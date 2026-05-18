@@ -20,7 +20,7 @@ const JobDetailsCompletedPage = () => {
   const [feedback, setFeedback] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [jobData, setJobData] = useState(null);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [invoiceData, setInvoiceData] = useState(null);
@@ -33,6 +33,7 @@ const JobDetailsCompletedPage = () => {
   const [occurrences, setOccurrences] = useState([]);
   const [workProgress, setWorkProgress] = useState(null);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const resolveImageSrc = (image) => {
     if (!image) return '';
@@ -151,7 +152,7 @@ const JobDetailsCompletedPage = () => {
             frequency: job.frequency || job.recurringFrequency || job.schedule?.frequency || '',
             status: job.statusDisplay || job.status || 'Completed',
             completedAt: job.completedAt || null, // Store as raw date string
-            scheduledDate: job.scheduledDate || null, 
+            scheduledDate: job.scheduledDate || null,
             location: job.location?.address || job.location?.fullAddress || 'Location',
             photos: jobPhotos,
             cleaner: {
@@ -490,41 +491,42 @@ const JobDetailsCompletedPage = () => {
         {/* Cleaner Info Card - Redesigned */}
         <div className="px-4 mt-4">
           <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden group hover:border-blue-100 transition-colors">
-            <div className="flex items-start justify-between ">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="flex items-start gap-4 flex-1">
                 {/* Avatar */}
-                <div className="relative mt-1">
+                <div className="relative mt-1 flex-shrink-0">
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 ring-2 ring-white">
-                    {jobData.cleaner.photo ? (
-                      <img 
-                        src={resolveImageSrc(jobData.cleaner.photo)} 
-                        alt={jobData.cleaner.name} 
+                    {resolveImageSrc(jobData.cleaner.photo) && !avatarError ? (
+                      <img
+                        src={resolveImageSrc(jobData.cleaner.photo)}
+                        alt={jobData.cleaner.name}
                         className="w-full h-full object-cover"
+                        onError={() => setAvatarError(true)}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <UserRound className="w-8 h-8 text-gray-300" strokeWidth={1.5} />
+                      <div className="w-full h-full bg-primary-500 flex items-center justify-center text-white text-2xl font-semibold uppercase">
+                        {jobData.cleaner.name ? jobData.cleaner.name.trim().charAt(0).toUpperCase() : 'C'}
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <h3 className="text-[22px] font-semibold text-[#111827] leading-none">{jobData.cleaner.name || "John Doe"}</h3>
-                  
+                  <h3 className="text-xl sm:text-[22px] font-semibold text-[#111827] leading-none capitalize">{jobData.cleaner.name || "John Doe"}</h3>
+
                   {/* Tier Badge */}
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex items-center gap-1 px-3 py-2 rounded-full bg-[#FFF2DE]">
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF2DE]">
                       <img src={RatingIcon} alt="Rating" className="w-3.5 h-3.5" />
-                      <span className="text-sm font-medium">{jobData.cleaner.rating || "4.9"}</span>
+                      <span className="text-xs sm:text-sm font-semibold">{jobData.cleaner.rating || "4.9"}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[linear-gradient(94.49deg,_#FDFDFD_0%,_#E9E9E9_100%)] border border-gray-100">
-                      <img 
-                        src={jobData.cleaner.tier === 'gold' ? GoldBadgeIcon : jobData.cleaner.tier === 'silver' ? SilverBadgeIcon : BronzeBadgeIcon} 
-                        alt="Badge" 
-                        className="w-5 h-5 drop-shadow-sm" 
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[linear-gradient(94.49deg,_#FDFDFD_0%,_#E9E9E9_100%)] border border-gray-100">
+                      <img
+                        src={jobData.cleaner.tier === 'gold' ? GoldBadgeIcon : jobData.cleaner.tier === 'silver' ? SilverBadgeIcon : BronzeBadgeIcon}
+                        alt="Badge"
+                        className="w-4 h-4 drop-shadow-sm"
                       />
-                      <span className="text-sm font-medium text-gray-900 capitalize">
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900 capitalize">
                         {jobData.cleaner.tier || 'Silver'} Tier
                       </span>
                     </div>
@@ -533,12 +535,10 @@ const JobDetailsCompletedPage = () => {
               </div>
 
               {/* Action Columns (Status Top, Icons Bottom) */}
-              <div className="flex flex-col items-end justify-between self-stretch">
-                <span className="px-4 py-2.5 rounded-full bg-[#E4FBED] text-[#1EB154] text-sm font-medium tracking-tight border border-[#DBF9E7]">
+              <div className="flex sm:flex-col sm:items-end justify-between sm:self-stretch mt-1 sm:mt-0">
+                <span className="px-3 py-1.5 rounded-full bg-[#E4FBED] text-[#1EB154] text-xs sm:text-sm font-semibold tracking-tight border border-[#DBF9E7] inline-block self-start sm:self-auto">
                   {jobData.status === 'Completed' || jobData.status?.toLowerCase() === 'completed' ? 'Completed' : 'In Progress'}
                 </span>
-
-      
               </div>
             </div>
           </div>
@@ -562,7 +562,7 @@ const JobDetailsCompletedPage = () => {
           <div className="space-y-0.5">
             <div className="flex items-center gap-2.5 group">
               <div className="w-7 h-7 rounded-lg text-[#6B7280] flex items-center justify-center">
-                <CalendarDays className="w-5 h-5" />  
+                <CalendarDays className="w-5 h-5" />
               </div>
               <div>
                 <p className="text-[15px] font-medium text-[#6B7280]">
@@ -591,10 +591,10 @@ const JobDetailsCompletedPage = () => {
               <div className="grid grid-cols-2 gap-2 mb-6 max-w-lg">
                 {overviewPhotos.slice(0, 4).map((img, idx) => (
                   <div key={idx} className="relative rounded-2xl overflow-hidden group cursor-pointer border border-gray-100">
-                    <img 
-                      src={img} 
-                      alt={`Job detail ${idx + 1}`} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    <img
+                      src={img}
+                      alt={`Job detail ${idx + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {idx === 3 && overviewPhotos.length > 4 && (
                       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center group-hover:bg-black/50 transition-colors">
@@ -635,15 +635,15 @@ const JobDetailsCompletedPage = () => {
             >
               {completingJob ? 'Completing...' : 'Mark Job as Completed'}
             </Button>
-        
+
           </div>
         )}
 
         {/* Complete Job Confirmation Modal */}
         {showCompleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div 
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in" 
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in"
               onClick={() => setShowCompleteModal(false)}
             ></div>
             <div className="relative bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
@@ -655,22 +655,22 @@ const JobDetailsCompletedPage = () => {
                 <p className="text-gray-500 text-sm leading-relaxed mb-8 px-2">
                   Are you sure the cleaner has finished the job? This will finalize the payment and allow you to rate the service.
                 </p>
-                
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowCompleteModal(false)}
-                    className="flex-1 py-4 px-6 rounded-2xl bg-gray-100 text-gray-600 font-bold text-base hover:bg-gray-200 transition-colors"
-                  >
-                    Not Now
-                  </button>
+
+                <div className="flex flex-col gap-3">
                   <button
                     onClick={() => {
                       setShowCompleteModal(false);
                       handleCompleteJob();
                     }}
-                    className="whitespace-nowrap flex-1 py-4 px-6 rounded-2xl bg-primary-500 text-white font-bold text-base hover:bg-blue-600 shadow-lg shadow-blue-100 hover:shadow-blue-200 transition-all"
+                    className="w-full py-4 px-6 rounded-2xl bg-primary-500 text-white font-bold text-base hover:bg-blue-600 shadow-lg shadow-blue-100 hover:shadow-blue-200 transition-all cursor-pointer"
                   >
-                   Complete Job
+                    Complete Job
+                  </button>
+                  <button
+                    onClick={() => setShowCompleteModal(false)}
+                    className="w-full py-4 px-6 rounded-2xl bg-gray-100 text-gray-600 font-bold text-base hover:bg-gray-200 transition-colors cursor-pointer"
+                  >
+                    Not Now
                   </button>
                 </div>
               </div>

@@ -23,6 +23,28 @@ import CloseIcon from '../../assets/close.svg';
 import { jobsAPI, quotesAPI } from '../../services/api';
 import { chatAPI } from '../../services/chatAPI';
 
+const CleanerAvatar = ({ src, name, className = "w-16 h-16" }) => {
+  const [hasError, setHasError] = useState(false);
+  const initials = name ? name.trim().charAt(0).toUpperCase() : 'C';
+
+  return (
+    <div className={`${className} rounded-full overflow-hidden flex-shrink-0 border border-gray-100`}>
+      {src && !hasError ? (
+        <img 
+          src={src} 
+          alt={name} 
+          className="w-full h-full object-cover" 
+          onError={() => setHasError(true)} 
+        />
+      ) : (
+        <div className="w-full h-full bg-primary-500 flex items-center justify-center text-white text-xl font-bold uppercase">
+          <span>{initials}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CustomerJobDetailsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -186,7 +208,7 @@ const CustomerJobDetailsPage = () => {
 
   const handleConnect = (cleanerId) => {
     const item = cleanerQuotes.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId) ||
-                 waitlistedCleaners.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId);
+      waitlistedCleaners.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId);
     if (item) {
       setQuoteToConnect(item);
       setShowConnectModal(true);
@@ -195,7 +217,7 @@ const CustomerJobDetailsPage = () => {
 
   const handleAcceptQuote = (cleanerId) => {
     const item = cleanerQuotes.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId) ||
-                 waitlistedCleaners.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId);
+      waitlistedCleaners.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId);
     if (item) {
       setQuoteToConnect(item);
       setShowConnectModal(true);
@@ -751,15 +773,7 @@ const CustomerJobDetailsPage = () => {
                     {/* Header: Avatar, Info, and Tier */}
                     <div className="flex items-start justify-between mb-5">
                       <div className="flex gap-4">
-                        <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-gray-50 border border-gray-100">
-                          {cleaner.photo ? (
-                            <img src={cleaner.photo} alt={cleaner.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
-                              <img src={UserIcon} className="w-8 h-8 opacity-40" alt="User" />
-                            </div>
-                          )}
-                        </div>
+                        <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-16 h-16" />
                         <div>
                           <h4 className="text-lg font-medium text-gray-900 mb-1 capitalize">
                             {cleaner.name}
@@ -807,20 +821,20 @@ const CustomerJobDetailsPage = () => {
                     </div>
 
                     {/* Footer Action Button */}
-                    <div className="flex justify-end border-t border-gray-100 pt-4"> 
-                    <Button
-                      onClick={() => {
-                        if (cleaner.isConnected) {
-                          navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`);
-                        } else {
-                          handleAcceptQuote(cleaner.id);
-                        }
-                      }}
-                      variant=""
-                      className="py-3 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer"
-                    >
-                      {cleaner.isConnected ? 'Message' : 'Connect & Message'}
-                    </Button>
+                    <div className="flex justify-end border-t border-gray-100 pt-4">
+                      <Button
+                        onClick={() => {
+                          if (cleaner.isConnected) {
+                            navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`);
+                          } else {
+                            handleAcceptQuote(cleaner.id);
+                          }
+                        }}
+                        variant=""
+                        className="py-3 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer"
+                      >
+                        {cleaner.isConnected ? 'Message' : 'Connect & Message'}
+                      </Button>
                     </div>
                   </div>
                 );
@@ -841,15 +855,7 @@ const CustomerJobDetailsPage = () => {
                       {/* Upper Header: Avatar, Name, Phone, and Tier Badge */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex gap-3 sm:gap-4">
-                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-50 border border-gray-100">
-                            {cleaner.photo ? (
-                              <img src={cleaner.photo} alt={cleaner.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-primary-50 text-primary-300">
-                                <img src={UserIcon} className="w-6 h-6 sm:w-8 sm:h-8" alt="User" />
-                              </div>
-                            )}
-                          </div>
+                          <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-10 h-10 sm:w-14 sm:h-14" />
                           <div className="pt-0.5 sm:pt-1">
                             <h4 className="text-[18px] sm:text-lg font-semibold text-primary-500 mb-1">
                               {cleaner.name}

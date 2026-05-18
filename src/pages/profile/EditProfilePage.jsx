@@ -23,6 +23,7 @@ const EditProfilePage = () => {
     countryCode: '+61'
   });
   const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
   const [userLocation, setUserLocation] = useState({
     address: '',
     city: ''
@@ -218,6 +219,16 @@ const EditProfilePage = () => {
     };
   }, [isCountryDropdownOpen]);
 
+  // Auto-dismiss error toast after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -395,20 +406,22 @@ const EditProfilePage = () => {
       } else {
         throw new Error('Failed to update profile');
       }
-    } catch (error) {
-      console.error('Error saving profile:', error);
+    } catch (err) {
+      console.error('Error saving profile:', err);
       
       // Handle validation errors from backend
-      if (error.response && error.response.errors) {
+      if (err.response && err.response.errors) {
         const validationErrors = {};
-        error.response.errors.forEach(err => {
+        err.response.errors.forEach(backendErr => {
           // Map backend 'path' to frontend field names
-          const field = err.path === 'phoneNumber' ? 'phone' : err.path;
-          validationErrors[field] = err.msg;
+          const field = backendErr.path === 'phoneNumber' ? 'phone' : backendErr.path;
+          validationErrors[field] = backendErr.msg;
         });
         setErrors(validationErrors);
+        setError('Please correct the validation errors below.');
       } else {
-        alert(error.message || 'Failed to update profile. Please try again.');
+        const errorMessage = err.response?.message || err.message || 'Failed to update profile. Please try again.';
+        setError(errorMessage);
       }
     } finally {
       setLoading(false);
@@ -429,6 +442,47 @@ const EditProfilePage = () => {
 
   return (
     <>
+      {error && (
+        <>
+          <style>{`
+            @keyframes slideDown {
+              from {
+                transform: translate(-50%, -20px);
+                opacity: 0;
+              }
+              to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+              }
+            }
+          `}</style>
+          <div 
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md bg-white border border-red-100 shadow-2xl rounded-2xl p-4 flex items-center gap-3 transition-all duration-300 transform translate-y-0"
+            style={{
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              animation: 'slideDown 0.3s ease-out'
+            }}
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="flex-grow">
+              <h4 className="text-sm font-semibold text-gray-900">Profile Update Error</h4>
+              <p className="text-xs text-gray-600 mt-0.5">{error}</p>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setError('')}
+              className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-50 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <PageHeader
           title="Edit Profile"
