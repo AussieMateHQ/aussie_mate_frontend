@@ -641,7 +641,7 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
         {/* Active Jobs - Only if Subscribed */}
         <div className="mt-6 mb-12">
             <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
-              <h3 className="text-xl font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900">
                 {subscriptionStatus ? "Your Assigned Jobs" : "Available Jobs"}
               </h3>
 
