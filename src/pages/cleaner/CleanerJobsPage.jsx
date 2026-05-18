@@ -172,10 +172,10 @@ const CleanerJobsPage = () => {
     // normalize response
     const jobsArray = result?.data?.jobs || result?.data || [];
     const total = result?.data?.totalAvailable || result?.totalAvailable || jobsArray.length;
-    const payload = { 
-      jobs: jobsArray, 
-      total, 
-      requireVerification: result?.requireVerification || false 
+    const payload = {
+      jobs: jobsArray,
+      total,
+      requireVerification: result?.requireVerification || false
     };
     apiCache.current[cacheKey] = payload;
     return payload;
@@ -354,7 +354,7 @@ const CleanerJobsPage = () => {
           rightSlot={
             <div
               className="flex items-center gap-2 cursor-pointer"
-              onClick={() => navigate('/location', { state: { from: 'cleaner-jobs' } })}
+              onClick={() => navigate('/location', { state: { from: '/cleaner-jobs' } })}
             >
               <img src={CurrentLocationIcon} alt="Location" className="w-5 h-5" />
               <span className="text-sm text-primary-600 font-medium ">

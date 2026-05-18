@@ -394,7 +394,10 @@ const LocationPage = () => {
 
     // REDIRECT LOGIC
     if (location.state?.from) {
-      return navigate(location.state.from, { state: { ...location.state } });
+      const redirectPath = location.state.from.startsWith('/')
+        ? location.state.from
+        : `/${location.state.from}`;
+      return navigate(redirectPath, { state: { ...location.state } });
     }
 
     const fromEditProfile = location.state?.fromPage === 'edit-profile';
