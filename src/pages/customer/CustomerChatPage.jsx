@@ -31,6 +31,8 @@ const CustomerChatPage = () => {
     addons: [],
     total: 0
   });
+  const [jobData, setJobData] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const messagesEndRef = useRef(null);
   const chatRoomIdRef = useRef(null);
@@ -163,6 +165,23 @@ const CustomerChatPage = () => {
     };
   }, [navigate]);
 
+  // Fetch job details to track booking state
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      if (jobId) {
+        try {
+          const response = await jobsAPI.getJobById(jobId);
+          if (response.success && response.data) {
+            setJobData(response.data);
+          }
+        } catch (err) {
+          console.error("Error fetching job details in chat page:", err);
+        }
+      }
+    };
+    fetchJobDetails();
+  }, [jobId]);
+
   // Join Chat Room
   useEffect(() => {
     if (jobId && cleanerId && cleanerId !== 'undefined' && cleanerId !== 'null' && isConnected) {
@@ -173,6 +192,7 @@ const CustomerChatPage = () => {
           const jobResponse = await jobsAPI.getJobById(jobId);
           if (jobResponse.success && jobResponse.data) {
             const job = jobResponse.data;
+            setJobData(job);
             const cleaners = [...(job.quotes || []), ...(job.contactedCleaners || [])];
 
             // Try to find the cleaner in the job data
@@ -324,7 +344,11 @@ const CustomerChatPage = () => {
     }
   };
 
-  const handleAcceptQuote = async () => {
+  const handleAcceptQuote = () => {
+    setShowConfirmModal(true);
+  };
+
+  const executeAssignCleaner = async () => {
     try {
       setLoading(true);
       setError('');
@@ -380,6 +404,45 @@ const CustomerChatPage = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-custom flex flex-col flex-1 overflow-hidden mb-2">
+        {/* Chat Header Inside Box */}
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
+          <div className="flex items-center gap-3">
+            {/* Avatar */}
+            <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white flex-shrink-0 font-bold">
+              {cleanerName ? cleanerName.charAt(0).toUpperCase() : 'C'}
+            </div>
+            
+            {/* Name and Status */}
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                {cleanerName || `Cleaner #${cleanerId?.slice(-4) || '1047'}`}
+              </h3>
+              <p className="text-xs text-gray-400 font-medium mt-0.5">
+                Cleaner &middot; Available
+              </p>
+            </div>
+          </div>
+
+          {/* Status Pill */}
+          {loading || !jobData ? (
+            null
+          ) : jobData.assignedCleanerId ? (
+            <div className="flex items-center gap-1 bg-[#E6F4EA] text-[#137333] px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Assigned</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 bg-[#FFF7ED] text-[#C2410C] px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Pending</span>
+            </div>
+          )}
+        </div>
+
         {/* Error Message */}
         {error && (
           <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg mx-4 mt-4">
@@ -523,22 +586,40 @@ const CustomerChatPage = () => {
         </div>
 
         {/* Sticky Action Footer */}
-        <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-gray-100 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-[32px] flex-shrink-0">
-          <div className="flex items-center justify-between gap-4">
+        {!loading && jobData && ((jobData.status === 'posted' || jobData.status === 'quoted') && !jobData.assignedCleanerId) && (
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
+            {/* Left Button */}
             <button
               onClick={handleRejectQuote}
-              className="text-red-500 text-sm sm:text-base font-bold hover:text-red-600 transition-colors"
+              className="flex items-center justify-center gap-1.5 border border-red-500 hover:bg-red-50 text-red-500 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer bg-white"
             >
-              Not Interested
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span>Not Interested</span>
             </button>
-            <Button
+
+            {/* Right Buttons */}
+            <div className="flex items-center gap-3 flex-1 justify-end max-w-md">
+              <button
+                onClick={() => navigate(`/customer-job-details/${jobId}`)}
+                className="flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+                <span>Save for later</span>
+              </button>
+
+          <Button
               onClick={handleAcceptQuote}
               className="flex-1 max-w-[240px] bg-[#1D75FF] hover:bg-blue-600 text-white py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold shadow-md transition-all sm:translate-y-0"
             >
               Assign & Book
             </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Phone Validation Alert */}
@@ -550,6 +631,81 @@ const CustomerChatPage = () => {
         }}
         isVisible={showPhoneAlert}
       />
+
+      {/* Assign & Book Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <style>{`
+            @keyframes scaleUp {
+              from {
+                transform: scale(0.95);
+                opacity: 0;
+              }
+              to {
+                transform: scale(1);
+                opacity: 1;
+              }
+            }
+            .animate-scaleUp {
+              animation: scaleUp 0.2s ease-out forwards;
+            }
+          `}</style>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowConfirmModal(false)}
+          />
+          
+          {/* Modal Container */}
+          <div className="relative bg-white rounded-3xl p-3 sm:p-6 max-w-md w-full shadow-2xl border border-gray-100 transform transition-all animate-scaleUp z-10">
+            {/* Close Button */}
+            <button 
+              onClick={() => setShowConfirmModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1.5 rounded-full hover:bg-gray-50 cursor-pointer"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Icon & Title */}
+            <div className="flex flex-col items-center text-center mb-6">
+              <div className="w-14 h-14 bg-[#EFF6FF] rounded-full flex items-center justify-center mb-4 text-[#1D75FF]">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Confirm Booking</h3>
+              <p className="text-sm text-gray-500 mt-2">
+                Are you sure you want to assign this job to <span className="font-semibold text-gray-700">{cleanerName || 'this cleaner'}</span>?
+              </p>
+            </div>
+
+      
+
+            {/* Actions */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-50 transition-all cursor-pointer text-center text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  executeAssignCleaner();
+                }}
+                className="flex-1 py-3 px-4 bg-[#1D75FF] hover:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-100 hover:shadow-blue-200 transition-all cursor-pointer text-center text-sm"
+              >
+                Assign & Book
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
