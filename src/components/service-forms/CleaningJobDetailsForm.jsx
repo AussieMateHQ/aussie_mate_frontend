@@ -175,12 +175,20 @@ const CleaningJobDetailsForm = ({
   const selectedCategory = categories.find((c) => c._id === formData.categoryId);
   const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
 
+  const selectedService = serviceTypes.find(s => s._id === formData.serviceTypeId);
+  const serviceName = (selectedService ? selectedService.name : (formData.serviceDetail || '')).toLowerCase();
+
   const isCommercial = categoryName.includes('commercial');
   const isDomesticOrRelated = categoryName.includes('domestic') || 
                               categoryName.includes('general') || 
                               categoryName.includes('bond') || 
                               categoryName.includes('lease') || 
                               categoryName.includes('other');
+
+  const isPetSittingOrHandyman = serviceName.includes('pet') || 
+                                 serviceName.includes('handyman');
+
+  const showRoomsAndBathrooms = isDomesticOrRelated && !isPetSittingOrHandyman;
 
   const handleNeedCleaningChange = (value) => {
     onInputChange('needCleaning', value);
@@ -377,7 +385,7 @@ const CleaningJobDetailsForm = ({
         )}
 
         {/* Need Cleaning Radio Options (Conditional) */}
-        {isDomesticOrRelated && (
+        {showRoomsAndBathrooms && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
             <div className="space-y-4">
               <div>
@@ -430,7 +438,7 @@ const CleaningJobDetailsForm = ({
         )}
 
         {/* Extra Service Items (Conditional) */}
-        {isDomesticOrRelated && extraServiceItems.length > 0 && (
+        {showRoomsAndBathrooms && extraServiceItems.length > 0 && (
           <div className="space-y-4 pt-4">
             <label className="block text-[20px] font-semibold text-[#111827]">
               What else needs cleaning?

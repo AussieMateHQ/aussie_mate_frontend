@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AlertTriangle, UserRound, X, CalendarDays, Clock3, CheckCircle, Circle, Calendar, Phone, Check, MapPin } from 'lucide-react';
 
 import { Button, MapWithPolyline, PageHeader } from '../../components';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 import MapPinIcon1 from '../../assets/location.svg';
 
@@ -90,6 +91,11 @@ const InProgressJobDetailsPage = () => {
     const [locationError, setLocationError] = useState(null);
     const [selectedWorkProgressId, setSelectedWorkProgressId] = useState(null);
     const [isCompleting, setIsCompleting] = useState(false);
+    const [showPhoneModal, setShowPhoneModal] = useState(false);
+    const [tempPhone, setTempPhone] = useState('');
+    const [showPhoneDisplayModal, setShowPhoneDisplayModal] = useState(false);
+    const [phoneToDisplay, setPhoneToDisplay] = useState('');
+    const [copied, setCopied] = useState(false);
     const cleanerLocationRef = useRef(null);
 
     // Helper function to check if a date is today
@@ -407,10 +413,13 @@ const InProgressJobDetailsPage = () => {
             job?.customer?.mobile;
 
         if (phoneNumber) {
-            window.location.href = `tel:${phoneNumber}`;
+            setPhoneToDisplay(phoneNumber);
+            setCopied(false);
+            setShowPhoneDisplayModal(true);
         } else {
             console.error('Customer phone number not available');
-            alert('Customer phone number not available');
+            setTempPhone('');
+            setShowPhoneModal(true);
         }
     };
 
@@ -1027,6 +1036,73 @@ const InProgressJobDetailsPage = () => {
 
                 </div>
             </div>
+
+            {/* Phone Number Modal */}
+            <ConfirmationModal
+                isOpen={showPhoneModal}
+                onClose={() => setShowPhoneModal(false)}
+                onConfirm={() => {
+                    if (tempPhone.trim()) {
+                        window.location.href = `tel:${tempPhone.trim()}`;
+                        setShowPhoneModal(false);
+                    }
+                }}
+                title="Phone Number Not Available"
+                message="The customer has not provided a contact phone number. You can enter a temporary number here to call directly, or choose to chat with them."
+                confirmText="Call Number"
+                cancelText="Close"
+                confirmButtonColor="bg-blue-600 hover:bg-blue-700"
+            >
+                <div className="mt-4 mb-2">
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider text-left">
+                        Enter Phone Number to Call
+                    </label>
+                    <input
+                        type="tel"
+                        value={tempPhone}
+                        onChange={(e) => setTempPhone(e.target.value)}
+                        placeholder="e.g. +61 400 000 000"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold text-gray-800"
+                    />
+                </div>
+            </ConfirmationModal>
+
+            {/* Phone Number Display Modal */}
+            <ConfirmationModal
+                isOpen={showPhoneDisplayModal}
+                onClose={() => setShowPhoneDisplayModal(false)}
+                onConfirm={() => {
+                    navigator.clipboard.writeText(phoneToDisplay);
+                    setCopied(true);
+                    setTimeout(() => {
+                        setShowPhoneDisplayModal(false);
+                    }, 1200);
+                }}
+                title="Customer Contact Info"
+                message="Choose how you want to connect with the customer:"
+                confirmText={copied ? "Copied!" : "Copy Number"}
+                cancelText="Close"
+                confirmButtonColor="bg-blue-600 hover:bg-blue-700"
+            >
+                <div className="mt-4 mb-4 text-center">
+                    <a 
+                        href={`tel:${phoneToDisplay}`}
+                        className="inline-flex items-center gap-2 px-5 py-3.5 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-2xl shadow-inner font-bold text-lg text-blue-600 tracking-wide transition-all cursor-pointer"
+                    >
+                        📞 {phoneToDisplay}
+                    </a>
+                    <p className="text-xs text-gray-400 font-semibold mt-2.5">
+                        {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                            ? "📱 Tap the number above to make a direct call." 
+                            : "💻 Click the number to call, or click Copy below."}
+                    </p>
+                    {copied && (
+                        <p className="text-xs text-green-600 font-semibold mt-2 animate-pulse">
+                            ✓ Copied to clipboard successfully!
+                        </p>
+                    )}
+                </div>
+            </ConfirmationModal>
         </>
     );
 };

@@ -164,6 +164,7 @@ const WeeklyJobCompletionPage = () => {
           location={job.location?.address}
           photos={job.photos}
           viewerRole="customer"
+          showQuotePill={false}
         />
       </div>
 

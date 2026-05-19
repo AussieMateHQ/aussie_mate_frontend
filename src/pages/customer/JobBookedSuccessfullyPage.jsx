@@ -343,6 +343,7 @@ const JobBookedSuccessfullyPage = () => {
               location={jobData.location?.address || jobData.location?.fullAddress || jobData.address || 'Location not specified'}
               photos={jobPhotos}
               viewerRole="customer"
+              showQuotePill={false}
               metaInfo={[
                 { label: 'Total Amount', value: `$${job?.total || 0}` },
                 ...(getPreferredDaysDisplay(jobData?.preferredDays) ? [{

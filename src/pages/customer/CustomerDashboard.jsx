@@ -296,54 +296,6 @@ const CustomerDashboard = () => {
           </div>
         </div>
 
-        {/* 3 Features Cards */}
-        <div
-          className="mb-6 sm:mb-8 p-[2px] rounded-[16px] 
-          bg-[linear-gradient(270deg,rgba(244,141,249,0.22),rgba(129,138,247,0.22))]"
-        >
-          <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[15px] py-5 px-1 sm:px-4">
-            <div className="flex flex-col items-center justify-start gap-2.5 relative">
-              <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
-                <img
-                  src={VerifiedImg}
-                  alt="Verified Cleaner"
-                  className="w-[30px] h-[30px] object-contain"
-                />
-              </div>
-              <span className="text-[11.5px] sm:text-[15px] text-center font-medium text-[#111827] leading-[1.2]">
-                Verified Cleaner
-              </span>
-              <div className="absolute right-0 top-[10%] w-px h-[80%] bg-[#E8EEFF]"></div>
-            </div>
-
-            <div className="flex flex-col items-center justify-start gap-2.5 relative">
-              <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
-                <img
-                  src={LockImg}
-                  alt="User's Privacy"
-                  className="w-[30px] h-[30px] object-contain"
-                />
-              </div>
-              <span className="text-[11.5px] sm:text-[15px] text-center font-medium text-[#111827] leading-[1.2]">
-                User's Privacy
-              </span>
-              <div className="absolute right-0 top-[10%] w-px h-[80%] bg-[#E8EEFF]"></div>
-            </div>
-
-            <div className="flex flex-col items-center justify-start gap-2.5">
-              <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
-                <img
-                  src={StarImg}
-                  alt="Rated & Reviewed"
-                  className="w-[30px] h-[30px] object-contain"
-                />
-              </div>
-              <span className="text-[11.5px] sm:text-[15px] text-center font-medium text-[#111827] leading-[1.2]">
-                Rated & Reviewed
-              </span>
-            </div>
-          </div>
-        </div>
 
         {/* Popular Services */}
         <div className="mb-6 sm:mb-8">
@@ -588,6 +540,55 @@ const CustomerDashboard = () => {
               ))}
             </Swiper>
           )}
+        </div>
+
+        {/* 3 Features Cards */}
+        <div
+          className="mt-6 sm:mt-8 p-[2px] rounded-[16px] 
+          bg-[linear-gradient(270deg,rgba(244,141,249,0.22),rgba(129,138,247,0.22))]"
+        >
+          <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[15px] py-5 px-1 sm:px-4">
+            <div className="flex flex-col items-center justify-start gap-2.5 relative">
+              <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
+                <img
+                  src={VerifiedImg}
+                  alt="Verified Cleaner"
+                  className="w-[30px] h-[30px] object-contain"
+                />
+              </div>
+              <span className="text-[11.5px] sm:text-[15px] text-center font-medium text-[#111827] leading-[1.2]">
+                Verified Cleaners
+              </span>
+              <div className="absolute right-0 top-[10%] w-px h-[80%] bg-[#E8EEFF]"></div>
+            </div>
+
+            <div className="flex flex-col items-center justify-start gap-2.5 relative">
+              <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
+                <img
+                  src={LockImg}
+                  alt="User's Privacy"
+                  className="w-[30px] h-[30px] object-contain"
+                />
+              </div>
+              <span className="text-[11.5px] sm:text-[15px] text-center font-medium text-[#111827] leading-[1.2]">
+                User's Privacy
+              </span>
+              <div className="absolute right-0 top-[10%] w-px h-[80%] bg-[#E8EEFF]"></div>
+            </div>
+
+            <div className="flex flex-col items-center justify-start gap-2.5">
+              <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
+                <img
+                  src={StarImg}
+                  alt="Rated & Reviewed"
+                  className="w-[30px] h-[30px] object-contain"
+                />
+              </div>
+              <span className="text-[11.5px] sm:text-[15px] text-center font-medium text-[#111827] leading-[1.2]">
+                Rated & Reviewed
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </>

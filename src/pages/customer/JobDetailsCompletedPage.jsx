@@ -543,75 +543,92 @@ const JobDetailsCompletedPage = () => {
             </div>
           </div>
         </div>
+          {/* Job Details Card (Figma Style) - Card 2 */}
+        <div className="px-4 mt-6">
+          <div className="bg-white rounded-3xl p-5 mb-6 border border-[#E9EFFF]">
+            <div className="mb-4">
+              <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
+                {jobData.serviceType || "COMMERCIAL CLEANING"}
+              </span>
+              <h2 className="text-[20px] font-semibold text-gray-900 mt-1 leading-tight capitalize">
+                {jobData.serviceDetail || jobData.title || "Bar / pub cleaning"}
+              </h2>
+              {jobData.instructions && (
+                <p className="text-gray-500 text-sm leading-relaxed mt-2 font-medium">
+                  {jobData.instructions}
+                </p>
+              )}
+            </div>
 
-        {/* Job Content Redesign */}
-        <div className="px-6 mt-8 space-y-2">
-          <div>
-            <p className="text-sm font-semibold text-gray-400 tracking-[0.1em] mb-1">
-              {jobData.serviceType || "Domestic / General Cleaning"}
-            </p>
-            <h2 className="text-[28px] font-semibold text-gray-900 leading-tight">
-              {jobData.serviceDetail || "Townhouse Cleaning"}
-            </h2>
-          </div>
-
-          <p className="text-gray-500 text-base leading-snug font-medium">
-            {jobData.instructions || "Make sure you come prepared with all the equipment you'll need so we can get everything done smoothly."}
-          </p>
-
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2.5 group">
-              <div className="w-7 h-7 rounded-lg text-[#6B7280] flex items-center justify-center">
-                <CalendarDays className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[15px] font-medium text-[#6B7280]">
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center text-[#6B7280]">
+                <Calendar className="w-4 h-4 mr-3 opacity-60 text-black" strokeWidth={2.5} />
+                <span className="text-sm font-medium">
                   {jobData.scheduledDate ? new Date(jobData.scheduledDate).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric'
-                  }) : "Pending Completion"}
-                </p>
+                  }) : "Date not specified"}
+                </span>
+              </div>
+              <div className="flex items-center text-[#6B7280]">
+                <MapPin className="w-4 h-4 mr-3 opacity-60 text-black" strokeWidth={2.5} />
+                <span className="text-sm font-medium leading-snug">
+                  {jobData.location || "3600 Presidential Blvd, Austin, TX 78719"}
+                </span>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div className="flex items-center gap-2.5 group">
-              <div className="w-7 h-7 rounded-lg text-[#6B7280] flex items-center justify-center">
-                <MapPin className="w-5 h-5" />
-              </div>
-              <p className="text-base font-medium text-[#6B7280] leading-snug">
-                {jobData.location || "12 King Street, Sydney NSW"}
+        {/* Job Metadata Grid - Card 3 */}
+        <div className="px-4 mb-6">
+          <div className="bg-white rounded-xl p-5 border border-[#E9EFFF] shadow-sm grid grid-cols-3 divide-x divide-gray-100 text-center">
+            <div>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">JOB ID</p>
+              <p className="text-[15px] font-bold text-gray-900">#{jobData.jobId}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">TYPE</p>
+              <p className="text-[15px] font-bold text-gray-900 capitalize">
+                {jobData.serviceType ? jobData.serviceType.replace(' Cleaning', '') : 'Commercial'}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">STATUS</p>
+              <p className="text-[15px] font-bold text-green-600">
+                {jobData.status === 'Completed' || jobData.status?.toLowerCase() === 'completed' ? 'Completed' : 'Active'}
               </p>
             </div>
           </div>
-
-          {/* Photos Grid - Redesigned */}
-          {overviewPhotos.length > 0 && (
-            <div className="">
-              <div className="grid grid-cols-2 gap-2 mb-6 max-w-lg">
-                {overviewPhotos.slice(0, 4).map((img, idx) => (
-                  <div key={idx} className="relative rounded-2xl overflow-hidden group cursor-pointer border border-gray-100">
-                    <img
-                      src={img}
-                      alt={`Job detail ${idx + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    {idx === 3 && overviewPhotos.length > 4 && (
-                      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                        <span className="text-white text-2xl font-bold flex items-center gap-1">
-                          +{overviewPhotos.length - 4}
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Completion Status Bar or Complete Button */}
+        {/* Photos Grid - Redesigned */}
+        {overviewPhotos.length > 0 && (
+          <div className="px-4 mb-6">
+            <div className="grid grid-cols-2 gap-2 max-w-lg">
+              {overviewPhotos.slice(0, 4).map((img, idx) => (
+                <div key={idx} className="relative rounded-2xl overflow-hidden group cursor-pointer border border-gray-100">
+                  <img
+                    src={img}
+                    alt={`Job detail ${idx + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {idx === 3 && overviewPhotos.length > 4 && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                      <span className="text-white text-2xl font-bold flex items-center gap-1">
+                        +{overviewPhotos.length - 4}
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Completion Status Bar or Complete Button (Right Aligned) */}
         {jobData.status?.toLowerCase() === 'completed' || jobData.status === 'Completed' ? (
           <div className="px-4 inline-block">
             <div className="bg-[#E9FBF0] rounded-xl py-3 px-5 flex items-center gap-3 border border-[#DBF9E7]">
@@ -626,16 +643,15 @@ const JobDetailsCompletedPage = () => {
             </div>
           </div>
         ) : (
-          <div className="px-4 mt-8">
+          <div className="px-4 mt-8 flex justify-end">
             <Button
               onClick={() => setShowCompleteModal(true)}
               variant="primary"
-              className="py-4 rounded-2xl font-bold text-lg shadow-lg shadow-blue-100 transition-all hover:shadow-blue-200 active:scale-[0.98]"
+              className="py-4 px-8 rounded-2xl font-bold text-lg shadow-lg shadow-blue-100 transition-all hover:shadow-blue-200 active:scale-[0.98]"
               disabled={completingJob}
             >
               {completingJob ? 'Completing...' : 'Mark Job as Completed'}
             </Button>
-
           </div>
         )}
 

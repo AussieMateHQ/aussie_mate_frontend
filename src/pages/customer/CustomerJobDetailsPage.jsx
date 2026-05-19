@@ -799,7 +799,7 @@ const CustomerJobDetailsPage = () => {
                               <span className="text-sm font-medium text-gray-500">{cleaner.phone || '07 3803 6136'}</span>
                             </div>
                             <p className="text-xs text-gray-500 font-medium">
-                              {cleaner.distance} — En root
+                              {cleaner.distance}
                             </p>
                           </div>
                         </div>

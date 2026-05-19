@@ -201,7 +201,7 @@
     };
 
     const bioWordCount = getBioWordCount();
-    const minBioWords = 50;
+    const minBioWords = 20;
 
     const handleFileUpload = async (e, fieldName) => {
       const file = e.target.files[0];
@@ -271,6 +271,9 @@
       setIsLoading(true);
     
       try {
+        if (bioWordCount < minBioWords) {
+          throw new Error(`Bio must be at least ${minBioWords} words.`);
+        }
         await validationSchema.validate(formData, { abortEarly: false });
     
         const fd = new FormData();
