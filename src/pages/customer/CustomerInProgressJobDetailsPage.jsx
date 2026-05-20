@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Check, UserRound, X, CalendarDays, Clock3, Home as HomeIcon, Wallet, Ruler, AlertTriangle, CheckCircle, Circle, Calendar, MapPinIcon } from 'lucide-react';
+import { Check, UserRound, X, CalendarDays, Clock3, Home as HomeIcon, Wallet, Ruler, AlertTriangle, CheckCircle, Circle, Calendar, MapPinIcon, Mail } from 'lucide-react';
 
 import { Button, MapWithPolyline, PageHeader, Loader, JobOverviewCard } from '../../components';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
@@ -680,9 +680,17 @@ const CustomerInProgressJobDetailsPage = () => {
 
                     <div className="flex flex-col gap-1 flex-1">
                       <h4 className="font-semibold text-gray-900 text-lg leading-tight capitalize">{cleaner.firstName} {cleaner.lastName}</h4>
-                      <div className="flex items-center text-sm text-gray-500 text-[13px]">
-                        <img src={PhoneIcon2} alt="Phone" className="w-3.5 h-3.5 mr-1.5 opacity-60" />
-                        {cleaner.phone || cleaner.phoneNumber || cleaner.mobile || 'Phone not available'}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center text-sm text-gray-500 text-[13px]">
+                          <img src={PhoneIcon2} alt="Phone" className="w-3.5 h-3.5 mr-1.5 opacity-60" />
+                          {cleaner.phone || cleaner.phoneNumber || cleaner.mobile || 'Phone not available'}
+                        </div>
+                        {cleaner.email && (
+                          <div className="flex items-center text-sm text-gray-500 text-[13px]">
+                            <Mail className="w-3.5 h-3.5 mr-1.5 opacity-60" />
+                            {cleaner.email}
+                          </div>
+                        )}
                       </div>
                       <div className="text-[12px] text-gray-400 font-medium !mt-1">
                         {routeInfo ? `${routeInfo.distance} away — En route` : '2.4 km away — En route'}

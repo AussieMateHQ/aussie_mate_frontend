@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNoIndex } from '../../hooks/useNoIndex';
 import logo from '../../assets/logo.png';
 import { FloatingLabelInput, Button, RadioButtonGroup, Checkbox } from '../../components';
 import backIcon from '../../assets/arrow-left.svg';
@@ -7,6 +8,7 @@ import { ndisPlanInfoSchema } from '../../utils/validationSchemas';
 import { userAPI } from '../../services/api';
 
 const NDISPlanInfoPage = () => {
+  useNoIndex();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         ndisNumber: '',

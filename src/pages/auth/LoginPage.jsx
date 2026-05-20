@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNoIndex } from '../../hooks/useNoIndex';
 import { loginSchema } from '../../utils/validationSchemas';
 import logo from '../../assets/logo.png';
 import eyeIcon from '../../assets/eye 1.svg';
@@ -9,6 +10,7 @@ import { FloatingLabelInput, Button } from '../../components';
 import { CLEANER_ROLES } from '../../routeGroups';
 
 const LoginPage = () => {
+  useNoIndex();
   const [formData, setFormData] = useState({
     email: '',
     password: ''

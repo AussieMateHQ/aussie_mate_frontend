@@ -1,12 +1,14 @@
   import React, { useState, useEffect, useMemo } from 'react';
   import { useNavigate, useLocation, Link } from 'react-router-dom';
   import { UserRound, PlusIcon, X } from 'lucide-react';
+  import { useNoIndex } from '../../hooks/useNoIndex';
   import CloseIcon from '../../assets/close.svg';
   import { userAPI } from '../../services/api';
   import { FloatingLabelInput, Button, FileUploadArea } from '../../components';
   import { createVerifyDocumentsSchema } from '../../utils/validationSchemas';
 
   const VerifyDocumentsPage = () => {
+    useNoIndex();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
       profilePicture: null,

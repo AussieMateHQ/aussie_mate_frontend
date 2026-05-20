@@ -618,9 +618,12 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
                 </div>
               </div>
             )}
-        <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm">
+        <div 
+          className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm cursor-pointer hover:border-primary-200 hover:shadow-md transition-all group"
+          onClick={() => navigate("/cleaner-jobs", { state: { tab: "live-jobs" } })}
+        >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <img
                   src={BoldJobIcon}
                   alt="jobs"
@@ -631,9 +634,14 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
                 Live Jobs near you
               </h3>
             </div>
-            <div className="flex items-center gap-2 text-primary-600 font-semibold text-sm">
-              <span className="w-2 h-2 rounded-full bg-primary-500"></span>
-              {liveJobsLabel}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-primary-600 font-semibold text-sm bg-primary-50/50 px-3 py-1.5 rounded-full">
+                <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                {liveJobsLabel}
+              </div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary-600" />
+              </div>
             </div>
           </div>
 
@@ -649,7 +657,7 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
             <div className="flex items-center justify-between sm:justify-end space-x-2">
               <Button
                 onClick={() =>
-                  navigate("/cleaner-jobs", { state: { tab: "live-jobs" } })
+                  navigate("/cleaner-jobs", { state: { tab: subscriptionStatus ? "assigned" : "live-jobs" } })
                 }
                 size="sm"
                 className="bg-blue-500 hover:bg-blue-600 text-white font-medium text-xs sm:text-sm rounded-full px-2 flex items-center justify-center space-x-1"
@@ -660,7 +668,7 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
                   />
                 }
               >
-                <span className="hidden sm:inline">View Jobs</span>
+                <span className="hidden sm:inline">{subscriptionStatus ? "View Assigned Jobs" : "View Jobs"}</span>
                 <span className="sm:hidden">Jobs</span>
               </Button>
 

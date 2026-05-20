@@ -3,7 +3,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { PageHeader, JobOverviewCard, ConfirmationModal } from '../../components';
 import ChatIcon from '../../assets/message2.svg';
 import { jobsAPI, subscriptionsAPI } from '../../services/api';
-import { Wallet, Clock3, Home as HomeIcon, Ruler, AlertTriangle, CalendarDays, Trash2, Info, CheckCircle2 } from 'lucide-react';
+import { Wallet, Clock3, Home as HomeIcon, Ruler, AlertTriangle, CalendarDays, Trash2, Info, CheckCircle2, Phone, Mail } from 'lucide-react';
 
 const JobDetailsPage = () => {
   const navigate = useNavigate();
@@ -416,16 +416,6 @@ const JobDetailsPage = () => {
                     <img src={ChatIcon} alt="Chat" className={`w-4 h-4 ${(job.contactedCount >= 3 && !isContacted) ? 'grayscale opacity-50' : ''}`} />
                      {!isSubscribed && !isContacted ? 'Subscribe to Chat' : 'Chat'}
                   </button>
-                  {/* Call button - only if phone is available (usually hidden until booking) */}
-                  {/* {isConnected && job.customerId.phone && (
-                     <button
-                      onClick={() => window.open(`tel:${job.customerId.phone}`)}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#F1F6FF] text-primary-600 rounded-full font-semibold text-sm border border-[#E0EAFF] hover:bg-blue-50 transition-colors cursor-pointer"
-                    >
-                      <span className="text-primary-600">📞</span>
-                      Call
-                    </button>
-                  )} */}
                 </div>
               </div>
 
@@ -486,6 +476,47 @@ const JobDetailsPage = () => {
                    )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Contact Details - only show if connected */}
+          {job.customerId && isConnected && (job.customerId.phone || job.customerId.email) && (
+            <div className="mb-4 rounded-xl bg-white overflow-hidden">
+              <div className="px-5 py-5">
+                <h4 className="text-[13px] font-bold text-gray-700 mb-5 tracking-wide uppercase">
+                  Customer Contact Details
+                </h4>
+                
+                <div className="flex flex-col">
+                  {job.customerId.phone && (
+                    <div className="flex items-center gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-[#F4F3ED] flex items-center justify-center flex-shrink-0">
+                        <Phone className="w-5 h-5 text-gray-700" strokeWidth={2} />
+                      </div>
+                      <div>
+                        <div className="text-[12px] text-gray-500 font-medium">Phone</div>
+                        <div className="text-[15px] font-medium text-gray-900 mt-0.5">{job.customerId.phone}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {job.customerId.phone && job.customerId.email && (
+                    <div className="h-px bg-gray-200 my-4 w-full"></div>
+                  )}
+                  
+                  {job.customerId.email && (
+                    <div className="flex items-center gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-[#F4F3ED] flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-5 h-5 text-gray-700" strokeWidth={2} />
+                      </div>
+                      <div>
+                        <div className="text-[12px] text-gray-500 font-medium">Email</div>
+                        <div className="text-[15px] font-medium text-gray-900 mt-0.5">{job.customerId.email}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 

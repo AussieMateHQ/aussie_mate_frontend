@@ -33,15 +33,15 @@ export const signupSchema = yup.object().shape({
   lastName: yup.string()
     .required('Last name is required')
     .min(2, 'Last name must be at least 2 characters'),
-  emailOrPhone: yup.string()
-    .required('Email or phone is required')
-    .test('email-or-phone', 'Please enter a valid email or phone number', (value) => {
+  email: yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  phone: yup.string()
+    .required('Phone number is required')
+    .test('valid-phone', 'Please enter a valid phone number', (value) => {
       if (!value) return true;
-      const isEmail = emailRegex.test(value);
-      // Clean for phone check
       const cleaned = value.replace(/[^\d+]/g, '');
-      const isPhone = phoneRegex.test(cleaned) || australianPhoneRegex.test(cleaned) || /^\d{10}$/.test(cleaned);
-      return isEmail || isPhone;
+      return phoneRegex.test(cleaned) || australianPhoneRegex.test(cleaned) || /^\d{9,10}$/.test(cleaned);
     }),
   role: yup.string()
     .required('Role is required'),

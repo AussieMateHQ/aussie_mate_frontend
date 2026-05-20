@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
+import { useNoIndex } from '../../hooks/useNoIndex';
 import { authAPI } from '../../services/api';
 import { resetPasswordSchema } from '../../utils/validationSchemas';
 import logo from '../../assets/logo.png';
@@ -9,6 +10,7 @@ import eyeOffIcon from '../../assets/eye-off 1.svg';
 import { FloatingLabelInput, Button, Loader } from '../../components';
 
 const ResetPasswordPage = () => {
+  useNoIndex();
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: ''

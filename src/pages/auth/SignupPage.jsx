@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNoIndex } from '../../hooks/useNoIndex';
 import { signupSchema } from '../../utils/validationSchemas';
 import logo from '../../assets/logo.png';
 import eyeIcon from '../../assets/eye 1.svg';
@@ -10,11 +11,13 @@ import InfoIcon from '../../assets/info.svg';
 
 
 const SignupPage = () => {
+  useNoIndex();
   const location = useLocation();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    emailOrPhone: '',
+    email: '',
+    phone: '',
     role: '',
     password: '',
     confirmPassword: '',
@@ -78,13 +81,11 @@ const SignupPage = () => {
       const selectedMapping = roleMapping[userData.role] || { userType: userData.role.toLowerCase(), role: userData.role };
 
       // Create clean API data with only required fields
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailOrPhone);
-      
       const apiData = {
         firstName: userData.firstName.trim(),
         lastName: userData.lastName.trim(),
-        email: isEmail ? formData.emailOrPhone.trim().toLowerCase() : undefined,
-        phone: !isEmail ? formatPhoneNumber(formData.emailOrPhone.trim()) : undefined,
+        email: formData.email.trim().toLowerCase(),
+        phone: formatPhoneNumber(formData.phone.trim()),
         password: userData.password,
         confirmPassword: userData.confirmPassword,
         userType: selectedMapping.userType,
@@ -207,11 +208,20 @@ const SignupPage = () => {
               </div>
 
               <FloatingLabelInput
-                id="emailOrPhone"
-                name="emailOrPhone"
-                label="Email or Phone"
-                type="text"
-                value={formData.emailOrPhone}
+                id="email"
+                name="email"
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+              <FloatingLabelInput
+                id="phone"
+                name="phone"
+                label="Phone Number"
+                type="tel"
+                value={formData.phone}
                 onChange={handleInputChange}
                 required
               />

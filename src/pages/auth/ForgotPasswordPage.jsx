@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNoIndex } from '../../hooks/useNoIndex';
 import { authAPI } from '../../services/api';
 import { forgotPasswordSchema } from '../../utils/validationSchemas';
 import logo from '../../assets/logo.png';
@@ -7,6 +8,7 @@ import { FloatingLabelInput, Button } from '../../components';
 import ForgotSuccessIcon from '../../assets/forgot success.svg';
 
 const ForgotPasswordPage = () => {
+  useNoIndex();
   const [formData, setFormData] = useState({
     email: ''
   });

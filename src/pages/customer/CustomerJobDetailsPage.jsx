@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   CalendarDays,
   Phone,
+  Mail,
   MapPin,
 } from 'lucide-react';
 
@@ -589,6 +590,7 @@ const CustomerJobDetailsPage = () => {
       id: cleanerId,
       name: cleaner ? `${cleaner.firstName || ''} ${cleaner.lastName || ''}`.trim() : 'Cleaner',
       phone: cleaner?.phone || '',
+      email: cleaner?.email || '',
       photo: resolveImageSrc(cleaner?.profilePhoto || cleaner?.profileImage),
       rating: cleaner?.averageRating !== undefined ? cleaner.averageRating : (cleaner?.rating || 0),
       reviews: cleaner?.totalReviews || cleaner?.reviewCount || 0,
@@ -793,15 +795,48 @@ const CustomerJobDetailsPage = () => {
                             {cleaner.name}
                           </h4>
 
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center">
-                              <Phone className="w-3.5 h-3.5 mr-2" strokeWidth={2} />
-                              <span className="text-sm font-medium text-gray-500">{cleaner.phone || '07 3803 6136'}</span>
+                          {(cleaner.phone || cleaner.email) && (
+                            <div className="my-3 border border-gray-200 rounded-2xl bg-white overflow-hidden max-w-sm w-full">
+                              <div className="px-5 py-4">
+                                <h4 className="text-[11px] font-bold text-gray-500 mb-4 tracking-wide uppercase">
+                                  Cleaner Contact Details
+                                </h4>
+                                
+                                <div className="flex flex-col">
+                                  {cleaner.phone && (
+                                    <div className="flex items-center gap-4">
+                                      <div className="w-10 h-10 rounded-xl bg-[#F4F3ED] flex items-center justify-center flex-shrink-0">
+                                        <Phone className="w-4 h-4 text-gray-700" strokeWidth={2} />
+                                      </div>
+                                      <div>
+                                        <div className="text-[11px] text-gray-500 font-medium">Phone</div>
+                                        <div className="text-[14px] font-bold text-gray-900">{cleaner.phone}</div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {cleaner.phone && cleaner.email && (
+                                    <div className="h-px bg-gray-200 my-4 w-full"></div>
+                                  )}
+                                  
+                                  {cleaner.email && (
+                                    <div className="flex items-center gap-4">
+                                      <div className="w-10 h-10 rounded-xl bg-[#F4F3ED] flex items-center justify-center flex-shrink-0">
+                                        <Mail className="w-4 h-4 text-gray-700" strokeWidth={2} />
+                                      </div>
+                                      <div>
+                                        <div className="text-[11px] text-gray-500 font-medium">Email</div>
+                                        <div className="text-[14px] font-bold text-gray-900">{cleaner.email}</div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <p className="text-xs text-gray-500 font-medium">
-                              {cleaner.distance}
-                            </p>
-                          </div>
+                          )}
+                          <p className="text-xs text-gray-500 font-medium mt-1">
+                            {cleaner.distance}
+                          </p>
                         </div>
                       </div>
 

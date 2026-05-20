@@ -1,12 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Info } from 'lucide-react';
+import { useNoIndex } from '../../hooks/useNoIndex';
 import logo from '../../assets/logo.png';
 import customerIcon from '../../assets/customer.svg';
 import housekeepingIcon from '../../assets/Cleaning.png';
 import { Button, RadioCard } from '../../components';
 
 const RoleSelectionPage = () => {
+  useNoIndex();
   const [selectedRole, setSelectedRole] = useState(null);
   const [isNDISParticipant, setIsNDISParticipant] = useState(false);
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, UserRound, X, CalendarDays, Clock3, CheckCircle, Circle, Calendar, Phone, Check, MapPin } from 'lucide-react';
+import { AlertTriangle, UserRound, X, CalendarDays, Clock3, CheckCircle, Circle, Calendar, Phone, Mail, Check, MapPin } from 'lucide-react';
 
 import { Button, MapWithPolyline, PageHeader } from '../../components';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
@@ -747,9 +747,17 @@ const InProgressJobDetailsPage = () => {
                                         <h4 className="text-lg font-semibold text-primary-500">
                                             {customer?.firstName || 'Customer'} {customer?.lastName?.slice(0, 1) || ''}.
                                         </h4>
-                                        <div className="flex items-center text-sm text-[#4B5563] font-medium mt-0.5">
-                                            <Phone className="w-3.5 h-3.5 mr-1.5 opacity-70" />
-                                            {customer?.phone || customer?.phoneNumber || 'No phone'}
+                                        <div className="flex flex-col gap-1 mt-1">
+                                            <div className="flex items-center text-sm text-[#4B5563] font-medium mt-0.5">
+                                                <Phone className="w-3.5 h-3.5 mr-1.5 opacity-70" />
+                                                {customer?.phone || customer?.phoneNumber || 'No phone'}
+                                            </div>
+                                            {customer?.email && (
+                                                <div className="flex items-center text-sm text-[#4B5563] font-medium">
+                                                    <Mail className="w-3.5 h-3.5 mr-1.5 opacity-70" />
+                                                    {customer.email}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
