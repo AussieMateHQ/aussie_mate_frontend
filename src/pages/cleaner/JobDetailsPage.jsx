@@ -437,18 +437,20 @@ const JobDetailsPage = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => {
-                          if (!isSubscribed) {
-                            navigate('/my-subscription');
-                            return;
-                          }
-                          setShowWaitlistModal(true);
-                        }}
-                        className="w-full py-3.5 bg-primary-500 text-white rounded-xl font-bold text-base hover:bg-primary-600 transition-all shadow-lg shadow-primary-100 cursor-pointer active:scale-[0.98]"
-                      >
-                        {!isSubscribed ? 'Subscribe to Join Waitlist' : 'Join Waitlist'}
-                      </button>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => {
+                            if (!isSubscribed) {
+                              navigate('/my-subscription');
+                              return;
+                            }
+                            setShowWaitlistModal(true);
+                          }}
+                          className="w-full sm:w-auto sm:min-w-[180px] px-6 py-3.5 bg-primary-500 text-white rounded-lg font-bold text-base hover:bg-primary-600 transition-all shadow-sm shadow-primary-100 cursor-pointer active:scale-[0.98]"
+                        >
+                          {!isSubscribed ? 'Subscribe to Join Waitlist' : 'Join Waitlist'}
+                        </button>
+                      </div>
                     </>
                    ) : (
                     <>
@@ -465,13 +467,15 @@ const JobDetailsPage = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={handleLeaveWaitlist}
-                        disabled={isWaitlistLoading}
-                        className="w-full py-3.5 border border-gray-200 text-gray-600 rounded-xl font-bold text-base hover:bg-gray-50 transition-all cursor-pointer active:scale-[0.98]"
-                      >
-                        {isWaitlistLoading ? 'Leaving...' : 'Leave Waitlist'}
-                      </button>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={handleLeaveWaitlist}
+                          disabled={isWaitlistLoading}
+                          className="w-full sm:w-auto sm:min-w-[180px] px-6 py-3.5 border border-gray-200 text-gray-600 rounded-xl font-bold text-base hover:bg-gray-50 transition-all cursor-pointer active:scale-[0.98]"
+                        >
+                          {isWaitlistLoading ? 'Leaving...' : 'Leave Waitlist'}
+                        </button>
+                      </div>
                     </>
                    )}
                 </div>

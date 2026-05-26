@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { UserRound, CalendarDays, Clock3 } from 'lucide-react';
+import { UserRound, CalendarDays, Clock3, Mail } from 'lucide-react';
 import { Button, Loader, JobOverviewCard } from '../../components';
 import MessageIcon from '../../assets/message2.svg';
 import CallIcon from '../../assets/phone2.svg';
@@ -391,12 +391,21 @@ const JobBookedSuccessfullyPage = () => {
                     </span>
                   </div>
 
-                  {cleaner?.phone && cleaner.phone !== 'Not available' && (
-                    <div className="flex items-center gap-2">
-                      <img src={CallIcon2} alt="Phone" className="w-4 h-4 text-primary-200" />
-                      <span className="text-sm text-primary-500 font-medium">{cleaner.phone}</span>
-                    </div>
-                  )}
+                  <div className="space-y-1">
+                    {cleaner?.phone && cleaner.phone !== 'Not available' && (
+                      <div className="flex items-center gap-2">
+                        <img src={CallIcon2} alt="Phone" className="w-4 h-4 text-primary-200" />
+                        <span className="text-sm text-primary-500 font-medium">{cleaner.phone}</span>
+                      </div>
+                    )}
+
+                    {cleaner?.email && (
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-primary-200 flex-shrink-0" strokeWidth={2} />
+                        <span className="text-sm text-primary-500 font-medium break-all">{cleaner.email}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

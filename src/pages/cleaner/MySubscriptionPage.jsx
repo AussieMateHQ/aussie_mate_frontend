@@ -9,7 +9,7 @@ import {
   Plus,
   Briefcase,
   AlertTriangle,
-  Clock,
+  Clock,  
   Coins,
 } from "lucide-react";
 import { subscriptionsAPI, categoriesAPI } from "../../services/api";

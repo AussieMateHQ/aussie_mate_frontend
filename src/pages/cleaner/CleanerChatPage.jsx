@@ -41,6 +41,7 @@ const CleanerChatPage = () => {
     const [effectiveCleanerId, setEffectiveCleanerId] = useState(null);
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
+    const [waitlistNotice, setWaitlistNotice] = useState(null);
     const messagesEndRef = useRef(null);
     const chatRoomIdRef = useRef(null);
     const currentUserRef = useRef(null);
@@ -244,6 +245,55 @@ const CleanerChatPage = () => {
             fetchJobDetails();
         }
     }, [jobId]);
+
+    const formatDateTime = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return '';
+        return date.toLocaleString('en-AU', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
+    // Check if cleaner is on waitlist on load
+    useEffect(() => {
+        if (!job || !effectiveCleanerId) {
+            setWaitlistNotice(null);
+            return;
+        }
+
+        const normalizedCleanerId = effectiveCleanerId?.toString();
+        const myWaitlistInfo = (job.waitlistedCleaners || []).find(w => {
+            const wId = w?.cleanerId?._id || w?.cleanerId?.id || w?.cleanerId || (typeof w === 'string' ? w : null);
+            return wId?.toString() === normalizedCleanerId;
+        });
+
+        const isWaitlisted = Boolean(myWaitlistInfo || job.isWaitlisted);
+        if (!isWaitlisted) {
+            setWaitlistNotice(null);
+            return;
+        }
+
+        const position = myWaitlistInfo
+            ? (job.waitlistedCleaners || []).findIndex(w => {
+                const wId = w?.cleanerId?._id || w?.cleanerId?.id || w?.cleanerId || (typeof w === 'string' ? w : null);
+                return wId?.toString() === normalizedCleanerId;
+            }) + 1
+            : undefined;
+
+        const unlocksAt = job.createdAt
+            ? new Date(new Date(job.createdAt).getTime() + 24 * 60 * 60 * 1000).toISOString()
+            : null;
+
+        setWaitlistNotice({
+            position: position,
+            unlocksAt: unlocksAt
+        });
+    }, [job, effectiveCleanerId]);
 
     // Check if cleaner has submitted quote for this job
     useEffect(() => {
@@ -658,6 +708,16 @@ const CleanerChatPage = () => {
                 {error && (
                     <div className="px-4 py-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg mx-4 mt-4 flex-shrink-0">
                         {error}
+                    </div>
+                )}
+
+                {waitlistNotice && (
+                    <div className="px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 text-sm rounded-lg mx-4 mt-4 flex-shrink-0">
+                        <div className="font-semibold text-blue-800">You are waitlisted</div>
+                        <div className="text-xs text-blue-600 mt-1">
+                            {waitlistNotice.position ? `Position: ${waitlistNotice.position}. ` : ''}
+                            {waitlistNotice.unlocksAt ? `Waitlist unlocks at ${formatDateTime(waitlistNotice.unlocksAt)}.` : ''}
+                        </div>
                     </div>
                 )}
 

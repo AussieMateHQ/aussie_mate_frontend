@@ -198,6 +198,37 @@ const CustomerJobDetailsPage = () => {
     return display;
   };
 
+  const formatDateTime = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('en-AU', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const isJobAssigned = [
+    'assigned',
+    'accepted',
+    'booked',
+    'on_the_way',
+    'started',
+    'in_progress',
+    'completed',
+  ].includes((job?.status || '').toLowerCase()) || Boolean(job?.assignedCleanerId || job?.assignedCleaner);
+
+  const waitlistUnlocksAt = job?.createdAt 
+    ? new Date(new Date(job.createdAt).getTime() + 24 * 60 * 60 * 1000) 
+    : null;
+  const is24HoursPassed = waitlistUnlocksAt ? new Date() >= waitlistUnlocksAt : false;
+  const waitlistVisible = job?.waitlistVisible === true || is24HoursPassed;
+  const waitlistCount = Math.max(Number(job?.waitlistCount || 0), waitlistedCleaners.length);
+  const waitlistUnlockLabel = waitlistUnlocksAt ? formatDateTime(waitlistUnlocksAt) : '';
+
   const handleDropdownToggle = () => {
     setShowDropdown(!showDropdown);
   };
@@ -891,71 +922,91 @@ const CustomerJobDetailsPage = () => {
             </div>
           )}
 
+          {waitlistVisible === false && waitlistCount > 0 && (
+            <div className="mt-8 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+              <span className="font-semibold">{waitlistCount} cleaner{waitlistCount === 1 ? '' : 's'} on the waitlist.</span>
+              {waitlistUnlockLabel ? ` Waitlist unlocks at ${waitlistUnlockLabel}.` : ' Waitlist opens after 24 hours.'}
+            </div>
+          )}
+
           {/* Waitlisted Section */}
-          {waitlistedCleaners.length > 0 && (
+          {waitlistVisible === true && waitlistedCleaners.length > 0 && (
             <div className="mt-8">
-              <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Waitlisted Cleaners</h4>
-              <div className="space-y-4">
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 uppercase tracking-wider">
+                  WAITLISTED CLEANERS
+                </h3>
+              </div>
+              <div className="space-y-6">
                 {waitlistedCleaners.map((item, index) => {
                   const cleaner = formatCleanerData(item);
 
                   return (
-                    <div key={`waitlisted-${index}`} className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm opacity-95">
-                      {/* Upper Header: Avatar, Name, Phone, and Tier Badge */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex gap-3 sm:gap-4">
-                          <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-10 h-10 sm:w-14 sm:h-14" />
-                          <div className="pt-0.5 sm:pt-1">
-                            <h4 className="text-[18px] sm:text-lg font-semibold text-primary-500 mb-1">
-                              {cleaner.name}
-                            </h4>
-                            <div className="flex items-center gap-1.5 text-[#374151] mb-1">
-                              <div className="flex items-center gap-1">
-                                <img src={RatingIcon} alt="Rating" className="w-3.5 h-3.5" />
-                                <span className="text-sm font-semibold">{cleaner.rating}</span>
-                                <span className="text-xs text-gray-400">({cleaner.reviews} reviews)</span>
+                    <div key={`waitlisted-${index}`} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                      {/* Header: Avatar, Info, and Tier */}
+                      <div className="mb-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex min-w-0 flex-1 gap-4">
+                            <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-12 h-12" />
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-lg font-semibold text-gray-900 capitalize leading-tight">
+                                {cleaner.name}
+                              </h4>
+                              <div className="flex items-center gap-1.5 text-gray-500 mt-1 mb-1">
+                                <div className="flex items-center gap-1">
+                                  <img src={RatingIcon} alt="Rating" className="w-3.5 h-3.5" />
+                                  <span className="text-sm font-semibold text-gray-700">{cleaner.rating}</span>
+                                  <span className="text-xs text-gray-400">({cleaner.reviews} reviews)</span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="text-xs sm:text-sm text-gray-400 font-normal">
-                              {cleaner.distance}
+                              <p className="text-xs text-gray-500 font-medium">
+                                {cleaner.distance}
+                              </p>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Tier Badge Pill */}
-                        {cleaner.tier && cleaner.tier !== 'none' && (
-                          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-100 bg-gray-50/50 shadow-sm`}>
-                            <img
-                              src={
-                                cleaner.tier === 'gold'
-                                  ? GoldBadgeIcon
-                                  : cleaner.tier === 'silver'
-                                    ? SilverBadgeIcon
-                                    : BronzeBadgeIcon
-                              }
-                              alt="Badge"
-                              className="w-4 h-4 sm:w-5 sm:h-5"
-                            />
-                            <span className="text-xs sm:text-sm text-[#374151] font-semibold capitalize whitespace-nowrap">
-                              {cleaner.tier} Tier
-                            </span>
-                          </div>
-                        )}
+                          {/* Tier Badge */}
+                          {cleaner.tier && cleaner.tier !== 'none' && (
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 flex-shrink-0">
+                              <img
+                                src={
+                                  cleaner.tier === 'gold'
+                                    ? GoldBadgeIcon
+                                    : cleaner.tier === 'silver'
+                                      ? SilverBadgeIcon
+                                      : BronzeBadgeIcon
+                                }
+                                alt="Badge"
+                                className="w-4 h-4"
+                              />
+                              <span className="text-xs text-gray-700 font-semibold capitalize whitespace-nowrap">
+                                {cleaner.tier} Tier
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       {/* Intro Message Bubble */}
-                      <div className="bg-[#F8FAFC] rounded-[20px] p-4 mb-4 border border-blue-50/50">
-                        <p className="text-gray-500 text-sm font-medium leading-[1.45] italic">
+                      <div className="bg-[#F8FAFC] rounded-2xl p-5 mb-4 border border-blue-50/50 inline-block w-full">
+                        <p className="text-gray-500 text-sm font-medium leading-relaxed italic">
                           "I'm on the waitlist for this job. Connect with me to discuss how I can help!"
                         </p>
                       </div>
 
                       {/* Footer Action Button */}
-                      <div className="flex justify-end">
+                      <div className="flex justify-end border-t border-gray-100 pt-4">
                         <Button
-                          onClick={() => handleAcceptQuote(cleaner.id)}
+                          onClick={() => {
+                            if (isJobAssigned) return;
+                            handleAcceptQuote(cleaner.id);
+                          }}
                           variant=""
-                          className="px-8 py-2.5 text-sm sm:text-md font-bold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white hover:border-[#1F6FEB] shadow-sm transition-all cursor-pointer"
+                          className={`py-3 text-base font-semibold rounded-full border transition-all ${
+                            isJobAssigned
+                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white cursor-pointer'
+                          }`}
                         >
                           Connect & Message
                         </Button>

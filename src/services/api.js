@@ -458,10 +458,30 @@ export const jobsAPI = {
 
   // Initiate contact with a job (Cleaner)
   contactJob: async (jobId, { message }) => {
-    return apiRequest(`/jobs/${jobId}/contact`, {
-      method: 'POST',
-      body: JSON.stringify({ message }),
-    });
+    try {
+      const response = await apiRequest(`/jobs/${jobId}/contact`, {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+      });
+      if (response.requireWaitlist || response.status === 'waitlisted' || response.data?.status === 'waitlisted') {
+        return {
+          ...response,
+          success: true,
+          status: 'waitlisted',
+        };
+      }
+      return response;
+    } catch (error) {
+      const response = error.response || {};
+      if (response.requireWaitlist || response.status === 'waitlisted' || response.data?.status === 'waitlisted') {
+        return {
+          ...response,
+          success: true,
+          status: 'waitlisted',
+        };
+      }
+      throw error;
+    }
   },
 
   // Withdraw bid (Cleaner) - used from Booking Requests flow
@@ -1237,6 +1257,17 @@ export const supportTicketsAPI = {
   // Get specific ticket details
   getTicketDetails: async (ticketId) => {
     return apiRequest(`/support-tickets/${ticketId}`);
+  }
+};
+
+// Enquiries API
+export const enquiriesAPI = {
+  // Submit an enquiry form (Public API)
+  createEnquiry: async (enquiryData) => {
+    return apiRequest('/enquiries', {
+      method: 'POST',
+      body: JSON.stringify(enquiryData),
+    });
   }
 };
 
