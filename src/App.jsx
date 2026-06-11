@@ -1,6 +1,6 @@
 import './App.css'
 import React, { Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 const HomePage = React.lazy(() => import('./pages/HomePage'))
 import { ProtectedRoute, ScrollToTop, Loader, Footer } from './components'
@@ -24,7 +24,8 @@ function AppContent() {
       <main className="flex-grow flex flex-col [&>div]:flex-grow">
         <Routes>
           {/* Public */}
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />

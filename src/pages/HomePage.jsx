@@ -26,14 +26,14 @@ const HomePage = () => {
       {/* 1. Header Navigation */}
       <header className="px-6 py-4 flex items-center justify-between max-w-7xl mx-auto w-full bg-white border-b border-gray-100 relative">
         <div className="flex items-center z-10">
-          <Link to="/" className="flex items-center">
+          <Link to="/home" className="flex items-center">
             <img src={logo} alt="Aussiemate" className="h-10 sm:h-12 md:h-14 w-auto" />
           </Link>
         </div>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-8 font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
-          <Link to="/" className="text-gray-900 font-bold transition-colors">Home</Link>
+          <Link to="/home" className="text-gray-900 font-bold transition-colors">Home</Link>
    
           <Link to="/about" className="hover:text-gray-900 transition-colors">About</Link>
           <Link to="/contact" className="hover:text-gray-900 transition-colors">Contact</Link>
