@@ -1,4 +1,5 @@
 import React from 'react'
+import { Navigate } from 'react-router-dom'
 
 import PlatformPolicyPage from './pages/legal/PlatformPolicyPage'
 
@@ -116,9 +117,10 @@ const CleanerChatPage = React.lazy(() => import('./pages/cleaner/CleanerChatPage
 
 const EarningsPage = React.lazy(() => import('./pages/cleaner/EarningsPage'))
 const MySubscriptionPage = React.lazy(() => import('./pages/cleaner/MySubscriptionPage'))
-
-
-// Shared pages
+const BuyCreditsPage = React.lazy(() => import('./pages/cleaner/BuyCreditsPage'))
+const SubscriptionSuccessPage = React.lazy(() => import('./pages/cleaner/SubscriptionSuccessPage'))
+const CreditsSuccessPage = React.lazy(() => import('./pages/cleaner/CreditsSuccessPage'))
+const LeadUsageHistoryPage = React.lazy(() => import('./pages/cleaner/LeadUsageHistoryPage'))
 
 const StripeSuccessPage = React.lazy(() => import('./pages/StripeSuccessPage'))
 
@@ -166,7 +168,7 @@ export const customerRoutes = [
 
   { path: '/invoices', component: InvoicesPage },
 
-  { path: '/notifications', component: NotificationPage },
+  { path: '/notifications', component: NotificationPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
   { path: '/notifications-settings', component: NotificationSettingsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
@@ -209,6 +211,11 @@ export const cleanerRoutes = [
   { path: '/set-cleaner-location', component: SetCleanerLocationPage },
   { path: '/my-subscription', component: MySubscriptionPage },
   { path: '/cleaner-dashboard', component: CleanerDashboard },
+  { path: '/buy-credits', component: BuyCreditsPage },
+  { path: '/subscription/success', component: SubscriptionSuccessPage },
+  { path: '/credits-success', component: CreditsSuccessPage },
+  { path: '/lead-usage-history', component: LeadUsageHistoryPage },
+  { path: '/subscription/cancel', component: () => React.createElement(Navigate, { to: "/my-subscription", replace: true }) },
 
   { path: '/cleaner-jobs', component: CleanerJobsPage },
 
@@ -233,6 +240,3 @@ export const cleanerRoutes = [
   { path: '/location', component: LocationPage, allowedRoles: ['Customer', ...CLEANER_ROLES], showHeader: false },
 
 ]
-
-
-
