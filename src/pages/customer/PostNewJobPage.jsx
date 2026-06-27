@@ -14,6 +14,7 @@ import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from '@react-google-m
 import { MapPin, Navigation, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
+import { useGoogleAds } from '../../hooks/useGoogleAds';
 
 // Map container style
 const mapContainerStyle = {
@@ -35,6 +36,7 @@ const libraries = ['places'];
 const PostNewJobPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { trackQuoteSubmitted } = useGoogleAds();
 
   // Step management (Step 1: Job Details, Step 2: Final Details, Step 3: Success)
   const [currentStep, setCurrentStep] = useState(1);
@@ -656,6 +658,9 @@ const PostNewJobPage = () => {
 
       if (response.success) {
         localStorage.removeItem('postJobFormState');
+
+        // 🎯 Google Ads: Quote form submitted conversion
+        trackQuoteSubmitted();
 
         setCreatedJobId(response.data._id);
         setCurrentStep(3);

@@ -8,6 +8,7 @@ import CallIcon2 from '../../assets/phone.svg';
 import InfoIcon from '../../assets/info.svg';
 import JobLiveIcon from '../../assets/joblive.gif';
 import { jobsAPI, userAPI } from '../../services/api';
+import { useGoogleAds } from '../../hooks/useGoogleAds';
 
 // Helper functions moved outside component
 const getPreferredDaysDisplay = (preferredDays) => {
@@ -54,6 +55,7 @@ const JobBookedSuccessfullyPage = () => {
   const [cleaner, setCleaner] = useState(null);
   const [error, setError] = useState('');
   const [showSuccessHeader, setShowSuccessHeader] = useState(true);
+  const { trackBookingCompleted } = useGoogleAds();
   // Show animation only once per booking (check sessionStorage)
   const [showAnimation, setShowAnimation] = useState(() => {
     const hasSeenAnimation = sessionStorage.getItem(`animation-seen-${jobId}`);
@@ -177,6 +179,8 @@ const JobBookedSuccessfullyPage = () => {
             status: fetchedJobData.status || 'accepted'
           });
 
+          // 🎯 Google Ads: Cleaning booking completed conversion
+          trackBookingCompleted({ value: acceptedQuote.price || 0, currency: 'AUD' });
 
           // Resolve avatar URL from multiple possible sources
           let avatarUrl = '';
