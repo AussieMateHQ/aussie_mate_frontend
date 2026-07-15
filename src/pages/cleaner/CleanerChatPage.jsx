@@ -41,6 +41,14 @@ const CleanerChatPage = () => {
     const [effectiveCleanerId, setEffectiveCleanerId] = useState(null);
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
+    const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+    const isContacted = React.useMemo(() => {
+        if (!job || !currentUser) return false;
+        const currentUserId = currentUser.id || currentUser._id;
+        return (job.contactedCleaners || []).some(c => 
+            (c.cleanerId?._id || c.cleanerId) === currentUserId
+        );
+    }, [job, currentUser]);
     const [waitlistNotice, setWaitlistNotice] = useState(null);
     const messagesEndRef = useRef(null);
     const chatRoomIdRef = useRef(null);
@@ -91,6 +99,7 @@ const CleanerChatPage = () => {
                 const response = await subscriptionsAPI.getMyStatus();
                 if (response.success && response.data) {
                     setIsSubscriptionExpired(response.data.isSubscriptionExpired);
+                    setSubscriptionStatus(response.data);
                 }
             } catch (err) {
                 console.error('Error fetching subscription status:', err);
@@ -704,6 +713,13 @@ const CleanerChatPage = () => {
             </div>
 
             <div className="max-w-7xl w-full mx-auto flex flex-col flex-1 bg-white rounded-2xl shadow-custom overflow-hidden mb-2">
+                {/* Cost Warning Banner when not connected yet */}
+                {!isContacted && (
+                    <div className="bg-amber-50 border-b border-amber-100 px-4 py-2.5 text-xs text-amber-700 text-center flex items-center justify-center gap-2 flex-shrink-0">
+                        <img src={InfoIcon} alt="Info" className="w-3.5 h-3.5" />
+                        <span>Sending your first message will deduct {subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} credits from your balance.</span>
+                    </div>
+                )}
                 {/* Error Message */}
                 {error && (
                     <div className="px-4 py-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg mx-4 mt-4 flex-shrink-0">

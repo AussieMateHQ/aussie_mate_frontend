@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { PageHeader, PaginationRanges, Button, RadioButton } from '../../components';
+import { PageHeader, PaginationRanges, Button, RadioButton, ConfirmationModal } from '../../components';
+import { MapPin } from 'lucide-react';
 import DownIcon from '../../assets/down2.svg';
 import CalendarIcon from '../../assets/Calendar.svg';
 import MapPinIcon from '../../assets/map-pin 1.png';
 import CurrentLocationIcon from '../../assets/currentLocation.svg';
 import SearchIcon from '../../assets/search.svg';
-import { jobsAPI, userAPI, reviewsAPI } from '../../services/api';
+import { jobsAPI, userAPI, reviewsAPI, subscriptionsAPI } from '../../services/api';
 
 
 const CleanerJobsPage = () => {
@@ -61,6 +62,15 @@ const CleanerJobsPage = () => {
   });
   const [cleanerReviews, setCleanerReviews] = useState([]);
   const [cleanerProfile, setCleanerProfile] = useState(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+
+  // Accept/Reject Confirmation Modals State
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [jobToAccept, setJobToAccept] = useState(null);
+  const [jobToReject, setJobToReject] = useState(null);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   // --- NEW: cache and abort refs ---
   const apiCache = useRef({}); // cache per status: { statusKey: { data, total } }
@@ -87,6 +97,12 @@ const CleanerJobsPage = () => {
         }
       } catch (err) {
         // ignore - best effort
+      }
+      try {
+        const statusRes = await subscriptionsAPI.getMyStatus();
+        if (mounted && statusRes.success && statusRes.data) setSubscriptionStatus(statusRes.data);
+      } catch (err) {
+        // ignore
       }
     })();
     return () => { mounted = false; };
@@ -220,8 +236,14 @@ const CleanerJobsPage = () => {
         const jobsList = result.jobs || [];
         const allTransformed = jobsList.map(transformJobForUI);
 
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const currentUserId = currentUser.id || currentUser._id;
+        const key = `rejected_jobs_${currentUserId}`;
+        const rejectedJobs = JSON.parse(localStorage.getItem(key) || '[]');
+
         // Client-side search and other filtering
         const filteredAll = allTransformed.filter(job => {
+          if (activeTab === 'posted' && rejectedJobs.includes(job.id)) return false;
           if (searchQuery.trim() === '') return true;
           return job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             job.id?.toString().toLowerCase().includes(searchQuery.toLowerCase());
@@ -315,6 +337,53 @@ const CleanerJobsPage = () => {
   const handleInProgressJobClick = (jobId) => navigate(`/in-progress-job/${jobId}`);
 
   const handlePageChange = (_, page) => setCurrentPage(page);
+
+  const handleConfirmReject = () => {
+    if (!jobToReject) return;
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUserId = currentUser.id || currentUser._id;
+    const key = `rejected_jobs_${currentUserId}`;
+    const rejectedJobs = JSON.parse(localStorage.getItem(key) || '[]');
+    if (!rejectedJobs.includes(jobToReject)) {
+      rejectedJobs.push(jobToReject);
+      localStorage.setItem(key, JSON.stringify(rejectedJobs));
+    }
+    setJobs(prev => prev.filter(j => j.id !== jobToReject));
+    setShowRejectModal(false);
+    setJobToReject(null);
+  };
+
+  const handleConfirmAccept = async () => {
+    if (!jobToAccept) return;
+    const jobId = jobToAccept.id;
+
+    // Check if cleaner has active subscription
+    const isSubscribed = subscriptionStatus?.subscription?.status === 'active';
+    if (!isSubscribed) {
+      navigate('/my-subscription');
+      return;
+    }
+
+    try {
+      setIsAccepting(true);
+      setModalError('');
+      const response = await jobsAPI.contactJob(jobId, {
+        message: 'Hi, I am interested in this job! Let\'s connect and discuss details.'
+      });
+
+      if (response.success) {
+        setShowAcceptModal(false);
+        setJobToAccept(null);
+        navigate(`/chat/${jobId}`);
+      } else {
+        setModalError(response.message || response.error || 'Failed to accept job');
+      }
+    } catch (err) {
+      setModalError(err.message || 'Failed to accept job. Please try again.');
+    } finally {
+      setIsAccepting(false);
+    }
+  };
 
   const handleResetFilters = () => {
     setDistance(25);
@@ -460,6 +529,11 @@ const CleanerJobsPage = () => {
                           {job.category}
                         </span>
                         <div className="flex gap-2">
+                          {activeTab === 'posted' && (
+                            <span className="text-[12px] font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                              Cost:{subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} Credits
+                            </span>
+                          )}
                           {/* {job.isUrgent && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600 border border-red-200 uppercase tracking-wider">
                               Urgent
@@ -524,6 +598,32 @@ const CleanerJobsPage = () => {
                             {activeTab === 'assigned' ? 'Assigned by' : 'Posted by'}{' '}
                             <span className="font-semibold text-gray-700 capitalize">{job.customer.firstName}</span>
                           </p>
+                        </div>
+                      )}
+
+                      {/* Cleaner Actions: Accept / Reject */}
+                      {activeTab === 'posted' && (
+                        <div className="flex justify-end gap-3 border-t border-gray-100 pt-3 mt-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setJobToReject(job.id);
+                              setShowRejectModal(true);
+                            }}
+                            className="py-2 px-5 text-xs font-semibold rounded-full border border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer text-center"
+                          >
+                            ✕ Reject
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setJobToAccept(job);
+                              setShowAcceptModal(true);
+                            }}
+                            className="py-2 px-5 text-xs font-semibold rounded-full border border-[#DCE4FF] bg-[#EBF2FD] text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer text-center"
+                          >
+                            ✓ Accept
+                          </button>
                         </div>
                       )}
                     </div>
@@ -673,6 +773,36 @@ const CleanerJobsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Cleaner Accept Job Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showAcceptModal}
+        onClose={() => { setShowAcceptModal(false); setJobToAccept(null); setModalError(''); }}
+        onConfirm={handleConfirmAccept}
+        title="Accept Job Interest?"
+        message={
+          jobToAccept
+            ? `Accepting this job will send an interest message to the customer. This will deduct ${subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} credits from your account.`
+            : "Accepting this job will deduct credits from your account."
+        }
+        confirmText="Confirm Accept"
+        cancelText="Cancel"
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+        isLoading={isAccepting}
+        errorMessage={modalError}
+      />
+
+      {/* Cleaner Reject Job Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showRejectModal}
+        onClose={() => { setShowRejectModal(false); setJobToReject(null); }}
+        onConfirm={handleConfirmReject}
+        title="Reject Job?"
+        message="Are you sure you want to reject this job? It will be hidden from your feed permanently."
+        confirmText="Hide Job"
+        cancelText="Cancel"
+        confirmButtonColor="bg-red-500 hover:bg-red-600"
+      />
     </div>
   );
 };

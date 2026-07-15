@@ -21,6 +21,13 @@ const JobDetailsPage = () => {
   const [isWaitlisted, setIsWaitlisted] = useState(false);
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
   const [isWaitlistLoading, setIsWaitlistLoading] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+
+  // Cleaner Accept/Reject Modals
+  const [showAcceptConfirmModal, setShowAcceptConfirmModal] = useState(false);
+  const [showRejectConfirmModal, setShowRejectConfirmModal] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState('');
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -32,7 +39,7 @@ const JobDetailsPage = () => {
         const response = await jobsAPI.getJobById(jobId);
 
 
-          if (response.success && response.data) {
+        if (response.success && response.data) {
           const jobData = response.data;
           setJob(jobData);
           setIsSubscribed(jobData.isSubscribed);
@@ -40,16 +47,16 @@ const JobDetailsPage = () => {
           // Check if current cleaner has already contacted or is connected
           const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
           const currentUserId = currentUser.id || currentUser._id;
-          
-          const contacted = (jobData.contactedCleaners || []).some(c => 
+
+          const contacted = (jobData.contactedCleaners || []).some(c =>
             (c.cleanerId?._id || c.cleanerId) === currentUserId
           );
           setIsContacted(contacted);
 
           const isAssignedStatus = ['assigned', 'accepted', 'on_the_way', 'started', 'in_progress'].includes(jobData.status);
           setIsConnected(contacted || isAssignedStatus);
-          
-          const waitlisted = (jobData.waitlistedCleaners || []).some(w => 
+
+          const waitlisted = (jobData.waitlistedCleaners || []).some(w =>
             (w.cleanerId?._id || w.cleanerId) === currentUserId
           );
           setIsWaitlisted(jobData.isWaitlisted || waitlisted || false);
@@ -64,8 +71,17 @@ const JobDetailsPage = () => {
       }
     };
 
+    const fetchSubscriptionStatus = async () => {
+      try {
+        const resp = await subscriptionsAPI.getMyStatus();
+        if (resp.success && resp.data) setSubscriptionStatus(resp.data);
+      } catch (e) {
+      }
+    };
+
     if (jobId) {
       fetchJobDetails();
+      fetchSubscriptionStatus();
     }
   }, [jobId]);
 
@@ -150,7 +166,7 @@ const JobDetailsPage = () => {
 
   const myQuote = useMemo(() => {
     if (!job || !currentUserId) return null;
-    
+
     // Check in quotes array
     const quotes = Array.isArray(job.quotes) ? job.quotes : [];
     const fromQuotes = quotes.find((q) => {
@@ -173,7 +189,7 @@ const JobDetailsPage = () => {
 
   const canWithdrawBid = useMemo(() => {
     if (!myQuote || !job) return false;
-    
+
     // If the job is already assigned to SOMEONE (including me) or in progress, usually can't withdraw bid
     const isJobAssigned = ['on_the_way', 'started', 'in_progress', 'completed'].includes(job.status?.toLowerCase());
     if (isJobAssigned) return false;
@@ -319,6 +335,45 @@ const JobDetailsPage = () => {
     }
   };
 
+  const handleConfirmReject = () => {
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUserId = currentUser.id || currentUser._id;
+    const key = `rejected_jobs_${currentUserId}`;
+    const rejectedJobs = JSON.parse(localStorage.getItem(key) || '[]');
+    if (!rejectedJobs.includes(jobId)) {
+      rejectedJobs.push(jobId);
+      localStorage.setItem(key, JSON.stringify(rejectedJobs));
+    }
+    setShowRejectConfirmModal(false);
+    navigate('/cleaner-jobs', { state: { tab: 'live-jobs' }, replace: true });
+  };
+
+  const handleConfirmAccept = async () => {
+    if (!isSubscribed) {
+      navigate('/my-subscription');
+      return;
+    }
+
+    try {
+      setIsAccepting(true);
+      setAcceptError('');
+      const response = await jobsAPI.contactJob(jobId, {
+        message: 'Hi, I am interested in this job! Let\'s connect and discuss details.'
+      });
+
+      if (response.success) {
+        setShowAcceptConfirmModal(false);
+        navigate(`/chat/${jobId}`);
+      } else {
+        setAcceptError(response.message || response.error || 'Failed to accept job');
+      }
+    } catch (err) {
+      setAcceptError(err.message || 'Failed to accept job. Please try again.');
+    } finally {
+      setIsAccepting(false);
+    }
+  };
+
 
   if (loading) {
     return null;
@@ -382,6 +437,14 @@ const JobDetailsPage = () => {
               metaInfo={jobOverviewMeta}
               roomsNeedCleaning={job?.roomsNeedCleaning}
               bathroomsNeedCleaning={job?.bathroomsNeedCleaning}
+              roleSections={{
+                cleaner: [
+                  { label: 'Plans', value: job?.hasPlans },
+                  { label: 'Council Approval', value: job?.hasCouncilApproval },
+                  { label: 'Budget', value: job?.budget },
+                  { label: 'Job Stage', value: job?.jobStage },
+                ].filter(item => item.value)
+              }}
             />
           </div>
 
@@ -390,39 +453,58 @@ const JobDetailsPage = () => {
             <div className="bg-white rounded-2xl p-4 mb-4 border border-gray-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={job.customerId.profileImage || `https://ui-avatars.com/api/?name=${job.customerId.firstName}+${job.customerId.lastName}`} 
-                    alt="Customer" 
-                    className="w-12 h-12 rounded-full border border-gray-200 object-cover" 
+                  <img
+                    src={job.customerId.profileImage || `https://ui-avatars.com/api/?name=${job.customerId.firstName}+${job.customerId.lastName}`}
+                    alt="Customer"
+                    className="w-12 h-12 rounded-full border border-gray-200 object-cover"
                   />
                   <div>
                     <p className="text-xs text-gray-400 font-medium">Posted by</p>
                     <p className="text-md font-medium text-primary-500 capitalize">{job.customerId.firstName} {job.customerId.lastName}</p>
                   </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleChatWithCustomer}
-                    disabled={job.contactedCount >= 3 && !isContacted}
-                    className={`flex items-center gap-3 px-4 py-2 rounded-full font-semibold text-sm border transition-colors ${
-                      (job.contactedCount >= 3 && !isContacted)
-                        ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed'
-                        : (!isSubscribed && !isContacted)
-                          ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100 cursor-pointer'
-                          : 'bg-[#F1F6FF] text-primary-600 border-[#E0EAFF] hover:bg-blue-50 cursor-pointer'
-                    }`}
-                  >
-                    <img src={ChatIcon} alt="Chat" className={`w-4 h-4 ${(job.contactedCount >= 3 && !isContacted) ? 'grayscale opacity-50' : ''}`} />
-                     {!isSubscribed && !isContacted ? 'Subscribe to Chat' : 'Chat'}
-                  </button>
+
+                <div className="flex flex-col items-end gap-1">
+                  {isContacted ? (
+                    /* If already contacted, show normal Chat button */
+                    <button
+                      onClick={handleChatWithCustomer}
+                      className="flex items-center gap-3 px-4 py-2 rounded-full font-semibold text-sm border border-[#E0EAFF] bg-[#F1F6FF] text-primary-600 hover:bg-blue-50 cursor-pointer transition-colors"
+                    >
+                      <img src={ChatIcon} alt="Chat" className="w-4 h-4" />
+                      Chat
+                    </button>
+                  ) : (
+                    /* Not contacted yet -> show Accept and Reject buttons */
+                    !(job.contactedCount >= 3) && (
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setShowRejectConfirmModal(true)}
+                          className="py-2 px-5 text-xs font-semibold rounded-full border border-red-200 bg-red-50 text-red-500 transition-all cursor-pointer text-center"
+                        >
+                          ✕ Reject
+                        </button>
+                        <button
+                          onClick={() => setShowAcceptConfirmModal(true)}
+                          className="py-2 px-5 text-xs font-semibold rounded-full border border-[#DCE4FF] bg-[#EBF2FD] text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer text-center"
+                        >
+                          ✓ Accept
+                        </button>
+                      </div>
+                    )
+                  )}
+                  {!isContacted && isSubscribed && !(job.contactedCount >= 3) && (
+                    <span className="text-[10px] text-amber-600 font-medium">
+                      💳 Uses {subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} credits
+                    </span>
+                  )}
                 </div>
               </div>
 
               {/* Waitlist Section */}
               {job.contactedCount >= 3 && !isContacted && (
                 <div className="mt-6 pt-6 border-t border-gray-50">
-                   {!isWaitlisted ? (
+                  {!isWaitlisted ? (
                     <>
                       <div className="bg-[#F8FAFF] border border-[#E8EFFF] rounded-2xl p-5 mb-4 flex gap-4">
                         <div className="bg-primary-50 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
@@ -452,10 +534,10 @@ const JobDetailsPage = () => {
                         </button>
                       </div>
                     </>
-                   ) : (
+                  ) : (
                     <>
                       <div className="bg-[#F8FAFF] border border-[#E8EFFF] rounded-2xl p-5 mb-4 flex gap-4">
-                         <div className="bg-primary-50 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="bg-primary-50 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                           <CheckCircle2 className="w-5 h-5 text-primary-600" />
                         </div>
                         <div>
@@ -477,7 +559,7 @@ const JobDetailsPage = () => {
                         </button>
                       </div>
                     </>
-                   )}
+                  )}
                 </div>
               )}
             </div>
@@ -490,7 +572,7 @@ const JobDetailsPage = () => {
                 <h4 className="text-[13px] font-bold text-gray-700 mb-5 tracking-wide uppercase">
                   Customer Contact Details
                 </h4>
-                
+
                 <div className="flex flex-col">
                   {job.customerId.phone && (
                     <div className="flex items-center gap-4">
@@ -503,11 +585,11 @@ const JobDetailsPage = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {job.customerId.phone && job.customerId.email && (
                     <div className="h-px bg-gray-200 my-4 w-full"></div>
                   )}
-                  
+
                   {job.customerId.email && (
                     <div className="flex items-center gap-4">
                       <div className="w-11 h-11 rounded-xl bg-[#F4F3ED] flex items-center justify-center flex-shrink-0">
@@ -530,11 +612,11 @@ const JobDetailsPage = () => {
               const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
               const currentUserId = currentUser.id || currentUser._id;
               const isAssigned = ['assigned', 'accepted', 'on_the_way', 'started', 'in_progress'].includes(job.status);
-              const isAssignedToMe = job.assignedCleanerId === currentUserId || 
-                                    job.assignedCleanerId?._id === currentUserId ||
-                                    job.cleanerId === currentUserId ||
-                                    job.cleanerId?._id === currentUserId;
-              
+              const isAssignedToMe = job.assignedCleanerId === currentUserId ||
+                job.assignedCleanerId?._id === currentUserId ||
+                job.cleanerId === currentUserId ||
+                job.cleanerId?._id === currentUserId;
+
               if (isAssigned && isAssignedToMe) {
                 return (
                   <button
@@ -565,17 +647,17 @@ const JobDetailsPage = () => {
 
       {/* Sticky bottom action (Figma) */}
       {canWithdrawBid && (
-  <div className="w-full flex justify-center items-center py-10">
-    <button
-      type="button"
-      onClick={() => { setModalError(''); setShowWithdrawModal(true); }}
-       className="flex items-center gap-3 px-5 py-2 rounded-full bg-[#FFE4E4B2] text-[#EF4444] font-medium text-md cursor-pointer"
-    >
-       <Trash2 className="w-5 h-5" strokeWidth={2.2} />
-      Withdraw Bid
-    </button>
-  </div>
-)}
+        <div className="w-full flex justify-center items-center py-10">
+          <button
+            type="button"
+            onClick={() => { setModalError(''); setShowWithdrawModal(true); }}
+            className="flex items-center gap-3 px-5 py-2 rounded-full bg-[#FFE4E4B2] text-[#EF4444] font-medium text-md cursor-pointer"
+          >
+            <Trash2 className="w-5 h-5" strokeWidth={2.2} />
+            Withdraw Bid
+          </button>
+        </div>
+      )}
 
       <ConfirmationModal
         isOpen={showWithdrawModal}
@@ -635,6 +717,34 @@ const JobDetailsPage = () => {
           ))}
         </div>
       </ConfirmationModal>
+
+      {/* Cleaner Accept Job Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showAcceptConfirmModal}
+        onClose={() => { setShowAcceptConfirmModal(false); setAcceptError(''); }}
+        onConfirm={handleConfirmAccept}
+        title="Accept Job Interest?"
+        message={
+          `Accepting this job will send an interest message to the customer. This will deduct ${subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} credits from your account.`
+        }
+        confirmText="Confirm Accept"
+        cancelText="Cancel"
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+        isLoading={isAccepting}
+        errorMessage={acceptError}
+      />
+
+      {/* Cleaner Reject Job Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showRejectConfirmModal}
+        onClose={() => setShowRejectConfirmModal(false)}
+        onConfirm={handleConfirmReject}
+        title="Reject Job?"
+        message="Are you sure you want to reject this job? It will be hidden from your feed permanently."
+        confirmText="Hide Job"
+        cancelText="Cancel"
+        confirmButtonColor="bg-red-500 hover:bg-red-600"
+      />
     </>
   );
 };

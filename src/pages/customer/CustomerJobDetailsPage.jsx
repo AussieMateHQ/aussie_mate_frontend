@@ -31,11 +31,11 @@ const CleanerAvatar = ({ src, name, className = "w-16 h-16" }) => {
   return (
     <div className={`${className} rounded-full overflow-hidden flex-shrink-0 border border-gray-100`}>
       {src && !hasError ? (
-        <img 
-          src={src} 
-          alt={name} 
-          className="w-full h-full object-cover" 
-          onError={() => setHasError(true)} 
+        <img
+          src={src}
+          alt={name}
+          className="w-full h-full object-cover"
+          onError={() => setHasError(true)}
         />
       ) : (
         <div className="w-full h-full bg-primary-500 flex items-center justify-center text-white text-xl font-bold uppercase">
@@ -221,8 +221,8 @@ const CustomerJobDetailsPage = () => {
     'completed',
   ].includes((job?.status || '').toLowerCase()) || Boolean(job?.assignedCleanerId || job?.assignedCleaner);
 
-  const waitlistUnlocksAt = job?.createdAt 
-    ? new Date(new Date(job.createdAt).getTime() + 24 * 60 * 60 * 1000) 
+  const waitlistUnlocksAt = job?.createdAt
+    ? new Date(new Date(job.createdAt).getTime() + 24 * 60 * 60 * 1000)
     : null;
   const is24HoursPassed = waitlistUnlocksAt ? new Date() >= waitlistUnlocksAt : false;
   const waitlistVisible = job?.waitlistVisible === true || is24HoursPassed;
@@ -773,6 +773,30 @@ const CustomerJobDetailsPage = () => {
                 )}
               </div>
             )}
+
+            {/* Additional details */}
+            {(job.hasPlans || job.hasCouncilApproval || job.budget || job.jobStage) && (
+              <div className="grid gap-3 sm:grid-cols-2 mt-4 mb-6">
+                {[
+                  { label: 'Plans', value: job.hasPlans },
+                  { label: 'Council Approval', value: job.hasCouncilApproval },
+                  { label: 'Budget', value: job.budget },
+                  { label: 'Job Stage', value: job.jobStage },
+                ].filter(item => item.value).map((item, index) => (
+                  <div
+                    key={index}
+                    className="p-3 rounded-xl border border-[#E2E8FF] bg-[#F8FAFF]"
+                  >
+                    <div className="text-[11px] uppercase text-primary-300 font-semibold tracking-wide mb-1">
+                      {item.label}
+                    </div>
+                    <div className="text-sm text-primary-500 font-medium">
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Photo Grid */}
@@ -795,9 +819,6 @@ const CustomerJobDetailsPage = () => {
             </div>
           )}
         </div>
-
-        {/* Custom Job Dates Section */}
-
 
         {/* Service Provider Quotes Section */}
         <div className="py-4">
@@ -832,7 +853,7 @@ const CustomerJobDetailsPage = () => {
                                 <h4 className="text-[11px] font-bold text-gray-500 mb-4 tracking-wide uppercase">
                                   Cleaner Contact Details
                                 </h4>
-                                
+
                                 <div className="flex flex-col">
                                   {cleaner.phone && (
                                     <div className="flex items-center gap-4">
@@ -845,11 +866,11 @@ const CustomerJobDetailsPage = () => {
                                       </div>
                                     </div>
                                   )}
-                                  
+
                                   {cleaner.phone && cleaner.email && (
                                     <div className="h-px bg-gray-200 my-4 w-full"></div>
                                   )}
-                                  
+
                                   {cleaner.email && (
                                     <div className="flex items-center gap-4">
                                       <div className="w-10 h-10 rounded-xl bg-[#F4F3ED] flex items-center justify-center flex-shrink-0">
@@ -900,21 +921,44 @@ const CustomerJobDetailsPage = () => {
                       </p>
                     </div>
 
-                    {/* Footer Action Button */}
-                    <div className="flex justify-end border-t border-gray-100 pt-4">
-                      <Button
-                        onClick={() => {
-                          if (cleaner.isConnected) {
-                            navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`);
-                          } else {
-                            handleAcceptQuote(cleaner.id);
-                          }
-                        }}
-                        variant=""
-                        className="py-3 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer"
-                      >
-                        {cleaner.isConnected ? 'Message' : 'Connect & Message'}
-                      </Button>
+                    {/* Footer Action Buttons */}
+                    <div className="border-t border-gray-100 pt-4">
+                      {/* Already Connected → show Message button */}
+                      {cleaner.isConnected ? (
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={() => navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`)}
+                            variant=""
+                            className="py-3 px-6 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer"
+                          >
+                            💬 Message
+                          </Button>
+                        </div>
+                      ) : item.status === 'rejected' ? (
+                        /* Rejected state */
+                        <div className="flex justify-center">
+                          <span className="py-2 px-5 text-sm font-medium text-red-400 bg-red-50 rounded-full border border-red-100">
+                            ✕ Rejected
+                          </span>
+                        </div>
+                      ) : (
+                        /* Pending → Accept + Reject */
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => handleDeclineQuote(cleaner.id)}
+                            className="flex-1 py-3 text-sm font-semibold rounded-full border border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                          >
+                            ✕ Reject
+                          </button>
+                          <Button
+                            onClick={() => handleAcceptQuote(cleaner.id)}
+                            variant=""
+                            className="flex-1 py-3 text-base font-semibold rounded-full border border-green-300 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all cursor-pointer"
+                          >
+                            ✓ Accept
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -1002,11 +1046,10 @@ const CustomerJobDetailsPage = () => {
                             handleAcceptQuote(cleaner.id);
                           }}
                           variant=""
-                          className={`py-3 text-base font-semibold rounded-full border transition-all ${
-                            isJobAssigned
+                          className={`py-3 text-base font-semibold rounded-full border transition-all ${isJobAssigned
                               ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
                               : 'border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white cursor-pointer'
-                          }`}
+                            }`}
                         >
                           Connect & Message
                         </Button>
@@ -1047,24 +1090,24 @@ const CustomerJobDetailsPage = () => {
         isLoading={isCancelling}
       />
 
-      {/* Connect Confirmation Modal */}
+      {/* Accept Cleaner Confirmation Modal */}
       <ConfirmationModal
         isOpen={showConnectModal}
         onClose={handleCancelConnect}
         onConfirm={handleConfirmConnect}
         title={
           quoteToConnect
-            ? `Connect with ${quoteToConnect.cleaner?.firstName || quoteToConnect.cleanerId?.firstName || 'Cleaner'}?`
-            : "Connect with Cleaner?"
+            ? `Accept ${quoteToConnect.cleaner?.firstName || quoteToConnect.cleanerId?.firstName || 'Cleaner'}?`
+            : "Accept Cleaner?"
         }
         message={
           quoteToConnect ?
-            `We'll notify ${quoteToConnect.cleaner?.firstName || quoteToConnect.cleanerId?.firstName || 'the cleaner'} that you want to connect about the job.` :
-            "We'll notify the cleaner that you want to connect about the job."
+            `Accepting ${quoteToConnect.cleaner?.firstName || quoteToConnect.cleanerId?.firstName || 'this cleaner'} will deduct credits from their account and open a chat with them.` :
+            "Accepting this cleaner will deduct credits from their account and open a chat with them."
         }
-        confirmText="Connect"
+        confirmText="Accept & Chat"
         cancelText="Not Now"
-        confirmButtonColor="bg-blue-600 hover:bg-blue-700"
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
         isLoading={isConnecting}
         errorMessage={actionError}
       />
