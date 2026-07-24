@@ -16,7 +16,6 @@ import { getStatusChip } from '../../utils/statusUtils';
 
 const tabs = [
   { id: 'all', label: 'All' },
-  { id: 'upcoming', label: 'Upcoming' },
   { id: 'completed', label: 'Completed' }
 ];
 
@@ -141,8 +140,6 @@ const MyJobsPage = () => {
 
   const statusFilter = useMemo(() => {
     switch (activeTab) {
-      case 'upcoming':
-        return 'posted,quoted,accepted,assigned';
       case 'completed':
         return 'completed';
       default:
