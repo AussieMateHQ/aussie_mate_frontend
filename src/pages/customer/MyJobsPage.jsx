@@ -17,14 +17,9 @@ import { getStatusChip } from '../../utils/statusUtils';
 const tabs = [
   { id: 'all', label: 'All' },
   { id: 'upcoming', label: 'Upcoming' },
-  { id: 'ongoing', label: 'Ongoing' },
   { id: 'completed', label: 'Completed' }
 ];
 
-// Remove hardcoded categoryOptions if they are now dynamic
-// const categoryOptions = [ ... ];
-
-// Helpers
 const dateFormatter = new Intl.DateTimeFormat('en-AU', {
   day: '2-digit',
   month: 'short',
@@ -147,9 +142,7 @@ const MyJobsPage = () => {
   const statusFilter = useMemo(() => {
     switch (activeTab) {
       case 'upcoming':
-        return 'quoted,accepted';
-      case 'ongoing':
-        return 'in_progress,pending_customer_confirmation,on_the_way';
+        return 'posted,quoted,accepted,assigned';
       case 'completed':
         return 'completed';
       default:

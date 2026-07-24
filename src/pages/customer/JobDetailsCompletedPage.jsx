@@ -457,6 +457,8 @@ const JobDetailsCompletedPage = () => {
     );
   }
 
+  const isCompleted = ['completed', 'assigned', 'accepted'].includes(jobData.status?.toLowerCase());
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
@@ -492,7 +494,7 @@ const JobDetailsCompletedPage = () => {
         <div className="px-4 mt-4">
           <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 relative overflow-hidden group hover:border-blue-100 transition-colors">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-              <div className="flex items-start gap-4 flex-1">
+              <div className="flex items-center gap-4 flex-1">
                 {/* Avatar */}
                 <div className="relative mt-1 flex-shrink-0">
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 ring-2 ring-white">
@@ -513,31 +515,13 @@ const JobDetailsCompletedPage = () => {
 
                 <div className="flex flex-col gap-2">
                   <h3 className="text-xl sm:text-[22px] font-semibold text-[#111827] leading-none capitalize">{jobData.cleaner.name || "John Doe"}</h3>
-
-                  {/* Tier Badge */}
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF2DE]">
-                      <img src={RatingIcon} alt="Rating" className="w-3.5 h-3.5" />
-                      <span className="text-xs sm:text-sm font-semibold">{jobData.cleaner.rating || "4.9"}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[linear-gradient(94.49deg,_#FDFDFD_0%,_#E9E9E9_100%)] border border-gray-100">
-                      <img
-                        src={jobData.cleaner.tier === 'gold' ? GoldBadgeIcon : jobData.cleaner.tier === 'silver' ? SilverBadgeIcon : BronzeBadgeIcon}
-                        alt="Badge"
-                        className="w-4 h-4 drop-shadow-sm"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-gray-900 capitalize">
-                        {jobData.cleaner.tier || 'Silver'} Tier
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
 
               {/* Action Columns (Status Top, Icons Bottom) */}
               <div className="flex sm:flex-col sm:items-end justify-between sm:self-stretch mt-1 sm:mt-0">
                 <span className="px-3 py-1.5 rounded-full bg-[#E4FBED] text-[#1EB154] text-xs sm:text-sm font-semibold tracking-tight border border-[#DBF9E7] inline-block self-start sm:self-auto">
-                  {jobData.status === 'Completed' || jobData.status?.toLowerCase() === 'completed' ? 'Completed' : 'In Progress'}
+                  {isCompleted ? 'Completed' : 'In Progress'}
                 </span>
               </div>
             </div>
@@ -597,7 +581,7 @@ const JobDetailsCompletedPage = () => {
             <div>
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">STATUS</p>
               <p className="text-[15px] font-bold text-green-600">
-                {jobData.status === 'Completed' || jobData.status?.toLowerCase() === 'completed' ? 'Completed' : 'Active'}
+                {isCompleted ? 'Completed' : 'Active'}
               </p>
             </div>
           </div>
@@ -628,8 +612,7 @@ const JobDetailsCompletedPage = () => {
           </div>
         )}
 
-        {/* Completion Status Bar or Complete Button (Right Aligned) */}
-        {jobData.status?.toLowerCase() === 'completed' || jobData.status === 'Completed' ? (
+        {isCompleted ? (
           <div className="px-4 inline-block">
             <div className="bg-[#E9FBF0] rounded-xl py-3 px-5 flex items-center gap-3 border border-[#DBF9E7]">
               <div className="w-2.5 h-2.5 rounded-full bg-[#1EB154]" />

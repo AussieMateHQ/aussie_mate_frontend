@@ -375,7 +375,7 @@ const CustomerDashboard = () => {
         <div className="bg-white px-4 sm:px-7 py-4 sm:py-6 rounded-2xl shadow-custom">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 sm:gap-0">
             <h3 className="text-base sm:text-lg md:text-xl font-semibold text-primary-500">
-              Ongoing Jobs
+              My Jobs
             </h3>
 
             {/* Navigation Buttons */}
