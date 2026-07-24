@@ -612,20 +612,7 @@ const JobDetailsCompletedPage = () => {
           </div>
         )}
 
-        {isCompleted ? (
-          <div className="px-4 inline-block">
-            <div className="bg-[#E9FBF0] rounded-xl py-3 px-5 flex items-center gap-3 border border-[#DBF9E7]">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#1EB154]" />
-              <span className="text-[#1EB154] font-medium text-sm">
-                Completed on {jobData.completedAt ? new Date(jobData.completedAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                }) : 'Recently'}
-              </span>
-            </div>
-          </div>
-        ) : (
+        {isCompleted ? null : (
           <div className="px-4 mt-8 flex justify-end">
             <Button
               onClick={() => setShowCompleteModal(true)}
