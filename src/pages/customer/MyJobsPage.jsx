@@ -15,7 +15,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getStatusChip } from '../../utils/statusUtils';
 
 const tabs = [
-  { id: 'all', label: 'All' },
+  { id: 'all', label: 'Job' },
   { id: 'completed', label: 'Completed' }
 ];
 
@@ -43,7 +43,6 @@ const formatDate = (iso) => {
   }
 };
 
-// Helper function to format cleaner data from quotes (same as CustomerJobDetailsPage)
 const formatCleanerData = (quote) => {
   const cleaner = quote.cleanerId || quote.cleaner;
   const cleanerId = cleaner?._id || cleaner?.id || quote.cleanerId || quote._id || quote.id;
