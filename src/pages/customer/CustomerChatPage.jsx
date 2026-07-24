@@ -423,10 +423,9 @@ const CustomerChatPage = () => {
             </div>
           </div>
 
-          {/* Status Pill */}
           {loading || !jobData ? (
             null
-          ) : jobData.assignedCleanerId ? (
+          ) : (jobData.assignedCleanerId || ['completed', 'assigned', 'accepted'].includes((jobData.status || '').toLowerCase())) ? (
             <div className="flex items-center gap-1 bg-[#E6F4EA] text-[#137333] px-3 py-1 rounded-full text-xs font-bold shadow-sm">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
@@ -585,8 +584,7 @@ const CustomerChatPage = () => {
           </div>
         </div>
 
-        {/* Sticky Action Footer */}
-        {!loading && jobData && ((jobData.status === 'posted' || jobData.status === 'quoted') && !jobData.assignedCleanerId) && (
+        {!loading && jobData && (['posted', 'quoted'].includes((jobData.status || '').toLowerCase()) && !jobData.assignedCleanerId) && (
           <div className="px-4 sm:px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
             {/* Left Button */}
             <button
