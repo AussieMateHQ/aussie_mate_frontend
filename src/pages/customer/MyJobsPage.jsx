@@ -30,7 +30,7 @@ const formatDate = (iso) => {
 
   try {
     const d = new Date(iso);
-
+              
     if (Number.isNaN(d.getTime())) {
       console.warn('Invalid date:', iso);
       return '';
@@ -309,7 +309,7 @@ const MyJobsPage = () => {
               quoteCount = job.quotesReceived;
             }
 
-            const shouldShowQuotes = quoteCount > 0 && !['accepted', 'in_progress', 'completed', 'pending_customer_confirmation'].includes(statusLower);
+            const shouldShowQuotes = quoteCount > 0 && !['accepted', 'in_progress', 'completed', 'pending_customer_confirmation', 'assigned'].includes(statusLower);
             const quotes = job.quotesReceivedDisplay || (shouldShowQuotes ? `${quoteCount} Quotes Received` : null);
 
             const jobIdentifier = job._id?.toString?.() || job.id || job.jobId || `job-${Math.random()}`;
@@ -472,7 +472,7 @@ const MyJobsPage = () => {
                     );
                   }
                   // Show quotes badge only if it's not an active/pending job
-                  else if (job.quotes && !['in_progress', 'started', 'pending_customer_confirmation', 'completed'].includes(job.status)) {
+                  else if (job.quotes && !['in_progress', 'started', 'pending_customer_confirmation', 'completed', 'assigned', 'accepted'].includes(job.status)) {
                     return (
                       <div className="flex items-center gap-1.5 bg-[#DDEFFF] px-2 py-1 rounded-full">
                         <div className="w-2 h-2 bg-[#0088FF] rounded-full"></div>
