@@ -245,9 +245,8 @@ const JobBookedSuccessfullyPage = () => {
     if (showAnimation) {
       const timer = setTimeout(() => {
         setShowAnimation(false);
-        // Mark animation as seen for this booking
         sessionStorage.setItem(`animation-seen-${jobId}`, 'true');
-      }, 3000); // Hide after 3 seconds
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
@@ -440,7 +439,7 @@ const JobBookedSuccessfullyPage = () => {
             <div className="flex items-center gap-3 mt-2">
               <img src={InfoIcon} alt="Info" className="w-5 h-5 text-primary-200" />
               <p className="text-sm text-primary-200 font-medium">
-                We'll notify you when your cleaner updates job status.
+                Your cleaning job is completed.
               </p>
             </div>
           </div>

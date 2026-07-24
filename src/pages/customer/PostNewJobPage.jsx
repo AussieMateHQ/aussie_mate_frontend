@@ -70,8 +70,7 @@ const PostNewJobPage = () => {
   const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
-  // Final details
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [finalInstructions, setFinalInstructions] = useState('');
   const [isUrgent, setIsUrgent] = useState(false);
 
@@ -506,10 +505,6 @@ const PostNewJobPage = () => {
         setError('Please specify the type of service you need');
         return;
       }
-      if (!formData.instructions || !formData.instructions.trim()) {
-        setError('Please add task instructions & special requirements');
-        return;
-      }
     }
     if (currentStep < 2) {
       setCurrentStep(currentStep + 1);
@@ -542,11 +537,7 @@ const PostNewJobPage = () => {
       return;
     }
 
-    if (!formData.instructions || !formData.instructions.trim()) {
-      setError('Please add task instructions & special requirements');
-      setIsLoading(false);
-      return;
-    }
+
 
     if (!selectedDate) {
       setError('Please select a date for the service');

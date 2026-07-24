@@ -466,11 +466,10 @@ const CustomerDashboard = () => {
                     onClick={() => {
                       if (
                         job.rawStatus === "completed" ||
-                        job.rawStatus === "pending_customer_confirmation"
+                        job.rawStatus === "assigned" ||
+                        job.rawStatus === "accepted"
                       ) {
                         navigate(`/job-completed/${job.rawId}`, { state: { from: 'dashboard' } });
-                      } else if (job.rawStatus === "in_progress") {
-                        navigate(`/customer-in-progress-job/${job.rawId}`, { state: { from: 'dashboard' } });
                       } else {
                         navigate(`/customer-job-details/${job.rawId}`, { state: { from: 'dashboard' } });
                       }

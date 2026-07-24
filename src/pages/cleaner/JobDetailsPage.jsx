@@ -437,6 +437,7 @@ const JobDetailsPage = () => {
               metaInfo={jobOverviewMeta}
               roomsNeedCleaning={job?.roomsNeedCleaning}
               bathroomsNeedCleaning={job?.bathroomsNeedCleaning}
+              extraServiceItems={job?.extraServiceItems || []}
               roleSections={{
                 cleaner: [
                   { label: 'Plans', value: job?.hasPlans },
@@ -605,43 +606,6 @@ const JobDetailsPage = () => {
               </div>
             </div>
           )}
-
-          <div className="flex justify-end gap-3">
-            {/* Show "I'm on the way" button only if assigned to me */}
-            {(() => {
-              const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-              const currentUserId = currentUser.id || currentUser._id;
-              const isAssigned = ['assigned', 'accepted', 'on_the_way', 'started', 'in_progress'].includes(job.status);
-              const isAssignedToMe = job.assignedCleanerId === currentUserId ||
-                job.assignedCleanerId?._id === currentUserId ||
-                job.cleanerId === currentUserId ||
-                job.cleanerId?._id === currentUserId;
-
-              if (isAssigned && isAssignedToMe) {
-                return (
-                  <button
-                    onClick={async () => {
-                      try {
-                        const response = await jobsAPI.updateJobStatus(jobId, 'on_the_way');
-                        if (response.success) {
-                          navigate(`/in-progress-job/${jobId}`);
-                        } else {
-                          alert(response.message || 'Failed to update status');
-                        }
-                      } catch (err) {
-                        console.error('Error updating status:', err);
-                        alert('Failed to update status. Please try again.');
-                      }
-                    }}
-                    className="bg-green-600 text-white cursor-pointer shadow-custom border border-green-100 font-medium py-2 px-4 sm:py-3 sm:px-6 rounded-xl transition-colors duration-200 flex items-center gap-2 hover:bg-green-700"
-                  >
-                    I'm On The Way
-                  </button>
-                );
-              }
-              return null;
-            })()}
-          </div>
         </div>
       </div>
 

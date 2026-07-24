@@ -17,13 +17,6 @@ const normalizeStatus = (status) => {
 export const getStatusColors = (status) => {
   const s = normalizeStatus(status);
   
-  if (s === 'in_progress' || s === 'in progress' || s === 'in-progress' || s === 'started') {
-    return {
-      bg: 'bg-[#FFEBCA]',
-      text: 'text-[#FF8800]',
-      border: 'border-[#FFEBCA]',
-    };
-  }
   if (s === 'completed') {
     return {
       bg: 'bg-[#DBF9E7]',
@@ -31,11 +24,11 @@ export const getStatusColors = (status) => {
       border: 'border-green-500',
     };
   }
-  if (s === 'pending_customer_confirmation' || s === 'pending customer confirmation') {
+  if (s === 'assigned') {
     return {
-      bg: 'bg-[#FFF4E6]',
-      text: 'text-[#FF8800]',
-      border: 'border-[#FFF4E6]',
+      bg: 'bg-[#DBF9E7]',
+      text: 'text-green-500',
+      border: 'border-green-500',
     };
   }
   if (s === 'accepted') {
@@ -75,22 +68,16 @@ export const getStatusColors = (status) => {
 export const getStatusChip = (statusRaw) => {
   const s = normalizeStatus(statusRaw);
   
-  if (s === 'in_progress' || s === 'in progress' || s === 'in-progress' || s === 'started') {
-    return { 
-      label: 'In Progress', 
-      className: 'bg-[#FFEBCA] text-[#FF8800] border border-[#FFEBCA]' 
-    };
-  }
   if (s === 'completed') {
     return { 
       label: 'Completed', 
       className: 'bg-[#DBF9E7] text-green-500 border border-green-500' 
     };
   }
-  if (s === 'pending_customer_confirmation' || s === 'pending customer confirmation') {
+  if (s === 'assigned') {
     return { 
-      label: 'Pending Confirmation', 
-      className: 'bg-[#FFF4E6] text-[#FF8800] border border-[#FFF4E6]' 
+      label: 'Completed', 
+      className: 'bg-[#DBF9E7] text-green-500 border border-green-500' 
     };
   }
   if (s === 'accepted') {
@@ -127,4 +114,3 @@ export const getStatusLabel = (status) => {
   const chip = getStatusChip(status);
   return chip.label;
 };
-

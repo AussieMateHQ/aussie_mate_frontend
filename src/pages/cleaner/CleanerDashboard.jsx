@@ -427,10 +427,8 @@ console.log("formattedActiveJobs =",formattedActiveJobs);
       return;
     }
 
-    if (status === "completed") {
+    if (status === "completed" || status === "assigned") {
       navigate(`/cleaner-job-completed/${jobIdentifier}`);
-    } else if (["in_progress", "in progress", "in-progress"].includes(status)) {
-      navigate(`/in-progress-job/${jobIdentifier}`);
     } else {
       // Coming from dashboard "Live Jobs" context
       navigate(`/job-details/${jobIdentifier}`, { state: { fromTab: "posted" } });

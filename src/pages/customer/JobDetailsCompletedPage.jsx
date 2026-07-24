@@ -694,136 +694,16 @@ const JobDetailsCompletedPage = () => {
           </div>
         )}
 
-        {/* Rate Your Cleaner / Review Section - Only show if job is completed */}
-        {(jobData.status?.toLowerCase() === 'completed' || jobData.status === 'Completed') && (
-          <div className="bg-white mx-4 mt-4 p-4 rounded-2xl shadow-sm border border-gray-100 mb-6">
-            {hasReviewed ? (
-              // Show existing review
-              <>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-primary-500">Your Review</h3>
-                  <span className="text-xs font-medium px-3 py-1 rounded-full bg-green-50 text-[#1EB154] border border-[#DBF9E7]">
-                    Submitted
-                  </span>
-                </div>
-
-                {/* Star Rating - Display Only */}
-                <div className="flex space-x-1 mb-4">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <img
-                      key={star}
-                      src={star <= selectedRating ? RatingIcon : Rating2Icon}
-                      alt={`Star ${star}`}
-                      className="w-8 h-8"
-                    />
-                  ))}
-                </div>
-
-                {/* Selected Tags - Display Only */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">What you liked:</p>
-                  {selectedTags.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {selectedTags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 rounded-full text-sm font-medium bg-[#EBF2FD] text-primary-600 border border-[#9CC0F6]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">No specific aspects selected</p>
-                  )}
-                </div>
-
-                {/* Feedback - Display Only */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">Your feedback:</p>
-                  {feedback ? (
-                    <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 inline-block">
-                      <p className="text-sm text-gray-700">{feedback}</p>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500">No additional feedback provided</p>
-                  )}
-                </div>
-
-                {/* Go to Dashboard Button */}
-                <div className="flex justify-end mt-4">
-                  <Button
-                    onClick={() => navigate('/customer-dashboard')}
-                    variant="primary"
-                  >
-                    Go to Dashboard
-                  </Button>
-                </div>
-              </>
-            ) : (
-              // Show review form
-              <>
-                <h3 className="font-semibold text-primary-500 mb-1">Rate Your Cleaner</h3>
-
-                {/* Star Rating */}
-                <div className="flex space-x-1 mb-4">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setSelectedRating(star)}
-                      className="focus:outline-none cursor-pointer"
-                    >
-                      <img
-                        src={star <= selectedRating ? RatingIcon : Rating2Icon}
-                        alt={`Star ${star}`}
-                        className="w-8 h-8"
-                      />
-                    </button>
-                  ))}
-                </div>
-
-                {/* Feedback Question */}
-                <p className="text-gray-700 mb-3">What did you like about your cleaner?</p>
-
-                {/* Feedback Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {feedbackTags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => handleTagSelect(tag)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors cursor-pointer ${selectedTags.includes(tag)
-                        ? 'bg-[#EBF2FD] text-primary-600 border border-[#9CC0F6]'
-                        : 'bg-[#F9FAFB] text-[#374151] border border-primary-200'
-                        }`}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Feedback Text Area */}
-                <div className="text-primary-500 font-semibold text-sm mb-1"> Anything specific we should know? <span className="text-primary-200 font-medium text-sm">(Optional)</span></div>
-                <textarea
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Write your feedback here..."
-                  className="w-full p-3 border border-primary-200 rounded-xl! resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={3}
-                />
-
-                {/* Submit Button */}
-                <div className="flex justify-end mt-4">
-                  <Button
-                    onClick={handleSubmitReview}
-                    disabled={submittingReview || !selectedRating}
-                  >
-                    {submittingReview ? 'Submitting...' : 'Submit Review'}
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+        {/* Return to dashboard button at the bottom */}
+        <div className="flex justify-center my-8 px-4">
+          <Button
+            onClick={() => navigate('/customer-dashboard')}
+            variant="primary"
+            className="w-full max-w-xs py-4 px-6 rounded-2xl font-bold text-base shadow-lg shadow-blue-100 hover:shadow-blue-200 transition-all"
+          >
+            Go to Dashboard
+          </Button>
+        </div>
       </div>
     </>
   );

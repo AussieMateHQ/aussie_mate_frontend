@@ -38,8 +38,8 @@ const CleanerJobCompletedPage = () => {
           const photosData = photosResponse.data || photosResponse;
 
           // If job is not completed, redirect to in-progress details
-          if (!['completed', 'Completed'].includes(job.status)) {
-            navigate(`/cleaner-jobs/${jobId}`, { replace: true });
+          if (!['completed', 'Completed', 'assigned', 'Assigned'].includes(job.status)) {
+            navigate(`/job-details/${jobId}`, { replace: true });
             return;
           }
 

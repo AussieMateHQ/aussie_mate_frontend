@@ -459,10 +459,8 @@ const MyJobsPage = () => {
             <div
               key={job.id}
               onClick={() => {
-                if (job.status === 'completed' || job.status === 'pending_customer_confirmation') {
+                if (job.status === 'completed' || job.status === 'assigned' || job.status === 'accepted') {
                   navigate(`/job-completed/${job.id}`);
-                } else if (job.status === 'in_progress' || job.status === 'started' ) {
-                  navigate(`/customer-in-progress-job/${job.id}`);
                 } else {
                   navigate(`/customer-job-details/${job.id}`);
                 }

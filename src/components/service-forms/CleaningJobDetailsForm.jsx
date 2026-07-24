@@ -593,7 +593,7 @@ const CleaningJobDetailsForm = ({
         selectedFiles={selectedFiles}
         onRemoveFile={onRemoveFile}
         instructionsTitle="Task Instructions & Special Requirements"
-        instructionsSubtitle="(Required)"
+        instructionsSubtitle="(Optional)"
         instructionsValue={formData.instructions || ''}
         onInstructionsChange={(value) => onInputChange('instructions', value)}
         instructionsPlaceholder="Write your instructions here...."

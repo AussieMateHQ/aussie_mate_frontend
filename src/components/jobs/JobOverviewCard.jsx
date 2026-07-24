@@ -35,6 +35,7 @@ const JobOverviewCard = ({
   serviceTypeId,
   roomsNeedCleaning,
   bathroomsNeedCleaning,
+  extraServiceItems = [],
 }) => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
 
@@ -180,16 +181,33 @@ const JobOverviewCard = ({
           )}
         </div>
 
-        {(roomsNeedCleaning || bathroomsNeedCleaning) && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {roomsNeedCleaning && (
-              <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                <span className="text-[#1A73E8]">🛏️</span> {roomsNeedCleaning} Room{roomsNeedCleaning !== '1' ? 's' : ''}
+        {(roomsNeedCleaning || bathroomsNeedCleaning || (extraServiceItems && extraServiceItems.length > 0)) && (
+          <div className="space-y-3 pt-1">
+            {(roomsNeedCleaning || bathroomsNeedCleaning) && (
+              <div className="flex flex-wrap gap-2">
+                {roomsNeedCleaning && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🛏️</span> {roomsNeedCleaning} Room{roomsNeedCleaning !== '1' ? 's' : ''}
+                  </div>
+                )}
+                {bathroomsNeedCleaning && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🚿</span> {bathroomsNeedCleaning} Bathroom{bathroomsNeedCleaning !== '1' ? 's' : ''}
+                  </div>
+                )}
               </div>
             )}
-            {bathroomsNeedCleaning && (
-              <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                <span className="text-[#1A73E8]">🚿</span> {bathroomsNeedCleaning} Bathroom{bathroomsNeedCleaning !== '1' ? 's' : ''}
+
+            {extraServiceItems && extraServiceItems.length > 0 && (
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Extra Services</h4>
+                <div className="flex flex-wrap gap-2">
+                  {extraServiceItems.map((item, idx) => (
+                    <span key={item._id || idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                      ✨ {item.name || item}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -381,6 +399,12 @@ JobOverviewCard.propTypes = {
   ),
   roomsNeedCleaning: PropTypes.string,
   bathroomsNeedCleaning: PropTypes.string,
+  extraServiceItems: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({ _id: PropTypes.string, name: PropTypes.string })
+    ])
+  ),
 };
 
 JobOverviewCard.defaultProps = {
@@ -403,6 +427,7 @@ JobOverviewCard.defaultProps = {
   roleSections: {},
   roomsNeedCleaning: null,
   bathroomsNeedCleaning: null,
+  extraServiceItems: [],
 };
 
 export default JobOverviewCard;
