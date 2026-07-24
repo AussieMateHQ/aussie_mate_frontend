@@ -163,8 +163,6 @@ const MapWithRealtimeTracking = ({ customerLocation, cleanerLocation: externalCl
       destination: customerLocation,
       travelMode: window.google.maps.TravelMode.DRIVING,
     }, (result, status) => {
-      console.log("📍 Directions Status:", status);
-      console.log("📍 Directions Result:", result);
       isCalculatingRouteRef.current = false;
 
       if (status === 'OK' && result) {

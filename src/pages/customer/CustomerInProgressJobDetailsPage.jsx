@@ -59,7 +59,7 @@ const generateWeeklySchedule = (job, workProgress, occurrences) => {
       status,
       photos,
       amount: occurrence.amount || workProgress?.amountPerOccurrence || 100,
-      occurrence: occurrence // Keep original occurrence data for reference
+      occurrence: occurrence 
     };
   });
 };
@@ -69,12 +69,9 @@ const CustomerInProgressJobDetailsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [job, setJob] = useState(null);
-  console.log("jobs 1 =", job);
-
   const [cleaner, setCleaner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [showMap, setShowMap] = useState(false);
   const [showArrivalStatus, setShowArrivalStatus] = useState(false);
   const [arrivalTime, setArrivalTime] = useState(8);
@@ -115,25 +112,16 @@ const CustomerInProgressJobDetailsPage = () => {
             displayLocation: job.location?.address ? `${job.location.address}${job.location.city ? `, ${job.location.city}` : ''}` : (job.address || 'Location not specified')
           });
           setCleaner(cleaner);
-          console.log("cleaner data =", cleaner);
-
-
           setWorkProgress(workProgress);
           setOccurrences(occurrences);
 
-          // Generate weekly schedule from occurrences data
           if (job.frequency === 'Weekly' && occurrences && occurrences.length > 0) {
             const schedule = generateWeeklySchedule(job, workProgress, occurrences);
-            console.log("Generated customer schedule from API:", schedule);
             setWeeklySchedule(schedule);
           }
 
-          // Check if job is completed - show modal
           if (job.status === 'completed') {
-            // Redirect to completed page if needed
           }
-
-          // Set customer location from job data
           const coords = job.location?.coordinates;
           if (coords) {
             let lat, lng;
@@ -211,8 +199,6 @@ const CustomerInProgressJobDetailsPage = () => {
           Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       }
-
-      // Update arrival time based on route info if available
       if (routeInfo && routeInfo.duration) {
         const mins = parseInt(routeInfo.duration);
         if (!isNaN(mins)) {
@@ -223,7 +209,6 @@ const CustomerInProgressJobDetailsPage = () => {
 
     // Listen for extra time requests
     const handleExtraTimeRequest = (data) => {
-      console.log('Extra time request received:', data);
       setExtraTimeRequest(data);
       setShowExtraTimeModal(true);
     };

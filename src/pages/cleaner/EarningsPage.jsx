@@ -405,12 +405,6 @@ const EarningsPage = () => {
                   height = Math.max(height, 5); // Minimum 5% height for visibility
                   height = Math.min(height, 100); // Maximum 100% height
 
-                  // Debug log for highest bar
-                  if (isHighlighted) {
-                    console.log('Highest bar:', { day: item.day, amount: item.amount, height, isHighlighted });
-                    console.log('Bar style will be:', { height: `${height}%`, minHeight: '100%' });
-                  }
-
                   return (
                     <div key={index} className="flex flex-col items-center flex-1 relative group">
                       <div className="relative w-6 sm:w-8 md:w-10 h-full flex items-end">

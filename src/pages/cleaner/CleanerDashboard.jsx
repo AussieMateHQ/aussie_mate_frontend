@@ -284,7 +284,6 @@ const CleanerDashboard = () => {
             customer: job.customerId || null,
           };
         });
-console.log("formattedActiveJobs =",formattedActiveJobs);
 
         setActiveJobs(formattedActiveJobs);
 

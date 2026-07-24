@@ -126,10 +126,6 @@ const AdminChatPage = () => {
     };
 
     const onAdminMessagesMarkedRead = (data) => {
-      console.log('📖 [SOCKET] Admin messages marked as read:', data);
-      
-      // Mark our sent messages as read.
-      // Room scoping is handled by the socket room.
       setMessages(prev => prev.map(msg => {
         const myId = userRef.current?._id || userRef.current?.id || userRef.current?.userId;
         const msgSenderId = msg.senderId?._id || msg.senderId;
@@ -142,7 +138,6 @@ const AdminChatPage = () => {
       }));
     };
 
-    // Socket event listeners
     socketService.on('connectionStatus', onConnectionStatus);
     socketService.on('adminChatJoined', onAdminChatJoined);
     socketService.on('adminChatHistory', onAdminChatHistory);
@@ -273,15 +268,12 @@ const AdminChatPage = () => {
     }
   };
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Mark messages as read when viewing
   useEffect(() => {
     if (currentChatRoom?.adminChatRoomId && messages.length > 0) {
-      // Check if there are unread messages from the OTHER user
       const hasUnreadFromOther = messages.some(msg => {
         const isSentByMe = msg.senderId?._id === (user?._id || user?.id || user?.userId) || 
                           msg.senderId === (user?._id || user?.id || user?.userId);
@@ -289,7 +281,6 @@ const AdminChatPage = () => {
       });
 
       if (hasUnreadFromOther) {
-        console.log('📖 [COMPONENT] Marking admin messages as read...');
         socketService.markAdminMessagesAsRead(currentChatRoom.adminChatRoomId);
       }
     }

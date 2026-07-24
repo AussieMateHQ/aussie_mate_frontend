@@ -98,20 +98,17 @@ const InProgressJobDetailsPage = () => {
     const [copied, setCopied] = useState(false);
     const cleanerLocationRef = useRef(null);
 
-    // Helper function to check if a date is today
     const isToday = (date) => {
         const today = new Date();
         const checkDate = new Date(date);
         return today.toDateString() === checkDate.toDateString();
     };
-    console.log("weeklySchedule =", weeklySchedule);
 
     useEffect(() => {
         const fetchJobDetails = async () => {
             try {
                 setLoading(true);
 
-                // Fetch cleaner progress data which includes job, quote, customer, workProgress, and occurrences
                 let progressData = null;
                 try {
                     const progressResponse = await jobsAPI.getCleanerProgress(jobId);
@@ -122,7 +119,6 @@ const InProgressJobDetailsPage = () => {
                     console.warn('getCleanerProgress failed, attempting fallback to getJobById', err);
                 }
 
-                // Fallback to basic job details if progress endpoint fails
                 if (!progressData) {
                     const jobResponse = await jobsAPI.getJobById(jobId);
                     if (jobResponse.success && jobResponse.data) {
@@ -156,25 +152,18 @@ const InProgressJobDetailsPage = () => {
                     // Generate weekly schedule from occurrences data
                     if (job.frequency === 'Weekly' && occurrences && occurrences.length > 0) {
                         const schedule = generateWeeklySchedule(job, workProgress, occurrences);
-                        console.log("Generated schedule from API:", schedule);
                         setWeeklySchedule(schedule);
 
-                        // Auto-select today's item if available and pending
-                        console.log("Checking for today's pending item in schedule:", schedule);
                         const todayItem = schedule.find(item => {
                             const checkDate = typeof item.date === 'string' ? new Date(item.date) : item.date;
                             const isTodayDate = isToday(checkDate);
                             const isPending = item.status === 'pending';
                             const result = isTodayDate && isPending;
-                            console.log(`Item ${item.id} - Date: ${item.date} (${typeof item.date}) - Status: ${item.status} - Is today & pending: ${result}`);
                             return result;
                         });
                         if (todayItem) {
                             setSelectedWorkProgressId(todayItem.id);
-                            console.log("Auto-selected today's pending item ID:", todayItem.id);
                         } else {
-                            console.log("No today's pending item found in schedule");
-                            // Don't auto-select any item if today's item is not pending
                             setSelectedWorkProgressId(null);
                         }
                     }
@@ -400,11 +389,9 @@ const InProgressJobDetailsPage = () => {
     };
 
     useEffect(() => {
-        console.log('selectedWorkProgressId changed:', selectedWorkProgressId);
     }, [selectedWorkProgressId]);
 
     const handleCallCustomer = () => {
-        // Try multiple possible phone number locations
         const phoneNumber = customer?.phone ||
             customer?.phoneNumber ||
             customer?.mobile ||
@@ -427,7 +414,6 @@ const InProgressJobDetailsPage = () => {
         try {
             const response = await jobsAPI.updateJobStatus(jobId, 'on_the_way');
             if (response.success) {
-                // Re-fetch job details to reflect status change
                 const progressResponse = await jobsAPI.getCleanerProgress(jobId);
                 if (progressResponse.success) {
                     setJob(progressResponse.data.job);
@@ -442,12 +428,9 @@ const InProgressJobDetailsPage = () => {
     };
 
     const handleStartJob = async () => {
-        console.log('Starting job. Frequency:', job?.frequency);
-
         try {
             const response = await jobsAPI.updateJobStatus(jobId, 'started');
             if (response.success) {
-                // Re-fetch job details to reflect status change
                 const progressResponse = await jobsAPI.getCleanerProgress(jobId);
                 if (progressResponse.success) {
                     setJob(progressResponse.data.job);
@@ -493,16 +476,13 @@ const InProgressJobDetailsPage = () => {
                 return;
             }
         } else {
-            // One-time jobs
             occId = occurrences?.[0]?._id;
         }
 
         try {
             setIsCompleting(true);
 
-            // 1. Try to capture payment first
             try {
-                console.log(`🔌 Attempting to capture payment for job ${jobId}...`);
                 const paymentStatusResponse = await paymentService.getPaymentStatus(jobId);
 
                 if (paymentStatusResponse?.success && paymentStatusResponse?.data?.payment?._id) {
@@ -510,7 +490,6 @@ const InProgressJobDetailsPage = () => {
                     const pStatus = paymentStatusResponse.data.payment.status;
 
                     if (pStatus === 'authorized') {
-                        console.log(`💰 Capturing payment ${paymentId}...`);
                         await paymentService.capturePayment(paymentId);
                     }
                 }
@@ -518,11 +497,9 @@ const InProgressJobDetailsPage = () => {
                 console.warn('⚠️ Payment capture failed or not needed:', paymentError);
             }
 
-            // 2. Update job status
             const response = await jobPhotosAPI.updateJobStatus(jobId, 'pending_customer_confirmation', occId);
 
             if (response.success) {
-                // Success - Redirect directly to completed jobs tab
                 navigate('/cleaner-jobs', { state: { tab: 'completed' }, replace: true });
             } else {
                 alert(response.message || 'Failed to update job status');

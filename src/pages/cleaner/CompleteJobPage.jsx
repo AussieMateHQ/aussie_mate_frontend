@@ -198,65 +198,6 @@ const CompleteJobPage = () => {
     }
   };
 
-  // const handleCompleteJob = async () => {
-  //   if (!beforePhotosUploaded || !afterPhotosUploaded) {
-  //     setUploadError('Please upload both before and after photos to complete the job');
-  //     setTimeout(() => setUploadError(null), 3000);
-  //     return;
-  //   }
-
-  //   try {
-  //     setCompletingJob(true);
-  //     setUploadError(null);
-  //     console.log("done jobs");
-
-  //     // First, try to capture the payment if job has an authorized payment
-  //     try {
-  //       console.log(`🔌 Attempting to capture payment for job ${jobId}...`);
-  //       const paymentStatusResponse = await paymentService.getPaymentStatus(jobId);
-  //       console.log("paymentStatusResponse", paymentStatusResponse);
-
-  //       if (paymentStatusResponse?.success && paymentStatusResponse?.data?.payment?._id) {
-  //         const paymentId = paymentStatusResponse.data.payment._id;
-  //         const paymentStatus = paymentStatusResponse.data.payment.status;
-
-  //         if (paymentStatus === 'authorized') {
-  //           console.log(`💰 Capturing payment ${paymentId}...`);
-  //           const captureResponse = await paymentService.capturePayment(paymentId);
-  //           if (captureResponse.success) {
-  //             console.log(`✅ Payment captured successfully for job ${jobId}`);
-  //             setSuccessMessage('Payment captured and job completed successfully!');
-  //           }
-  //         } else {
-  //           console.log(`ℹ️ Payment status is ${paymentStatus}, not capturing. Proceeding with job completion.`);
-  //         }
-  //       }
-  //     } catch (paymentError) {
-  //       console.warn('⚠️ Could not capture payment automatically:', paymentError);
-  //       // Continue with job completion even if payment capture fails
-  //     }
-
-  //     // Update job status to pending_customer_confirmation
-  //     const response = await jobPhotosAPI.updateJobStatus(jobId, 'pending_customer_confirmation');
-
-  //     if (response.success) {
-  //       if (!successMessage) {
-  //         setSuccessMessage('Job completed successfully! Redirecting...');
-  //       }
-  //       setTimeout(() => {
-  //         navigate('/cleaner-dashboard');
-  //       }, 1500);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error completing job:', error);
-  //     setUploadError(handleAPIError(error));
-  //     setTimeout(() => setUploadError(null), 5000);
-  //   } finally {
-  //     setCompletingJob(false);
-  //   }
-  // };
-
-
     const handleCompleteJob = async () => {
     if (!beforePhotosUploaded || !afterPhotosUploaded) {
       setUploadError('Please upload both before and after photos to complete the job');
@@ -267,36 +208,26 @@ const CompleteJobPage = () => {
     try {
       setCompletingJob(true);
       setUploadError(null);
-      console.log("done jobs");
 
-      // First, try to capture the payment if job has an authorized payment
       try {
-        console.log(`🔌 Attempting to capture payment for job ${jobId}...`);
         const paymentStatusResponse = await paymentService.getPaymentStatus(jobId);
-        console.log("paymentStatusResponse", paymentStatusResponse);
 
         if (paymentStatusResponse?.success && paymentStatusResponse?.data?.payment?._id) {
           const paymentId = paymentStatusResponse.data.payment._id;
           const paymentStatus = paymentStatusResponse.data.payment.status;
 
           if (paymentStatus === 'authorized') {
-            console.log(`💰 Capturing payment ${paymentId}...`);
             const captureResponse = await paymentService.capturePayment(paymentId);
             if (captureResponse.success) {
-              console.log(`✅ Payment captured successfully for job ${jobId}`);
               setSuccessMessage('Payment captured and job completed successfully!');
             }
           } else {
-            console.log(`ℹ️ Payment status is ${paymentStatus}, not capturing. Proceeding with job completion.`);
           }
         }
       } catch (paymentError) {
         console.warn('⚠️ Could not capture payment automatically:', paymentError);
-        // Continue with job completion even if payment capture fails
       }
 
-      // Update job status to pending_customer_confirmation
-      console.log('🔄 Updating job status to pending_customer_confirmation...');
       const response = await jobPhotosAPI.updateJobStatus(jobId, 'pending_customer_confirmation', occurrenceId);
 
       if (response.success) {

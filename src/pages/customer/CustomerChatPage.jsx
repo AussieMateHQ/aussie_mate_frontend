@@ -120,7 +120,6 @@ const CustomerChatPage = () => {
         setPhoneValidationError(error.message);
         setShowPhoneAlert(true);
       } else if (error.message === 'Cleaner has not quoted on this job') {
-        console.log('Socket: Cleaner has not quoted yet, but connection exists.');
         setLoading(false);
       } else {
         setError(error.message);
@@ -129,10 +128,6 @@ const CustomerChatPage = () => {
     };
 
     const onMessagesMarkedRead = (data) => {
-      console.log('📖 [SOCKET] Messages marked as read:', data);
-
-      // Mark our sent messages as read. 
-      // Socket.io room scoping ensures we only get events for the active room.
       setMessages(prev => prev.map(msg => {
         const myId = currentUserRef.current?._id || currentUserRef.current?.id || currentUserRef.current?.userId;
         const msgSenderId = msg.senderId?._id || msg.senderId;
@@ -145,7 +140,6 @@ const CustomerChatPage = () => {
       }));
     };
 
-    // Socket event listeners
     socketService.on('connectionStatus', onConnectionStatus);
     socketService.on('chatJoined', onChatJoined);
     socketService.on('chatHistory', onChatHistory);
@@ -283,7 +277,6 @@ const CustomerChatPage = () => {
       });
 
       if (hasUnreadFromOther) {
-        console.log('📖 [COMPONENT] Marking messages as read...');
         socketService.markAsRead(currentChatRoom.chatRoomId);
       }
     }

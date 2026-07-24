@@ -118,10 +118,6 @@ const LiveChatPage = () => {
     };
 
     const onAdminMessagesMarkedRead = (data) => {
-      console.log('📖 [SOCKET] Admin messages marked as read:', data);
-      
-      // Mark our sent messages as read.
-      // Socket.io room scoping helps ensure we only get relevant events.
       setMessages(prev => prev.map(msg => {
         const myId = userRef.current?._id || userRef.current?.id || userRef.current?.userId;
         const msgSenderId = msg.senderId?._id || msg.senderId;
@@ -134,7 +130,6 @@ const LiveChatPage = () => {
       }));
     };
 
-    // Socket event listeners
     socketService.on('connectionStatus', onConnectionStatus);
     socketService.on('adminChatJoined', onAdminChatJoined);
     socketService.on('adminChatHistory', onAdminChatHistory);
@@ -142,7 +137,6 @@ const LiveChatPage = () => {
     socketService.on('adminMessagesMarkedRead', onAdminMessagesMarkedRead);
     socketService.on('error', onSocketError);
 
-    // Set loading to false if socket is already connected and no room is being joined
     if (socketService.isConnected) {
       setIsConnected(true);
       if (!selectedRoomId) {
@@ -174,12 +168,10 @@ const LiveChatPage = () => {
         if (response.success) {
           setAdminChatRooms(response.data || []);
           
-          // Auto-select first room if available
           if (response.data && response.data.length > 0 && !selectedRoomId) {
             const firstRoom = response.data[0];
             joinChatRoom(firstRoom._id, firstRoom.userId?._id, firstRoom.adminId?._id);
           } else {
-            // No rooms to join, stop loading
             setLoading(false);
           }
         } else {
@@ -302,7 +294,6 @@ const LiveChatPage = () => {
       });
 
       if (hasUnreadFromOther) {
-        console.log('📖 [COMPONENT] Marking admin messages as read...');
         socketService.markAdminMessagesAsRead(currentChatRoom.adminChatRoomId);
       }
     }

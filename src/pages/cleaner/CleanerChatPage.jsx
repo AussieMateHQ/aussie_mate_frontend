@@ -191,10 +191,6 @@ const CleanerChatPage = () => {
         };
 
         const onMessagesMarkedRead = (data) => {
-            console.log('📖 [SOCKET] Messages marked as read:', data);
-            
-            // Mark our sent messages as read.
-            // Socket.io room scoping helps ensure we only get relevant events.
             setMessages(prev => prev.map(msg => {
                 const myId = currentUserRef.current?._id || currentUserRef.current?.id;
                 const msgSenderId = msg.senderId?._id || msg.senderId;
@@ -206,8 +202,6 @@ const CleanerChatPage = () => {
                 return msg;
             }));
         };
-
-        // Socket event listeners
         socketService.on('connectionStatus', onConnectionStatus);
         socketService.on('chatJoined', onChatJoined);
         socketService.on('chatNotFound', onChatNotFound);
@@ -439,7 +433,6 @@ const CleanerChatPage = () => {
             });
 
             if (hasUnreadFromOther) {
-                console.log('📖 [COMPONENT] Marking messages as read...');
                 socketService.markAsRead(currentChatRoom.chatRoomId);
             }
         }

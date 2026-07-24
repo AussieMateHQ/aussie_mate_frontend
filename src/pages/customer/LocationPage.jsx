@@ -214,8 +214,6 @@ const LocationPage = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        console.log(`Current position: ${latitude}, ${longitude}`);
-
         try {
           const geocoder = new window.google.maps.Geocoder();
           geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
@@ -228,8 +226,6 @@ const LocationPage = () => {
               };
               setSelectedLocation(location);
               setSearchQuery(results[0].formatted_address);
-
-              // Pan map if it's available
               if (map) {
                 map.panTo({ lat: latitude, lng: longitude });
               }

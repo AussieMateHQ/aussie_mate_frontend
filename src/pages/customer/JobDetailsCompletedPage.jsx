@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Check, UserRound, X, Phone, MessageSquare, Calendar, MapPin, CalendarDays } from 'lucide-react';
+import { Check, X, Calendar, MapPin } from 'lucide-react';
 import { Button, PageHeader, Loader } from '../../components';
-import RatingIcon from '../../assets/Rating1.svg';
-import Rating2Icon from '../../assets/rating3.svg';
-//import PdfIcon from '../../assets/pdf.svg';
-//import DownloadIcon from '../../assets/download.svg';
-import GoldBadgeIcon from '../../assets/goldBadge.svg';
-import SilverBadgeIcon from '../../assets/silverBadge.svg';
-import BronzeBadgeIcon from '../../assets/bronzeBadge.svg';
 import { jobsAPI, jobPhotosAPI, jobDetailsAPI, reviewsAPI } from '../../services/api';
 import { handleAPIError } from '../../services/api';
 
@@ -43,7 +36,6 @@ const JobDetailsCompletedPage = () => {
 
   const overviewPhotos = useMemo(() => {
     if (!jobData) return [];
-    // Only show original job photos, not completion proof photos
     const jobPhotos = jobData.photos || [];
     return jobPhotos.map(resolveImageSrc).filter(Boolean);
   }, [jobData]);
@@ -53,48 +45,29 @@ const JobDetailsCompletedPage = () => {
     'Punctual', 'Professional', 'Quality Work', 'Friendly', 'Good Communication'
   ];
 
-  const handleTagSelect = (tag) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter(t => t !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
-    }
-  };
-
-  // Fetch job details and invoice data
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
 
-        // Try to get customer progress data first (for weekly jobs)
         let progressResponse;
         try {
           progressResponse = await jobsAPI.getCustomerProgress(jobId);
-          console.log('📊 Customer progress data:', progressResponse);
         } catch (progressError) {
-          console.log('⚠️ Could not fetch customer progress, trying regular job details:', progressError);
         }
 
         let job, photosData;
 
         if (progressResponse?.success && progressResponse?.data) {
-          // Use customer progress data for weekly jobs
           const { job: jobData, cleaner, workProgress, occurrences, paymentSummary } = progressResponse.data;
           job = { ...jobData, cleaner };
 
-          // Set occurrences and work progress state
           setOccurrences(occurrences || []);
           setWorkProgress(workProgress);
 
-          // Mock photos data for now
           photosData = { beforePhotos: [], afterPhotos: [] };
 
-          console.log('📊 Using customer progress data - Job:', job);
-          console.log('📊 Occurrences:', occurrences);
-          console.log('📊 Work Progress:', workProgress);
         } else {
-          // Fallback to regular job details for one-time jobs
           const [jobResponse, photosResponse] = await Promise.all([
             jobsAPI.getJobById(jobId),
             jobPhotosAPI.getJobPhotos(jobId).catch(() => ({ data: { beforePhotos: [], afterPhotos: [] } }))
@@ -107,9 +80,6 @@ const JobDetailsCompletedPage = () => {
         }
 
         if (job) {
-
-
-          // Check if this is a weekly job and show completed days
           if (job.weeklyProgress && job.weeklyProgress.weeklyCompletions) {
             const completedDays = Object.entries(job.weeklyProgress.weeklyCompletions)
               .filter(([key, completion]) => completion.status === 'completed')
@@ -119,12 +89,8 @@ const JobDetailsCompletedPage = () => {
                 photos: completion.photos ? completion.photos.length : 0,
                 completedAt: completion.completedAt
               }));
-            console.log('📸 Completed days:', completedDays);
           }
-
-          // Transform job data to match expected format
           const acceptedQuote = job.quotes?.find(q => q.status === 'accepted');
-          // Use completedBy if it's an object, otherwise try acceptedQuote cleanerId
           const cleaner = (job.cleaner && typeof job.cleaner === 'object')
             ? job.cleaner
             : (job.completedBy && typeof job.completedBy === 'object')
@@ -133,15 +99,9 @@ const JobDetailsCompletedPage = () => {
                 ? acceptedQuote.cleanerId
                 : null;
 
-          // Get photos from multiple possible sources with better handling
           const beforeImages = photosData.beforePhotos || job.beforePhotos || [];
           const afterImages = photosData.afterPhotos || job.afterPhotos || [];
-          // Get original job photos
           const jobPhotos = job.photos || [];
-
-          console.log('📸 Processed beforeImages:', beforeImages);
-          console.log('📸 Processed afterImages:', afterImages);
-          console.log('📸 Processed jobPhotos:', jobPhotos);
 
           const transformedData = {
             jobId: job.jobId || job._id,
@@ -151,7 +111,7 @@ const JobDetailsCompletedPage = () => {
             instructions: job.specialInstructions || job.instructions || job.additionalNotes || '',
             frequency: job.frequency || job.recurringFrequency || job.schedule?.frequency || '',
             status: job.statusDisplay || job.status || 'Completed',
-            completedAt: job.completedAt || null, // Store as raw date string
+            completedAt: job.completedAt || null,
             scheduledDate: job.scheduledDate || null,
             location: job.location?.address || job.location?.fullAddress || 'Location',
             photos: jobPhotos,
@@ -174,11 +134,7 @@ const JobDetailsCompletedPage = () => {
             }
           };
 
-          console.log('📸 Final transformed data:', transformedData);
           setJobData(transformedData);
-
-          // Check if review already exists
-          // First check localStorage for recently submitted review
           const recentReviewKey = `review_${jobId}`;
           const recentReview = localStorage.getItem(recentReviewKey);
           if (recentReview) {
@@ -190,7 +146,6 @@ const JobDetailsCompletedPage = () => {
               setSelectedTags(reviewData.tags || reviewData.likedAspects || []);
               setFeedback(reviewData.feedback || '');
             } catch (e) {
-              // Error parsing localStorage review
             }
           }
 
@@ -201,15 +156,11 @@ const JobDetailsCompletedPage = () => {
               const reviewData = reviewStatusResponse.data;
 
               if (reviewData.hasReviewed || reviewData.existingReview || reviewData.review || reviewData.rating || reviewData.likedAspects) {
-                // Extract review data from different possible structures
                 const actualReview = reviewData.existingReview || reviewData.review || reviewData;
-
-                // Try multiple field names for each data type
                 const rating = actualReview.rating || reviewData.rating || actualReview.starRating || reviewData.starRating || 0;
                 const tags = actualReview.likedAspects || actualReview.tags || reviewData.tags || reviewData.likedAspects || [];
                 const feedbackText = actualReview.feedback || reviewData.feedback || actualReview.comment || reviewData.comment || '';
 
-                // Only set hasReviewed to true if we actually have meaningful data
                 if (rating > 0 || tags.length > 0 || feedbackText.trim() !== '') {
                   setHasReviewed(true);
                   setExistingReview(actualReview);
@@ -224,11 +175,9 @@ const JobDetailsCompletedPage = () => {
               }
             }
           } catch (reviewError) {
-            // Try alternative approach - check if we can get review directly
             try {
               const directReviewResponse = await reviewsAPI.getCustomerReviews();
               if (directReviewResponse.success && directReviewResponse.data) {
-                // Find review for this specific job
                 const reviewForThisJob = directReviewResponse.data.reviews?.find(r => r.jobId === jobId);
                 if (reviewForThisJob) {
                   setHasReviewed(true);
@@ -239,18 +188,15 @@ const JobDetailsCompletedPage = () => {
                 }
               }
             } catch (directError) {
-              // Direct review fetch failed
             }
           }
 
-          // Fetch invoice data if available
           try {
             const invoiceResponse = await jobDetailsAPI.getStripeInvoice(jobId);
             if (invoiceResponse.success) {
               setInvoiceData(invoiceResponse.data);
             }
           } catch (invoiceError) {
-            // Invoice not available
           }
         }
       } catch (error) {
@@ -265,84 +211,13 @@ const JobDetailsCompletedPage = () => {
     }
   }, [jobId]);
 
-  const handleSubmitReview = async () => {
-    if (!selectedRating) {
-      setErrorMessage('Please select a rating before submitting');
-      setTimeout(() => setErrorMessage(null), 3000);
-      return;
-    }
-
-    try {
-      setSubmittingReview(true);
-      setErrorMessage(null);
-
-      const response = await reviewsAPI.createReview(
-        jobId,
-        selectedRating,
-        selectedTags,
-        feedback
-      );
-
-      if (response.success) {
-        const reviewData = {
-          rating: selectedRating,
-          tags: selectedTags,
-          feedback: feedback,
-          submittedAt: new Date().toISOString()
-        };
-
-        setHasReviewed(true);
-        setExistingReview(reviewData);
-
-        // Store in localStorage for immediate display
-        const recentReviewKey = `review_${jobId}`;
-        localStorage.setItem(recentReviewKey, JSON.stringify(reviewData));
-
-        setSuccessMessage('Review submitted successfully!');
-        setTimeout(() => setSuccessMessage(null), 3000);
-      }
-    } catch (error) {
-      setErrorMessage(handleAPIError(error));
-      setTimeout(() => setErrorMessage(null), 5000);
-    } finally {
-      setSubmittingReview(false);
-    }
-  };
-
-  const handleMarkOccurrenceCompleted = async (occurrenceId) => {
-    try {
-      setCompletingJob(true);
-      setErrorMessage(null);
-
-      console.log(`🔄 Marking occurrence ${occurrenceId} as completed`);
-      const response = await jobPhotosAPI.updateJobStatus(jobId, 'completed', occurrenceId);
-
-      if (response.success) {
-        setSuccessMessage('Occurrence marked as completed successfully!');
-        // Refresh the data to update the UI
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error completing occurrence:', error);
-      setErrorMessage(handleAPIError(error));
-      setTimeout(() => setErrorMessage(null), 5000);
-    } finally {
-      setCompletingJob(false);
-    }
-  };
-
   const handleCompleteJob = async () => {
     try {
       setCompletingJob(true);
       setErrorMessage(null);
-
-      // Update job status to completed
       const response = await jobsAPI.updateJobStatus(jobId, 'completed');
 
       if (response.success) {
-        // Update local job data status
         setJobData(prev => ({
           ...prev,
           status: 'completed'
@@ -351,7 +226,6 @@ const JobDetailsCompletedPage = () => {
         setSuccessMessage('Job marked as completed! You can now review your cleaner.');
         setTimeout(() => setSuccessMessage(null), 3000);
 
-        // Refresh job data to get updated status
         const jobResponse = await jobsAPI.getJobById(jobId);
         if (jobResponse.success && jobResponse.data) {
           const job = jobResponse.data;
@@ -382,34 +256,6 @@ const JobDetailsCompletedPage = () => {
       setTimeout(() => setErrorMessage(null), 5000);
     } finally {
       setCompletingJob(false);
-    }
-  };
-
-  const handleDownloadInvoice = async () => {
-    if (!invoiceData) {
-      setErrorMessage('Invoice not available');
-      setTimeout(() => setErrorMessage(null), 3000);
-      return;
-    }
-
-    try {
-      const blob = await jobDetailsAPI.downloadInvoice(jobId);
-
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Invoice_${jobId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      setSuccessMessage('Invoice downloaded successfully!');
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (error) {
-      setErrorMessage(handleAPIError(error));
-      setTimeout(() => setErrorMessage(null), 5000);
     }
   };
 

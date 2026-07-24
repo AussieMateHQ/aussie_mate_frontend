@@ -38,8 +38,6 @@ const NotificationPage = () => {
         )
         window.dispatchEvent(new CustomEvent('notificationsUpdated'));
       }
-      
-      console.log('Notification clicked:', notification)
     } catch (error) {
       console.error('Error marking notification as read:', error)
     }

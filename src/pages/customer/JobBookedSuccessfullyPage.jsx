@@ -72,7 +72,6 @@ const JobBookedSuccessfullyPage = () => {
           const fetchedJobData = response.data;
           setJobData(fetchedJobData);
 
-          // Process job photos
           const resolveImageSrc = (image) => {
             if (!image) return null;
             if (typeof image === 'string') return image;
@@ -157,7 +156,6 @@ const JobBookedSuccessfullyPage = () => {
           let onlineAmount = Math.round((acceptedQuote.price || 0) * 0.1);
           let cashAmount = Math.round((acceptedQuote.price || 0) * 0.9);
 
-          // Set job data for payment summary
           setJob({
             jobId: fetchedJobData.jobId || jobId,
             title: fetchedJobData.title || `${fetchedJobData.serviceType}`,
@@ -172,10 +170,8 @@ const JobBookedSuccessfullyPage = () => {
             status: fetchedJobData.status || 'accepted'
           });
 
-          // 🎯 Google Ads: Cleaning booking completed conversion
           trackBookingCompleted({ value: acceptedQuote.price || 0, currency: 'AUD' });
 
-          // Resolve avatar URL from multiple possible sources
           let avatarUrl = '';
           
           const resolveImageUrl = (image) => {
@@ -199,8 +195,6 @@ const JobBookedSuccessfullyPage = () => {
             avatarUrl = resolveImageUrl(cleanerInfo.photo);
           }
 
-
-          // Extract cleaner ID - try multiple possible field names
           const cleanerId = cleanerInfo._id || 
                            cleanerInfo.id || 
                            cleanerInfo.userId || 
@@ -233,7 +227,6 @@ const JobBookedSuccessfullyPage = () => {
     }
   }, [jobId]);
 
-  // Hide animation after 3 seconds and mark as seen
   useEffect(() => {
     if (showAnimation) {
       const timer = setTimeout(() => {
@@ -245,7 +238,6 @@ const JobBookedSuccessfullyPage = () => {
     }
   }, [showAnimation, jobId]);
 
-  // Hide success header message after 3 seconds of being visible
   useEffect(() => {
     if (!loading && !showAnimation) {
       const timer = setTimeout(() => {

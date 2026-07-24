@@ -11,12 +11,10 @@ class SocketService {
 
   connect(token) {
     if (this.socket && this.isConnected) {
-      console.log('✅ [SOCKET] Already connected, skipping');
       return;
     }
     
     if (this.socket && !this.isConnected) {
-      console.log('🔄 [SOCKET] Disconnecting old socket');
       this.disconnect();
     }
 
@@ -49,14 +47,12 @@ class SocketService {
     this.socket.on('connect', () => {
       this.isConnected = true;
       
-      // Join user-specific room for notifications
       try {
         const userStr = localStorage.getItem('user');
         if (userStr) {
           const user = JSON.parse(userStr);
           const userId = user._id || user.id || user.userId;
           if (userId) {
-            console.log('🚪 Joining user room:', userId);
             this.joinUserRoom(userId);
           }
         }
@@ -69,7 +65,6 @@ class SocketService {
 
     this.socket.on('disconnect', () => {
       this.isConnected = false;
-      console.log('❌ Socket disconnected');
       this.notifyListeners('connectionStatus', false);
     });
 
@@ -115,17 +110,13 @@ class SocketService {
       this.notifyListeners('locationUpdateAcknowledged', data);
     });
 
-    // Extra time request events
     this.socket.on('extra_time_request', (data) => {
       this.notifyListeners('extraTimeRequest', data);
     });
 
-    // User room events
     this.socket.on('user_room_joined', (data) => {
-      console.log('✅ Joined user room successfully:', data);
     });
 
-    // Admin chat events
     this.socket.on('admin_chat_joined', (data) => {
       this.notifyListeners('adminChatJoined', data);
     });
@@ -216,18 +207,14 @@ class SocketService {
 
   joinRoom(chatRoomId) {
     if (this.socket && this.isConnected) {
-      console.log('🚪 [SOCKET] Joining room:', chatRoomId);
-      // Emit as both string and object to be safe
       this.socket.emit('join_room', chatRoomId);
       this.socket.emit('join_room', { chatRoomId });
     }
   }
 
   sendMessage(chatRoomId, content, messageType = 'text') {
-    // Check for phone numbers in message content
     const validation = validateMessageForPhoneNumbers(content);
     if (!validation.isValid) {
-      // Emit error to show alert in frontend
       this.notifyListeners('error', { 
         message: validation.message 
       });
@@ -244,10 +231,8 @@ class SocketService {
   }
 
   sendQuote(chatRoomId, price, message) {
-    // Check for phone numbers in quote message
     const validation = validateMessageForPhoneNumbers(message);
     if (!validation.isValid) {
-      // Emit error to show alert in frontend
       this.notifyListeners('error', { 
         message: 'Phone numbers are not allowed in quote messages. Please contact through the platform.' 
       });
@@ -311,10 +296,7 @@ class SocketService {
   // Join user-specific room for notifications
   joinUserRoom(userId) {
     if (this.socket && this.isConnected) {
-      console.log('📤 Emitting join_user_room for userId:', userId);
       this.socket.emit('join_user_room', { userId });
-    } else {
-      console.warn('⚠️ Cannot join user room: Socket not connected');
     }
   }
 
@@ -326,7 +308,6 @@ class SocketService {
   }
 
   sendAdminMessage(adminChatRoomId, content, messageType = 'text', fileData = null) {
-    // Check for phone numbers in message content
     const validation = validateMessageForPhoneNumbers(content);
     if (!validation.isValid) {
       this.notifyListeners('error', { 
