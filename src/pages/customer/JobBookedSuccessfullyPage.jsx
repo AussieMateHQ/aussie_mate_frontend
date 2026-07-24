@@ -10,7 +10,6 @@ import JobLiveIcon from '../../assets/joblive.gif';
 import { jobsAPI, userAPI } from '../../services/api';
 import { useGoogleAds } from '../../hooks/useGoogleAds';
 
-// Helper functions moved outside component
 const getPreferredDaysDisplay = (preferredDays) => {
   if (!preferredDays || typeof preferredDays !== 'object') return '';
   
@@ -56,7 +55,6 @@ const JobBookedSuccessfullyPage = () => {
   const [error, setError] = useState('');
   const [showSuccessHeader, setShowSuccessHeader] = useState(true);
   const { trackBookingCompleted } = useGoogleAds();
-  // Show animation only once per booking (check sessionStorage)
   const [showAnimation, setShowAnimation] = useState(() => {
     const hasSeenAnimation = sessionStorage.getItem(`animation-seen-${jobId}`);
     return !hasSeenAnimation;
@@ -83,15 +81,13 @@ const JobBookedSuccessfullyPage = () => {
             return null;
           };
 
-          // Only show original job photos, not completion proof photos
           const photos = fetchedJobData.photos || fetchedJobData.images || [];
           const processedPhotos = photos.map(resolveImageSrc).filter(Boolean);
           setJobPhotos(processedPhotos);
 
           let acceptedQuote = fetchedJobData.quotes?.find(q => q.status === 'accepted');
 
-          // Fallback: If no "accepted" quote, but job is assigned/in_progress, find the assigned cleaner's quote
-          if (!acceptedQuote && (fetchedJobData.status === 'assigned' || fetchedJobData.status === 'in_progress')) {
+          if (!acceptedQuote && (['assigned', 'in_progress', 'completed'].includes(fetchedJobData.status))) {
             const assignedId = fetchedJobData.assignedCleanerId?._id || fetchedJobData.assignedCleanerId || fetchedJobData.assignedCleaner?._id || fetchedJobData.assignedCleaner;
             
             if (assignedId) {
@@ -102,8 +98,7 @@ const JobBookedSuccessfullyPage = () => {
             }
           }
 
-          // If still no quote object found, but job is assigned, create a minimal quote object from job data
-          if (!acceptedQuote && (fetchedJobData.status === 'assigned' || fetchedJobData.status === 'in_progress')) {
+          if (!acceptedQuote && (['assigned', 'in_progress', 'completed'].includes(fetchedJobData.status))) {
             acceptedQuote = {
               price: fetchedJobData.price || 0,
               basePrice: fetchedJobData.basePrice || 0,
@@ -133,7 +128,6 @@ const JobBookedSuccessfullyPage = () => {
 
           let cleanerInfo = acceptedQuote.cleanerId || acceptedQuote.cleaner;
 
-          // If cleanerInfo is just an ID string, fetch full cleaner details
           if (typeof cleanerInfo === 'string' || (cleanerInfo && !cleanerInfo.firstName && !cleanerInfo.name)) {
             const cleanerId = typeof cleanerInfo === 'string' 
               ? cleanerInfo 
@@ -151,7 +145,6 @@ const JobBookedSuccessfullyPage = () => {
             }
           }
 
-          // Fallback to job's cleanerId if still not found
           if (!cleanerInfo || (!cleanerInfo.firstName && !cleanerInfo.name)) {
             cleanerInfo = fetchedJobData.cleanerId || fetchedJobData.assignedCleaner || {};
           }

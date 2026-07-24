@@ -32,7 +32,6 @@ const CustomerChatPage = () => {
     total: 0
   });
   const [jobData, setJobData] = useState(null);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const messagesEndRef = useRef(null);
   const chatRoomIdRef = useRef(null);
@@ -256,33 +255,27 @@ const CustomerChatPage = () => {
     }
   }, [jobId, cleanerId, isConnected]);
 
-  // Load chat history via REST API as fallback
   useEffect(() => {
     const loadChatHistoryFallback = async () => {
       if (jobId && cleanerId) {
         try {
-          // Try to get chat history via REST API
           const response = await chatAPI.getChatHistory(jobId, cleanerId);
 
           if (response.success && response.data?.messages) {
             setMessages(response.data.messages);
           }
         } catch (error) {
-          // Silently handle error
         }
       }
     };
 
-    // Try to load chat history immediately and also after a delay
     loadChatHistoryFallback();
     const timeoutId = setTimeout(loadChatHistoryFallback, 3000);
     return () => clearTimeout(timeoutId);
   }, [jobId, cleanerId]);
 
-  // Mark messages as read when chat is viewed
   useEffect(() => {
     if (currentChatRoom?.chatRoomId && messages.length > 0) {
-      // Check if there are any unread messages from the OTHER user
       const hasUnreadFromOther = messages.some(msg => {
         const isSentByMe = msg.senderId?._id === (currentUser?._id || currentUser?.id || currentUser?.userId) ||
           msg.senderId === (currentUser?._id || currentUser?.id || currentUser?.userId);
@@ -324,13 +317,11 @@ const CustomerChatPage = () => {
       };
 
       if (currentChatRoom?.chatRoomId && isConnected) {
-        // Optimistically add to state
         setMessages(prev => [...prev, tempMessage]);
         socketService.sendMessage(currentChatRoom.chatRoomId, newMessage.trim());
         setNewMessage('');
         scrollToBottom();
       } else {
-        // Fallback to static messages when not connected
         setMessages(prev => [...prev, { ...tempMessage, isOptimistic: false }]);
         setNewMessage('');
         scrollToBottom();
@@ -343,54 +334,6 @@ const CustomerChatPage = () => {
       handleSendMessage();
     }
   };
-
-  const handleAcceptQuote = () => {
-    setShowConfirmModal(true);
-  };
-
-  const executeAssignCleaner = async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const cleanerIdToAssign = cleanerId;
-      if (!cleanerIdToAssign) {
-        setError('Cleaner information not found.');
-        return;
-      }
-
-      const response = await jobsAPI.assignCleaner(jobId, cleanerIdToAssign);
-
-      if (response.success) {
-        navigate(`/booking-confirmation/${jobId}?cleaner=${cleanerIdToAssign}`);
-      } else {
-        setError(response.message || response.error || 'Failed to assign cleaner. Please try again.');
-      }
-    } catch (err) {
-      console.error('Error assigning cleaner:', err);
-      setError('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRejectQuote = async () => {
-    try {
-      setLoading(true);
-      const response = await quotesAPI.rejectQuote(jobId, cleanerId);
-      if (response.success) {
-        navigate(`/customer-job-details/${jobId}`);
-      } else {
-        setError(response.error || 'Failed to reject quote');
-      }
-    } catch (err) {
-      setError('Failed to reject quote. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
 
   return (
     <div className='px-4 md:px-8 h-[calc(100dvh-90px)] flex flex-col overflow-hidden'>
@@ -425,21 +368,14 @@ const CustomerChatPage = () => {
 
           {loading || !jobData ? (
             null
-          ) : (jobData.assignedCleanerId || ['completed', 'assigned', 'accepted'].includes((jobData.status || '').toLowerCase())) ? (
+          ) : ((jobData.assignedCleanerId?._id || jobData.assignedCleanerId) === cleanerId) ? (
             <div className="flex items-center gap-1 bg-[#E6F4EA] text-[#137333] px-3 py-1 rounded-full text-xs font-bold shadow-sm">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Assigned</span>
             </div>
-          ) : (
-            <div className="flex items-center gap-1 bg-[#FFF7ED] text-[#C2410C] px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Pending</span>
-            </div>
-          )}
+          ) : null}
         </div>
 
         {/* Error Message */}
@@ -584,40 +520,7 @@ const CustomerChatPage = () => {
           </div>
         </div>
 
-        {!loading && jobData && (['posted', 'quoted'].includes((jobData.status || '').toLowerCase()) && !jobData.assignedCleanerId) && (
-          <div className="px-4 sm:px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
-            {/* Left Button */}
-            <button
-              onClick={handleRejectQuote}
-              className="flex items-center justify-center gap-1.5 border border-red-500 hover:bg-red-50 text-red-500 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer bg-white"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span>Not Interested</span>
-            </button>
 
-            {/* Right Buttons */}
-            <div className="flex items-center gap-3 flex-1 justify-end max-w-md">
-              <button
-                onClick={() => navigate(`/customer-job-details/${jobId}`)}
-                className="flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                </svg>
-                <span>Save for later</span>
-              </button>
-
-          <Button
-              onClick={handleAcceptQuote}
-              className="flex-1 max-w-[240px] bg-[#1D75FF] hover:bg-blue-600 text-white py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold shadow-md transition-all sm:translate-y-0"
-            >
-              Assign & Book
-            </Button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Phone Validation Alert */}
@@ -630,80 +533,7 @@ const CustomerChatPage = () => {
         isVisible={showPhoneAlert}
       />
 
-      {/* Assign & Book Confirmation Modal */}
-      {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <style>{`
-            @keyframes scaleUp {
-              from {
-                transform: scale(0.95);
-                opacity: 0;
-              }
-              to {
-                transform: scale(1);
-                opacity: 1;
-              }
-            }
-            .animate-scaleUp {
-              animation: scaleUp 0.2s ease-out forwards;
-            }
-          `}</style>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity"
-            onClick={() => setShowConfirmModal(false)}
-          />
-          
-          {/* Modal Container */}
-          <div className="relative bg-white rounded-3xl p-3 sm:p-6 max-w-md w-full shadow-2xl border border-gray-100 transform transition-all animate-scaleUp z-10">
-            {/* Close Button */}
-            <button 
-              onClick={() => setShowConfirmModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1.5 rounded-full hover:bg-gray-50 cursor-pointer"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
 
-            {/* Icon & Title */}
-            <div className="flex flex-col items-center text-center mb-6">
-              <div className="w-14 h-14 bg-[#EFF6FF] rounded-full flex items-center justify-center mb-4 text-[#1D75FF]">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">Confirm Booking</h3>
-              <p className="text-sm text-gray-500 mt-2">
-                Are you sure you want to assign this job to <span className="font-semibold text-gray-700">{cleanerName || 'this cleaner'}</span>?
-              </p>
-            </div>
-
-      
-
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setShowConfirmModal(false)}
-                className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-50 transition-all cursor-pointer text-center text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowConfirmModal(false);
-                  executeAssignCleaner();
-                }}
-                className="flex-1 py-3 px-4 bg-[#1D75FF] hover:bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-100 hover:shadow-blue-200 transition-all cursor-pointer text-center text-sm"
-              >
-                Assign & Book
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
