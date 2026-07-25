@@ -922,42 +922,22 @@ const CustomerJobDetailsPage = () => {
                     </div>
 
                     {/* Footer Action Buttons */}
-                    <div className="border-t border-gray-100 pt-4">
-                      {/* Already Connected → show Message button */}
-                      {cleaner.isConnected ? (
-                        <div className="flex justify-end">
-                          <Button
-                            onClick={() => navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`)}
-                            variant=""
-                            className="py-3 px-6 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer"
-                          >
-                            💬 Message
-                          </Button>
-                        </div>
-                      ) : item.status === 'rejected' ? (
+                    <div className="border-t border-gray-100 pt-4 flex justify-end">
+                      {item.status === 'rejected' ? (
                         /* Rejected state */
-                        <div className="flex justify-center">
+                        <div className="flex justify-center w-full">
                           <span className="py-2 px-5 text-sm font-medium text-red-400 bg-red-50 rounded-full border border-red-100">
                             ✕ Rejected
                           </span>
                         </div>
                       ) : (
-                        /* Pending → Accept + Reject */
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => handleDeclineQuote(cleaner.id)}
-                            className="flex-1 py-3 text-sm font-semibold rounded-full border border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
-                          >
-                            ✕ Reject
-                          </button>
-                          <Button
-                            onClick={() => handleAcceptQuote(cleaner.id)}
-                            variant=""
-                            className="flex-1 py-3 text-base font-semibold rounded-full border border-green-300 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all cursor-pointer"
-                          >
-                            ✓ Accept
-                          </Button>
-                        </div>
+                        <Button
+                          onClick={() => navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`)}
+                          variant=""
+                          className="py-3 px-6 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          💬 Chat
+                        </Button>
                       )}
                     </div>
                   </div>

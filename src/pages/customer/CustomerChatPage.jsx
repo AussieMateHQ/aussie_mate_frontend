@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Button, PageHeader, PhoneValidationAlert, Loader } from '../../components';
+import { Button, PageHeader, PhoneValidationAlert, Loader, ConfirmationModal } from '../../components';
 import InfoIcon from '../../assets/info.svg';
 import MessageIcon from '../../assets/sendChat.svg';
 import UserIcon from '../../assets/user.svg';
@@ -32,6 +32,10 @@ const CustomerChatPage = () => {
     total: 0
   });
   const [jobData, setJobData] = useState(null);
+  const [currentQuote, setCurrentQuote] = useState(null);
+  const [isDeclining, setIsDeclining] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
 
   const messagesEndRef = useRef(null);
   const chatRoomIdRef = useRef(null);
@@ -202,6 +206,7 @@ const CustomerChatPage = () => {
             }
 
             if (cleanerQuote) {
+              setCurrentQuote(cleanerQuote);
               // Set quote data for display
               setQuoteData({
                 baseQuote: cleanerQuote.basePrice || cleanerQuote.price || 0,
@@ -325,6 +330,54 @@ const CustomerChatPage = () => {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSendMessage();
+    }
+  };
+
+  const handleDecline = async () => {
+    if (!currentQuote) return;
+    const quoteId = currentQuote._id || currentQuote.id;
+    try {
+      setIsDeclining(true);
+      const response = await quotesAPI.declineQuote(quoteId);
+      if (response.success) {
+        navigate(`/customer-job-details/${jobId}`);
+      } else {
+        alert(response.message || response.error || 'Failed to decline quote');
+      }
+    } catch (err) {
+      console.error("Failed to decline quote:", err);
+      alert(err.message || 'Failed to decline quote. Please try again.');
+    } finally {
+      setIsDeclining(false);
+    }
+  };
+
+  const handleConfirmAccept = async () => {
+    try {
+      setIsAccepting(true);
+
+      if (currentQuote && !currentQuote.isConnected) {
+        try {
+          await jobsAPI.connectCleaner(jobId, cleanerId);
+        } catch (connectErr) {
+          if (!connectErr.message?.includes('Already connected')) {
+            throw connectErr;
+          }
+        }
+      }
+
+      const response = await jobsAPI.assignCleaner(jobId, cleanerId);
+      if (response.success) {
+        navigate(`/booking-confirmation/${jobId}?cleaner=${cleanerId}`);
+      } else {
+        alert(response.message || response.error || 'Failed to assign cleaner');
+      }
+    } catch (err) {
+      console.error("Failed to assign cleaner:", err);
+      alert(err.message || 'Failed to assign cleaner. Please try again.');
+    } finally {
+      setIsAccepting(false);
+      setShowAcceptModal(false);
     }
   };
 
@@ -491,6 +544,32 @@ const CustomerChatPage = () => {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Chat Action Footer (Accept/Reject) */}
+        {jobData && (jobData.status === 'posted' || jobData.status === 'quoted') && !jobData.assignedCleanerId && currentQuote && currentQuote.status !== 'rejected' && (
+          <div className="bg-[#F8FAFC] border-t border-b border-gray-100 py-3 px-4 sm:px-6 flex items-center justify-between gap-3 flex-shrink-0">
+            <span className="text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">
+              Review quote and decide:
+            </span>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Button
+                onClick={handleDecline}
+                isLoading={isDeclining}
+                variant=""
+                className="flex-1 sm:flex-none py-2.5 px-5 text-sm font-semibold rounded-full border border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+              >
+                ✕ Not Interested
+              </Button>
+              <Button
+                onClick={() => setShowAcceptModal(true)}
+                variant=""
+                className="flex-1 sm:flex-none py-2.5 px-6 text-sm font-semibold rounded-full border border-green-300 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all cursor-pointer"
+              >
+                ✓ Accept & Book
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Message Input */}
         <div className="bg-white py-2 sm:py-3 px-3 sm:px-6 flex-shrink-0">
           <div className="flex items-center space-x-2 sm:space-x-3">
@@ -526,7 +605,22 @@ const CustomerChatPage = () => {
         isVisible={showPhoneAlert}
       />
 
-
+      {/* Accept Cleaner Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showAcceptModal}
+        onClose={() => setShowAcceptModal(false)}
+        onConfirm={handleConfirmAccept}
+        title={cleanerName ? `Accept ${cleanerName}?` : "Accept Cleaner?"}
+        message={
+          cleanerName ?
+            `Are you sure you want to accept and book ${cleanerName} for this job?` :
+            "Are you sure you want to accept and book this cleaner for this job?"
+        }
+        confirmText="Accept & Book"
+        cancelText="Cancel"
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+        isLoading={isAccepting}
+      />
     </div>
   );
 };
