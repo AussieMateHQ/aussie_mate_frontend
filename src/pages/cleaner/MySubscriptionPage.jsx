@@ -301,7 +301,7 @@ const MySubscriptionPage = () => {
                         backgroundImage:
                           "linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent)",
                         backgroundSize: "1rem 1rem",
-                        width: `${Math.min(100, Math.max(0, (((activeSubscription?.subscription?.planId?.creditsPerMonth || activeSubscription?.planCredits || 1) - activeSubscription.availableCredits) / (activeSubscription?.subscription?.planId?.creditsPerMonth || activeSubscription?.planCredits || 1)) * 100))}%`,
+                        width: `${Math.min(100, Math.max(0, (activeSubscription.availableCredits / (activeSubscription?.subscription?.planId?.creditsPerMonth || activeSubscription?.planCredits || 1)) * 100))}%`,
                       }}
                     />
                   </div>
@@ -309,14 +309,10 @@ const MySubscriptionPage = () => {
                     className="absolute left-0 -bottom-2 transform translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
                     style={{
                       left: `${Math.min(
-                        90,
+                        60,
                         Math.max(
                           0,
-                          (((activeSubscription?.subscription?.planId
-                            ?.creditsPerMonth ||
-                            activeSubscription?.planCredits ||
-                            1) -
-                            activeSubscription.availableCredits) /
+                          (activeSubscription.availableCredits /
                             (activeSubscription?.subscription?.planId
                               ?.creditsPerMonth ||
                               activeSubscription?.planCredits ||
@@ -331,20 +327,14 @@ const MySubscriptionPage = () => {
                       <div className="absolute -top-1 left-4 w-2 h-2 bg-white border-t border-l border-gray-200 rotate-45" />
 
                       <p className="text-sm font-bold text-gray-900">
-                        {Math.max(
-                          0,
-                          (activeSubscription?.subscription?.planId
-                            ?.creditsPerMonth ||
-                            activeSubscription?.planCredits ||
-                            0) - activeSubscription.availableCredits,
-                        )}{" "}
+                        {activeSubscription.availableCredits}{" "}
                         <span className="text-gray-400 font-medium">of</span>{" "}
                         {activeSubscription?.subscription?.planId
                           ?.creditsPerMonth ||
                           activeSubscription?.planCredits ||
                           0}{" "}
                         <span className="text-gray-400 font-normal">
-                          Credits Used
+                          Credits Available
                         </span>
                       </p>
                     </div>

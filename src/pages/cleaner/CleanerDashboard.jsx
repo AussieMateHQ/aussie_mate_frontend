@@ -232,7 +232,7 @@ const CleanerDashboard = () => {
         const allJobsResponse = await jobsAPI
           .getCleanerJobFeed({ tab: "posted", page: 1, limit: 200 })
           .catch(() => null);
-        
+
         if (allJobsResponse?.requireVerification) {
           setRequireVerification(true);
         } else {
@@ -250,11 +250,11 @@ const CleanerDashboard = () => {
             (job, index, self) =>
               getJobIdentifier(job) &&
               index ===
-                self.findIndex(
-                  (other) =>
-                    getJobIdentifier(other)?.toString() ===
-                    getJobIdentifier(job)?.toString(),
-                ),
+              self.findIndex(
+                (other) =>
+                  getJobIdentifier(other)?.toString() ===
+                  getJobIdentifier(job)?.toString(),
+              ),
           )
           .sort(
             (a, b) =>
@@ -297,7 +297,7 @@ const CleanerDashboard = () => {
             return (
               id &&
               index ===
-                self.findIndex((other) => getJobIdentifier(other) === id)
+              self.findIndex((other) => getJobIdentifier(other) === id)
             );
           })
           .sort(
@@ -490,26 +490,25 @@ const CleanerDashboard = () => {
                       <div className="w-full h-4 bg-[#E5E7EB] rounded-full overflow-hidden  relative">
                         <div
                           className="h-full bg-[#22C55E] rounded-full transition-all duration-1000 relative"
-                          style={{ 
-                            width: `${Math.min(100, Math.max(0, ((subscriptionStatus.subscription?.planId?.creditsPerMonth - subscriptionStatus.availableCredits) / subscriptionStatus.subscription?.planId?.creditsPerMonth) * 100))}%`,
+                          style={{
+                            width: `${Math.min(100, Math.max(0, (subscriptionStatus.availableCredits / (subscriptionStatus.subscription?.planId?.creditsPerMonth || 1)) * 100))}%`,
                             backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent)',
                             backgroundSize: '1rem 1rem'
                           }}
                         />
                       </div>
 
-                      {/* Progress Indicator Tooltip */}
                       <div
                         className="absolute left-0 -bottom-2 transform translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
                         style={{
-                          left: `${Math.min(90, Math.max(0, ((subscriptionStatus.subscription?.planId?.creditsPerMonth - subscriptionStatus.availableCredits) / subscriptionStatus.subscription?.planId?.creditsPerMonth) * 100))}%`,
+                          left: `${Math.min(60, Math.max(0, (subscriptionStatus.availableCredits / (subscriptionStatus.subscription?.planId?.creditsPerMonth || 1)) * 100))}%`,
                         }}
                       >
                         <div className="relative bg-white border border-gray-200 rounded-lg px-3 py-1.5 shadow-sm whitespace-nowrap">
                           {/* Triangle decorator */}
                           <div className="absolute -top-1 left-4 w-2 h-2 bg-white border-t border-l border-gray-200 rotate-45" />
                           <p className="text-sm font-bold text-gray-900">
-                            {subscriptionStatus.subscription?.planId?.creditsPerMonth - subscriptionStatus.availableCredits} <span className="text-gray-400 font-medium">of</span> {subscriptionStatus.subscription?.planId?.creditsPerMonth} <span className="text-gray-400 font-normal">Credits Used</span>
+                            {subscriptionStatus.availableCredits} <span className="text-gray-400 font-medium">of</span> {subscriptionStatus.subscription?.planId?.creditsPerMonth || 0} <span className="text-gray-400 font-normal">Credits Available</span>
                           </p>
                         </div>
                       </div>
@@ -527,15 +526,15 @@ const CleanerDashboard = () => {
                         <span className="text-black font-semibold">
                           {Math.floor(
                             subscriptionStatus.availableCredits /
-                              (subscriptionStatus.subscription?.planId
-                                ?.creditsPerLead || 1),
+                            (subscriptionStatus.subscription?.planId
+                              ?.creditsPerLead || 1),
                           )}
                         </span>
                       </p>
                     </div>
 
                     {canBuyCredits && (
-                      <button 
+                      <button
                         onClick={() => navigate('/buy-credits')}
                         className="flex items-center gap-2 cursor-pointer text-primary-500 cursor-pointer font-black text-sm hover:translate-x-1 transition-transform cursor-pointer"
                       >
@@ -557,9 +556,9 @@ const CleanerDashboard = () => {
                       <p className="text-xl font-medium text-gray-900 mb-2">Subscription Expired</p>
                       <p className="text-gray-500 font-normal max-w-4xl text-xs">Your subscription has ended. Renew now to continue getting new leads.</p>
                     </div>
-                    <Button 
-                      variant="primary" 
-                      size="sm" 
+                    <Button
+                      variant="primary"
+                      size="sm"
                       className="rounded-xl px-6"
                       onClick={() => navigate('/my-subscription')}
                     >
@@ -615,238 +614,238 @@ const CleanerDashboard = () => {
                 </div>
               </div>
             )}
-        <div 
-          className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm cursor-pointer hover:border-primary-200 hover:shadow-md transition-all group"
-          onClick={() => navigate("/cleaner-jobs", { state: { tab: "live-jobs" } })}
-        >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <img
-                  src={BoldJobIcon}
-                  alt="jobs"
-                  className="w-10 h-10"
-                />
-              </div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-                Live Jobs near you
-              </h3>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-primary-600 font-semibold text-sm bg-primary-50/50 px-3 py-1.5 rounded-full">
-                <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
-                {liveJobsLabel}
-              </div>
-              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary-600" />
-              </div>
-            </div>
-          </div>
-
-
-        {/* Active Jobs - Only if Subscribed */}
-        <div className="mt-6 mb-12">
-            <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {subscriptionStatus ? "Your Assigned Jobs" : "Available Jobs"}
-              </h3>
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between sm:justify-end space-x-2">
-              <Button
-                onClick={() =>
-                  navigate("/cleaner-jobs", { state: { tab: subscriptionStatus ? "assigned" : "live-jobs" } })
-                }
-                size="sm"
-                className="bg-blue-500 hover:bg-blue-600 text-white font-medium text-xs sm:text-sm rounded-full px-2 flex items-center justify-center space-x-1"
-                icon={
-                  <BriefcaseBusiness
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4"
-                    strokeWidth={2}
-                  />
-                }
-              >
-                <span className="hidden sm:inline">{subscriptionStatus ? "View Assigned Jobs" : "View Jobs"}</span>
-                <span className="sm:hidden">Jobs</span>
-              </Button>
-
-              <div className="flex space-x-1 sm:space-x-2">
-                <Button
-                  onClick={goToPrev}
-                  variant="ghost"
-                  size="xs"
-                  className="rounded-full p-1 sm:p-1.5 md:p-2"
-                  icon={
-                    <ChevronLeft
-                      className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-600"
-                      strokeWidth={2}
-                    />
-                  }
-                />
-
-                <Button
-                  onClick={goToNext}
-                  variant="ghost"
-                  size="xs"
-                  className="rounded-full p-1 sm:p-1.5 md:p-2"
-                  icon={
-                    <ChevronRight
-                      className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-600"
-                      strokeWidth={2}
-                    />
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          {dashboardError && (
-            <div className="mt-3 text-sm text-red-500 font-medium">
-              {dashboardError}
-            </div>
-          )}
-
-          {loadingDashboard ? (
-            <div className="py-8 flex justify-center">
-              <Loader message="Loading your jobs..." />
-            </div>
-          ) : swiperJobs.length > 0 ? (
-            <Swiper
-              ref={swiperRef}
-              modules={[Autoplay]}
-              spaceBetween={16}
-              slidesPerView={1}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                  spaceBetween: 16,
-                },
-                1024: {
-                  slidesPerView: 3,
-                  spaceBetween: 16,
-                },
-              }}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              speed={800}
-              effect="slide"
-              loop={swiperJobs.length > 1}
-              className="!pb-4 mt-3"
+            <div
+              className="mt-6 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm cursor-pointer hover:border-primary-200 hover:shadow-md transition-all group"
+              onClick={() => navigate("/cleaner-jobs", { state: { tab: "live-jobs" } })}
             >
-              {swiperJobs.map((job, index) => (
-                <SwiperSlide key={`job-${job.id || index}`}>
-                  <div
-                    className="bg-white rounded-2xl border border-[#F3F3F3] p-5 sm:p-6 shadow-sm h-[210px] cursor-pointer transition-all duration-300"
-                    onClick={() => handleJobClick(job)}
-                  >
-                      <div className="flex flex-col h-full relative">
-                        {/* Red Left Accent Bar */}
-                        
-                        <div className="flex-1">
-                          <div className="flex flex-col gap-1 mb-3">
-                            <span className="text-[13px] font-medium text-gray-400">
-                              {job.category}
-                            </span>
-                            <div className="text-[#111827] font-semibold text-[17px] leading-tight capitalize line-clamp-2">
-                              {job.title}
-                            </div>
-                          </div>
- 
-                          <div className="space-y-2.5">
-                            <div className="flex items-center text-gray-500 font-medium text-[14px]">
-                              <Calendar
-                                className="w-5 h-5 mr-3 flex-shrink-0 text-gray-400"
-                                strokeWidth={1.5}
-                              />
-                              <span>{job.date || "Date not specified"}</span>
-                            </div>
-                            
-                            <div className="flex items-center text-gray-500 font-medium text-[14px]">
-                              <MapPin
-                                className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5 text-gray-400"
-                                strokeWidth={1.5}
-                              />
-                              <span className="line-clamp-2 leading-tight">
-                                {job.location || "Location not specified"}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <img
+                    src={BoldJobIcon}
+                    alt="jobs"
+                    className="w-10 h-10"
+                  />
+                </div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                  Live Jobs near you
+                </h3>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-primary-600 font-semibold text-sm bg-primary-50/50 px-3 py-1.5 rounded-full">
+                  <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                  {liveJobsLabel}
+                </div>
+                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary-600" />
+                </div>
+              </div>
+            </div>
 
-                        {/* Customer Info */}
-                        {job.customer && (
-                          <div className="flex items-center gap-2 mt-2 border-t border-gray-50">
-                            <img
-                              src={(() => {
-                                const img = job.customer.profilePhoto || job.customer.profileImage;
-                                if (!img) return `https://ui-avatars.com/api/?name=${job.customer.firstName}+${job.customer.lastName}&background=random`;
-                                if (typeof img === 'string') return img;
-                                return img.url || img.path || img.secureUrl || `https://ui-avatars.com/api/?name=${job.customer.firstName}+${job.customer.lastName}&background=random`;
-                              })()}
-                              alt="Customer"
-                              className="w-6 h-6 rounded-full object-cover border border-gray-100"
-                              onError={(e) => {
-                                e.target.src = `https://ui-avatars.com/api/?name=${job.customer.firstName}+${job.customer.lastName}&background=random`;
-                              }}
-                            />
-                            <p className="text-xs text-gray-400">
-                              Posted by <span className="font-semibold text-gray-700 capitalize">{job.customer.firstName}</span>
-                            </p>
-                          </div>
-                        )}
-                      </div>
+
+            {/* Active Jobs - Only if Subscribed */}
+            <div className="mt-6 mb-12">
+              <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {subscriptionStatus ? "Your Assigned Jobs" : "Available Jobs"}
+                </h3>
+
+                {/* Navigation Buttons */}
+                <div className="flex items-center justify-between sm:justify-end space-x-2">
+                  <Button
+                    onClick={() =>
+                      navigate("/cleaner-jobs", { state: { tab: subscriptionStatus ? "assigned" : "live-jobs" } })
+                    }
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-medium text-xs sm:text-sm rounded-full px-2 flex items-center justify-center space-x-1"
+                    icon={
+                      <BriefcaseBusiness
+                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4"
+                        strokeWidth={2}
+                      />
+                    }
+                  >
+                    <span className="hidden sm:inline">{subscriptionStatus ? "View Assigned Jobs" : "View Jobs"}</span>
+                    <span className="sm:hidden">Jobs</span>
+                  </Button>
+
+                  <div className="flex space-x-1 sm:space-x-2">
+                    <Button
+                      onClick={goToPrev}
+                      variant="ghost"
+                      size="xs"
+                      className="rounded-full p-1 sm:p-1.5 md:p-2"
+                      icon={
+                        <ChevronLeft
+                          className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-600"
+                          strokeWidth={2}
+                        />
+                      }
+                    />
+
+                    <Button
+                      onClick={goToNext}
+                      variant="ghost"
+                      size="xs"
+                      className="rounded-full p-1 sm:p-1.5 md:p-2"
+                      icon={
+                        <ChevronRight
+                          className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-600"
+                          strokeWidth={2}
+                        />
+                      }
+                    />
                   </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          ) : requireVerification ? (
-            <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
-              <div className="max-w-sm mx-auto px-6">
-                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CalendarDays className="w-8 h-8 text-blue-500" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Verification Pending</h4>
-                <p className="text-gray-500 text-sm leading-relaxed">
-                  Your documents are being reviewed. Jobs will show up here once you are verified by our team.
-                </p>
               </div>
-            </div>
-          ) : !subscriptionStatus ? (
-            <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
-              <div className="max-w-sm mx-auto px-6">
-                <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="w-8 h-8 text-primary-500" />
+
+              {dashboardError && (
+                <div className="mt-3 text-sm text-red-500 font-medium">
+                  {dashboardError}
                 </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">Plan Required</h4>
-                <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                  You are verified! Now purchase a plan to unlock customer leads and start earning.
-                </p>
-                <Button 
-                  variant="primary" 
-                  size="sm" 
-                  className="rounded-xl px-8"
-                  onClick={() => navigate('/my-subscription')}
+              )}
+
+              {loadingDashboard ? (
+                <div className="py-8 flex justify-center">
+                  <Loader message="Loading your jobs..." />
+                </div>
+              ) : swiperJobs.length > 0 ? (
+                <Swiper
+                  ref={swiperRef}
+                  modules={[Autoplay]}
+                  spaceBetween={16}
+                  slidesPerView={1}
+                  breakpoints={{
+                    640: {
+                      slidesPerView: 2,
+                      spaceBetween: 16,
+                    },
+                    1024: {
+                      slidesPerView: 3,
+                      spaceBetween: 16,
+                    },
+                  }}
+                  autoplay={{
+                    delay: 3000,
+                    disableOnInteraction: false,
+                  }}
+                  speed={800}
+                  effect="slide"
+                  loop={swiperJobs.length > 1}
+                  className="!pb-4 mt-3"
                 >
-                  Browse Plans
-                </Button>
-              </div>
+                  {swiperJobs.map((job, index) => (
+                    <SwiperSlide key={`job-${job.id || index}`}>
+                      <div
+                        className="bg-white rounded-2xl border border-[#F3F3F3] p-5 sm:p-6 shadow-sm h-[210px] cursor-pointer transition-all duration-300"
+                        onClick={() => handleJobClick(job)}
+                      >
+                        <div className="flex flex-col h-full relative">
+                          {/* Red Left Accent Bar */}
+
+                          <div className="flex-1">
+                            <div className="flex flex-col gap-1 mb-3">
+                              <span className="text-[13px] font-medium text-gray-400">
+                                {job.category}
+                              </span>
+                              <div className="text-[#111827] font-semibold text-[17px] leading-tight capitalize line-clamp-2">
+                                {job.title}
+                              </div>
+                            </div>
+
+                            <div className="space-y-2.5">
+                              <div className="flex items-center text-gray-500 font-medium text-[14px]">
+                                <Calendar
+                                  className="w-5 h-5 mr-3 flex-shrink-0 text-gray-400"
+                                  strokeWidth={1.5}
+                                />
+                                <span>{job.date || "Date not specified"}</span>
+                              </div>
+
+                              <div className="flex items-center text-gray-500 font-medium text-[14px]">
+                                <MapPin
+                                  className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5 text-gray-400"
+                                  strokeWidth={1.5}
+                                />
+                                <span className="line-clamp-2 leading-tight">
+                                  {job.location || "Location not specified"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Customer Info */}
+                          {job.customer && (
+                            <div className="flex items-center gap-2 mt-2 border-t border-gray-50">
+                              <img
+                                src={(() => {
+                                  const img = job.customer.profilePhoto || job.customer.profileImage;
+                                  if (!img) return `https://ui-avatars.com/api/?name=${job.customer.firstName}+${job.customer.lastName}&background=random`;
+                                  if (typeof img === 'string') return img;
+                                  return img.url || img.path || img.secureUrl || `https://ui-avatars.com/api/?name=${job.customer.firstName}+${job.customer.lastName}&background=random`;
+                                })()}
+                                alt="Customer"
+                                className="w-6 h-6 rounded-full object-cover border border-gray-100"
+                                onError={(e) => {
+                                  e.target.src = `https://ui-avatars.com/api/?name=${job.customer.firstName}+${job.customer.lastName}&background=random`;
+                                }}
+                              />
+                              <p className="text-xs text-gray-400">
+                                Posted by <span className="font-semibold text-gray-700 capitalize">{job.customer.firstName}</span>
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : requireVerification ? (
+                <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+                  <div className="max-w-sm mx-auto px-6">
+                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CalendarDays className="w-8 h-8 text-blue-500" />
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Verification Pending</h4>
+                    <p className="text-gray-500 text-sm leading-relaxed">
+                      Your documents are being reviewed. Jobs will show up here once you are verified by our team.
+                    </p>
+                  </div>
+                </div>
+              ) : !subscriptionStatus ? (
+                <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+                  <div className="max-w-sm mx-auto px-6">
+                    <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp className="w-8 h-8 text-primary-500" />
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">Plan Required</h4>
+                    <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                      You are verified! Now purchase a plan to unlock customer leads and start earning.
+                    </p>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="rounded-xl px-8"
+                      onClick={() => navigate('/my-subscription')}
+                    >
+                      Browse Plans
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+                  <div className="max-w-sm mx-auto px-6">
+                    <p className="text-gray-400 font-medium">No active jobs right now.</p>
+                    <p className="text-gray-500 text-sm mt-1">Explore live jobs to get started.</p>
+                  </div>
+                </div>
+              )}
+
             </div>
-          ) : (
-            <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
-              <div className="max-w-sm mx-auto px-6">
-                <p className="text-gray-400 font-medium">No active jobs right now.</p>
-                <p className="text-gray-500 text-sm mt-1">Explore live jobs to get started.</p>
-              </div>
-            </div>
-          )}
-          
-        </div>
+          </div>
+        )}
       </div>
-    )}
-  </div>
-</div>
-);
+    </div>
+  );
 };
 
 export default CleanerDashboard;
