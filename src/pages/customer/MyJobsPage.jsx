@@ -136,6 +136,7 @@ const MyJobsPage = () => {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [expandedJobId, setExpandedJobId] = useState(null);
 
   const statusFilter = useMemo(() => {
     switch (activeTab) {
@@ -448,11 +449,7 @@ const MyJobsPage = () => {
             <div
               key={job.id}
               onClick={() => {
-                if (job.status === 'completed' || job.status === 'assigned' || job.status === 'accepted') {
-                  navigate(`/job-completed/${job.id}`);
-                } else {
-                  navigate(`/customer-job-details/${job.id}`);
-                }
+                setExpandedJobId(prev => prev === job.id ? null : job.id);
               }}
               className="bg-white rounded-2xl border border-gray-200 shadow-custom p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200"
             >
@@ -513,6 +510,109 @@ const MyJobsPage = () => {
                   <span className="line-clamp-1">{job.address}</span>
                 </div>
               </div>
+
+              {/* Collapsible Details for Customer Card */}
+              {expandedJobId === job.id && (
+                <div className="mt-4 pt-3 border-t border-gray-100 space-y-4">
+                  {/* Instructions */}
+                  {job.originalJob?.instructions && (
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Instructions</h4>
+                      <p className="text-sm text-gray-600 font-medium leading-relaxed bg-[#F8FAFF] rounded-xl p-3 border border-[#E2E8FF]">
+                        {job.originalJob.instructions}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Rooms & Bathrooms */}
+                  {(job.originalJob?.roomsNeedCleaning || job.originalJob?.bathroomsNeedCleaning) && (
+                    <div className="flex flex-wrap gap-2">
+                      {job.originalJob.roomsNeedCleaning && (
+                        <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                          <span className="text-[#1A73E8]">🛏️</span> {job.originalJob.roomsNeedCleaning} Room{job.originalJob.roomsNeedCleaning !== '1' ? 's' : ''}
+                        </div>
+                      )}
+                      {job.originalJob.bathroomsNeedCleaning && (
+                        <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                          <span className="text-[#1A73E8]">🚿</span> {job.originalJob.bathroomsNeedCleaning} Bathroom{job.originalJob.bathroomsNeedCleaning !== '1' ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Extra Service Items */}
+                  {job.originalJob?.extraServiceItems && job.originalJob.extraServiceItems.length > 0 && (
+                    <div className="space-y-1.5">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Extra Services</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {job.originalJob.extraServiceItems.map((item, idx) => (
+                          <span key={item._id || idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                             {item.name || item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Specs: Plans, Council, Budget, Job Stage */}
+                  {(job.originalJob?.hasPlans || job.originalJob?.hasCouncilApproval || job.originalJob?.budget || job.originalJob?.jobStage) && (
+                    <div className="grid gap-3 grid-cols-1">
+                      {[
+                        { label: 'Plans', value: job.originalJob.hasPlans },
+                        { label: 'Council Approval', value: job.originalJob.hasCouncilApproval },
+                        { label: 'Budget', value: job.originalJob.budget },
+                        { label: 'Job Stage', value: job.originalJob.jobStage },
+                      ].filter(item => item.value).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-xl border border-[#E2E8FF] bg-[#F8FAFF]"
+                        >
+                          <div className="text-[11px] uppercase text-primary-300 font-semibold tracking-wide mb-1">
+                            {item.label}
+                          </div>
+                          <div className="text-sm text-primary-500 font-medium">
+                            {item.value}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Photos */}
+                  {job.originalJob?.photos && job.originalJob.photos.length > 0 && (
+                    <div className="space-y-1.5">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Job Photos</h4>
+                      <div className="flex flex-wrap gap-2 bg-[#E5E7EB] rounded-xl p-[6px] w-fit">
+                        {job.originalJob.photos.map((photo, idx) => {
+                          const photoUrl = typeof photo === 'string' ? photo : (photo.url || photo.path || photo.secureUrl);
+                          return (
+                            <div key={idx} className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                              <img src={photoUrl} alt={`Job Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Manage / Details Button */}
+                  <div className="flex justify-end gap-3 border-t border-gray-100 pt-3 mt-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (job.status === 'completed' || job.status === 'assigned' || job.status === 'accepted') {
+                          navigate(`/job-completed/${job.id}`);
+                        } else {
+                          navigate(`/customer-job-details/${job.id}`);
+                        }
+                      }}
+                      className="py-2 px-5 text-xs font-semibold rounded-full border border-[#DCE4FF] bg-[#EBF2FD] text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer text-center"
+                    >
+                      { (job.status === 'completed' || job.status === 'assigned' || job.status === 'accepted') ? '✓ View Completed Job' : 'Manage Job / View Quotes' }
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Footer Row */}
               <div className="mt-3 flex items-center justify-between">
