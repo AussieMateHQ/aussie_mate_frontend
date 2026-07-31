@@ -998,11 +998,6 @@ const CustomerJobDetailsPage = () => {
                 <h3 className="text-lg font-medium text-gray-900 uppercase tracking-wider">
                   WAITLISTED CLEANERS
                 </h3>
-                {!is24HoursPassed && waitlistUnlockLabel && (
-                  <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full w-fit">
-                    🔓 Unlocks at {waitlistUnlockLabel}
-                  </span>
-                )}
               </div>
               <div className="space-y-6">
                 {waitlistedCleaners.map((item, index) => {
@@ -1019,13 +1014,6 @@ const CustomerJobDetailsPage = () => {
                               <h4 className="text-lg font-semibold text-gray-900 capitalize leading-tight">
                                 {cleaner.name}
                               </h4>
-                              <div className="flex items-center gap-1.5 text-gray-500 mt-1 mb-1">
-                                <div className="flex items-center gap-1">
-                                  <img src={RatingIcon} alt="Rating" className="w-3.5 h-3.5" />
-                                  <span className="text-sm font-semibold text-gray-700">{cleaner.rating}</span>
-                                  <span className="text-xs text-gray-400">({cleaner.reviews} reviews)</span>
-                                </div>
-                              </div>
                               <p className="text-xs text-gray-500 font-medium">
                                 {cleaner.distance}
                               </p>
