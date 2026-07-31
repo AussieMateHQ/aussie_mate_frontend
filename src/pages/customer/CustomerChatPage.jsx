@@ -400,7 +400,7 @@ const CustomerChatPage = () => {
             <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white flex-shrink-0 font-bold">
               {cleanerName ? cleanerName.charAt(0).toUpperCase() : 'C'}
             </div>
-            
+
             {/* Name and Status */}
             <div>
               <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
@@ -544,31 +544,7 @@ const CustomerChatPage = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Chat Action Footer (Accept/Reject) */}
-        {jobData && (jobData.status === 'posted' || jobData.status === 'quoted') && !jobData.assignedCleanerId && currentQuote && currentQuote.status !== 'rejected' && (
-          <div className="bg-[#F8FAFC] border-t border-b border-gray-100 py-3 px-4 sm:px-6 flex items-center justify-between gap-3 flex-shrink-0">
-            <span className="text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">
-              Review quote and decide:
-            </span>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <Button
-                onClick={handleDecline}
-                isLoading={isDeclining}
-                variant=""
-                className="flex-1 sm:flex-none py-2.5 px-5 text-sm font-semibold rounded-full border border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
-              >
-                ✕ Not Interested
-              </Button>
-              <Button
-                onClick={() => setShowAcceptModal(true)}
-                variant=""
-                className="flex-1 sm:flex-none py-2.5 px-6 text-sm font-semibold rounded-full border border-green-300 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all cursor-pointer"
-              >
-                ✓ Accept & Book
-              </Button>
-            </div>
-          </div>
-        )}
+        {/* Chat Action Footer (Accept/Reject) has been moved to CustomerJobDetailsPage.jsx */}
 
         {/* Message Input */}
         <div className="bg-white py-2 sm:py-3 px-3 sm:px-6 flex-shrink-0">

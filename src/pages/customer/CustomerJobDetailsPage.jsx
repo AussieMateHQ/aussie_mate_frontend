@@ -63,6 +63,10 @@ const CustomerJobDetailsPage = () => {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
   const [quoteToDecline, setQuoteToDecline] = useState(null);
+  const [showHireModal, setShowHireModal] = useState(false);
+  const [cleanerToHire, setCleanerToHire] = useState(null);
+  const [isHiring, setIsHiring] = useState(false);
+  const [hireError, setHireError] = useState('');
   const [cleanerQuotes, setCleanerQuotes] = useState([]);
   const [waitlistedCleaners, setWaitlistedCleaners] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
@@ -314,6 +318,38 @@ const CustomerJobDetailsPage = () => {
       setActionError(err.message || 'Failed to assign cleaner. Please try again.');
     } finally {
       setIsConnecting(false);
+    }
+  };
+
+  const handleHireClick = (cleanerId) => {
+    const item = cleanerQuotes.find(q => (q.cleanerId?._id || q.cleanerId) === cleanerId);
+    if (item) {
+      setCleanerToHire(item);
+      setHireError('');
+      setShowHireModal(true);
+    }
+  };
+
+  const handleConfirmHire = async () => {
+    if (!cleanerToHire) return;
+    const cleanerId = cleanerToHire.cleanerId?._id || cleanerToHire.cleanerId || cleanerToHire.id;
+
+    try {
+      setIsHiring(true);
+      setHireError('');
+
+      const response = await jobsAPI.assignCleaner(jobId, cleanerId);
+
+      if (response.success) {
+        setShowHireModal(false);
+        navigate(`/booking-confirmation/${jobId}?cleaner=${cleanerId}`);
+      } else {
+        setHireError(response.message || response.error || 'Failed to assign cleaner');
+      }
+    } catch (err) {
+      setHireError(err.message || 'Failed to assign cleaner. Please try again.');
+    } finally {
+      setIsHiring(false);
     }
   };
 
@@ -922,7 +958,7 @@ const CustomerJobDetailsPage = () => {
                     </div>
 
                     {/* Footer Action Buttons */}
-                    <div className="border-t border-gray-100 pt-4 flex justify-end">
+                    <div className="border-t border-gray-100 pt-4 flex justify-end gap-3">
                       {item.status === 'rejected' ? (
                         /* Rejected state */
                         <div className="flex justify-center w-full">
@@ -931,13 +967,22 @@ const CustomerJobDetailsPage = () => {
                           </span>
                         </div>
                       ) : (
-                        <Button
-                          onClick={() => navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`)}
-                          variant=""
-                          className="py-3 px-6 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer flex items-center gap-1.5"
-                        >
-                          💬 Chat
-                        </Button>
+                        <>
+                          <Button
+                            onClick={() => navigate(`/customer-chat/${jobId}?cleaner=${cleaner.id}`)}
+                            variant=""
+                            className="py-3 px-6 text-base font-semibold rounded-full border border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer flex items-center gap-1.5"
+                          >
+                            💬 Chat
+                          </Button>
+                          <Button
+                            onClick={() => handleHireClick(cleaner.id)}
+                            variant=""
+                            className="py-3 px-6 text-base font-semibold rounded-full border border-green-300 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all cursor-pointer flex items-center gap-1.5"
+                          >
+                            ✓ Hire
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -946,20 +991,18 @@ const CustomerJobDetailsPage = () => {
             </div>
           )}
 
-          {waitlistVisible === false && waitlistCount > 0 && (
-            <div className="mt-8 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-              <span className="font-semibold">{waitlistCount} cleaner{waitlistCount === 1 ? '' : 's'} on the waitlist.</span>
-              {waitlistUnlockLabel ? ` Waitlist unlocks at ${waitlistUnlockLabel}.` : ' Waitlist opens after 24 hours.'}
-            </div>
-          )}
-
           {/* Waitlisted Section */}
-          {waitlistVisible === true && waitlistedCleaners.length > 0 && (
+          {waitlistedCleaners.length > 0 && (
             <div className="mt-8">
-              <div className="mb-6">
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h3 className="text-lg font-medium text-gray-900 uppercase tracking-wider">
                   WAITLISTED CLEANERS
                 </h3>
+                {!is24HoursPassed && waitlistUnlockLabel && (
+                  <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full w-fit">
+                    🔓 Unlocks at {waitlistUnlockLabel}
+                  </span>
+                )}
               </div>
               <div className="space-y-6">
                 {waitlistedCleaners.map((item, index) => {
@@ -1031,7 +1074,7 @@ const CustomerJobDetailsPage = () => {
                               : 'border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white cursor-pointer'
                             }`}
                         >
-                          Connect & Message
+                          Connect
                         </Button>
                       </div>
                     </div>
@@ -1107,6 +1150,28 @@ const CustomerJobDetailsPage = () => {
         cancelText="Cancel"
         confirmButtonColor="bg-red-500 hover:bg-[#EF4444] text-red-500! hover:text-white! border border-red-500"
         isLoading={isDeclining}
+      />
+
+      {/* Hire Cleaner Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showHireModal}
+        onClose={() => setShowHireModal(false)}
+        onConfirm={handleConfirmHire}
+        title={
+          cleanerToHire
+            ? `Hire ${cleanerToHire.cleaner?.firstName || cleanerToHire.cleanerId?.firstName || 'Cleaner'}?`
+            : "Hire Cleaner?"
+        }
+        message={
+          cleanerToHire ?
+            `Are you sure you want to hire ${cleanerToHire.cleaner?.firstName || cleanerToHire.cleanerId?.firstName || 'this cleaner'} and book them for this job?` :
+            "Are you sure you want to hire this cleaner and book them for this job?"
+        }
+        confirmText="Hire & Book"
+        cancelText="Not Now"
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+        isLoading={isHiring}
+        errorMessage={hireError}
       />
     </>
   );
