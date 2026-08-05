@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, History as HistoryIcon, Clock } from "lucide-react";
+import { X, History as HistoryIcon, Clock, Info, Calendar as CalendarIcon, MapPin } from "lucide-react";
 import { PageHeader, PaginationRanges, Loader, Button, Calendar, CustomSelect, DateRangePicker } from "../../components";
 import { subscriptionsAPI } from "../../services/api";
 import dayjs from "dayjs";
@@ -10,6 +10,7 @@ const LeadUsageHistoryPage = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hoveredItemId, setHoveredItemId] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -110,7 +111,7 @@ const LeadUsageHistoryPage = () => {
           className="mb-6"
         />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
           <div className="p-6 border-b border-gray-50 bg-white">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex flex-col min-w-0">
@@ -230,7 +231,7 @@ const LeadUsageHistoryPage = () => {
                               </span>
                             )}
                           </p>
-                          <p className="text-[13px] text-gray-400 font-medium">
+                          <p className="text-[13px] text-gray-400 font-medium flex items-center gap-1.5 flex-wrap">
                             {item.jobId ? (
                               <>
                                 #
@@ -241,6 +242,112 @@ const LeadUsageHistoryPage = () => {
                               </>
                             ) : null}{" "}
                             {formatDate(item.createdAt)}
+                            {item.jobId && typeof item.jobId === "object" && (
+                              <span className="relative inline-block ml-1">
+                                <Info 
+                                  className="w-4 h-4 text-[#1F6FEB] hover:text-[#1154c0] cursor-pointer transition-colors"
+                                  onMouseEnter={() => setHoveredItemId(item._id)}
+                                  onMouseLeave={() => setHoveredItemId(null)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setHoveredItemId(prev => prev === item._id ? null : item._id);
+                                  }}
+                                />
+                                {hoveredItemId === item._id && (
+                                  <div className="absolute left-6 bottom-0 w-80 p-5 bg-white/95 backdrop-blur-md border border-gray-200/60 rounded-2xl shadow-2xl z-50 text-left text-gray-800 space-y-3 pointer-events-none">
+                                    <div className="border-b border-gray-100 pb-2">
+                                      <h4 className="text-sm font-bold text-gray-900 capitalize">
+                                        {item.jobId.serviceTypeId?.name || item.jobId.categoryId?.name || "Cleaning Job"}
+                                      </h4>
+                                      {item.jobId.scheduledDate && (
+                                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                                          <CalendarIcon className="w-3.5 h-3.5 opacity-60" />
+                                          <span>{dayjs(item.jobId.scheduledDate).format("DD MMMM YYYY, hh:mm a")}</span>
+                                        </div>
+                                      )}
+                                      {(item.jobId.location?.fullAddress || item.jobId.location?.address || item.jobId.location?.city) && (
+                                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                                          <MapPin className="w-3.5 h-3.5 opacity-60" />
+                                          <span className="line-clamp-2">
+                                            {item.jobId.location.fullAddress || item.jobId.location.address || item.jobId.location.city}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* Instructions */}
+                                    {item.jobId.instructions && (
+                                      <div className="space-y-0.5">
+                                        <div className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Instructions</div>
+                                        <div className="text-xs text-gray-600 bg-gray-50 rounded-lg p-2 border border-gray-100/50 max-h-24 overflow-y-auto">
+                                          {item.jobId.instructions}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Grid details: Plans, Council Approval, Budget, Job Stage */}
+                                    {(item.jobId.hasPlans || item.jobId.hasCouncilApproval || item.jobId.budget || item.jobId.jobStage) && (
+                                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                                        {item.jobId.hasPlans && (
+                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
+                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Plans</div>
+                                            <div className="font-semibold text-gray-700">{item.jobId.hasPlans}</div>
+                                          </div>
+                                        )}
+                                        {item.jobId.hasCouncilApproval && (
+                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
+                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Council Approval</div>
+                                            <div className="font-semibold text-gray-700">{item.jobId.hasCouncilApproval}</div>
+                                          </div>
+                                        )}
+                                        {item.jobId.budget && (
+                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
+                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Budget</div>
+                                            <div className="font-semibold text-gray-700">{item.jobId.budget}</div>
+                                          </div>
+                                        )}
+                                        {item.jobId.jobStage && (
+                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
+                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Job Stage</div>
+                                            <div className="font-semibold text-gray-700">{item.jobId.jobStage}</div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Rooms & Bathrooms */}
+                                    {(item.jobId.roomsNeedCleaning || item.jobId.bathroomsNeedCleaning) && (
+                                      <div className="flex gap-2">
+                                        {item.jobId.roomsNeedCleaning && (
+                                          <span className="inline-flex items-center gap-1 bg-gray-100 border border-gray-200 px-2 py-1 rounded-full text-[10px] font-semibold text-gray-700">
+                                            🛏️ {item.jobId.roomsNeedCleaning} Rooms
+                                          </span>
+                                        )}
+                                        {item.jobId.bathroomsNeedCleaning && (
+                                          <span className="inline-flex items-center gap-1 bg-gray-100 border border-gray-200 px-2 py-1 rounded-full text-[10px] font-semibold text-gray-700">
+                                            🚿 {item.jobId.bathroomsNeedCleaning} Baths
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Extra Services */}
+                                    {item.jobId.extraServiceItems && item.jobId.extraServiceItems.length > 0 && (
+                                      <div className="space-y-1">
+                                        <div className="text-[9px] uppercase text-gray-400 font-bold tracking-wider">Extra Services</div>
+                                        <div className="flex flex-wrap gap-1">
+                                          {item.jobId.extraServiceItems.map((s, sIdx) => (
+                                            <span key={s._id || sIdx} className="bg-blue-50/60 border border-blue-100 px-2 py-0.5 rounded-full text-[10px] font-semibold text-blue-600">
+                                              {s.name || s}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </span>
+                            )}
                           </p>
                         </div>
                       </div>
