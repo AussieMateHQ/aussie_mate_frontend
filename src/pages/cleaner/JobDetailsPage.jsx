@@ -438,6 +438,12 @@ const JobDetailsPage = () => {
               roomsNeedCleaning={job?.roomsNeedCleaning}
               bathroomsNeedCleaning={job?.bathroomsNeedCleaning}
               extraServiceItems={job?.extraServiceItems || []}
+              petType={job?.petType}
+              numberOfPets={job?.numberOfPets}
+              petNeeds={job?.petNeeds || []}
+              fixingItems={job?.fixingItems || []}
+              handymanUrgency={job?.handymanUrgency}
+              handymanRequirements={job?.handymanRequirements || []}
               roleSections={{
                 cleaner: [
                   { label: 'Plans', value: job?.hasPlans },

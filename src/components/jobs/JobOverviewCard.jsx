@@ -36,6 +36,12 @@ const JobOverviewCard = ({
   roomsNeedCleaning,
   bathroomsNeedCleaning,
   extraServiceItems = [],
+  petType,
+  numberOfPets,
+  petNeeds = [],
+  fixingItems = [],
+  handymanUrgency,
+  handymanRequirements = [],
 }) => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
 
@@ -205,6 +211,76 @@ const JobOverviewCard = ({
                   {extraServiceItems.map((item, idx) => (
                     <span key={item._id || idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
                       ✨ {item.name || item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {(petType || numberOfPets || (petNeeds && petNeeds.length > 0)) && (
+          <div className="space-y-3 pt-1">
+            {(petType || numberOfPets) && (
+              <div className="flex flex-wrap gap-2">
+                {petType && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🐾</span> Pet: {petType}
+                  </div>
+                )}
+                {numberOfPets && (
+                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                    <span className="text-[#1A73E8]">🔢</span> Count: {numberOfPets}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {petNeeds && petNeeds.length > 0 && (
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pet Needs</h4>
+                <div className="flex flex-wrap gap-2">
+                  {petNeeds.map((item, idx) => (
+                    <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                      ✨ {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {((fixingItems && fixingItems.length > 0) || handymanUrgency || (handymanRequirements && handymanRequirements.length > 0)) && (
+          <div className="space-y-3 pt-1">
+            {handymanUrgency && (
+              <div className="flex flex-wrap gap-2">
+                <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                  <span className="text-[#1A73E8]">⚠️</span> Urgency: {handymanUrgency}
+                </div>
+              </div>
+            )}
+
+            {fixingItems && fixingItems.length > 0 && (
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Fixing/Installing</h4>
+                <div className="flex flex-wrap gap-2">
+                  {fixingItems.map((item, idx) => (
+                    <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                      🔨 {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {handymanRequirements && handymanRequirements.length > 0 && (
+              <div className="space-y-1.5">
+                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Requirements</h4>
+                <div className="flex flex-wrap gap-2">
+                  {handymanRequirements.map((item, idx) => (
+                    <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                      📋 {item}
                     </span>
                   ))}
                 </div>

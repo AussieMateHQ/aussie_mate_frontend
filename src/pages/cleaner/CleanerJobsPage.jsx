@@ -601,6 +601,71 @@ const CleanerJobsPage = () => {
                             </div>
                           )}
 
+                          {/* Pet Sitting Details */}
+                          {(job.originalJob?.petType || job.originalJob?.numberOfPets || (job.originalJob?.petNeeds && job.originalJob.petNeeds.length > 0)) && (
+                            <div className="space-y-3">
+                              <div className="flex flex-wrap gap-2">
+                                {job.originalJob.petType && (
+                                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                                    <span className="text-[#1A73E8]">🐾</span> Pet: {job.originalJob.petType}
+                                  </div>
+                                )}
+                                {job.originalJob.numberOfPets && (
+                                  <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                                    <span className="text-[#1A73E8]">🔢</span> Count: {job.originalJob.numberOfPets}
+                                  </div>
+                                )}
+                              </div>
+                              {job.originalJob.petNeeds && job.originalJob.petNeeds.length > 0 && (
+                                <div className="space-y-1.5">
+                                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Pet Needs</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.originalJob.petNeeds.map((need, idx) => (
+                                      <span key={idx} className="inline-flex items-center bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                                        {need}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Handyman Details */}
+                          {((job.originalJob?.fixingItems && job.originalJob.fixingItems.length > 0) || job.originalJob?.handymanUrgency || (job.originalJob?.handymanRequirements && job.originalJob.handymanRequirements.length > 0)) && (
+                            <div className="space-y-3">
+                              {job.originalJob.handymanUrgency && (
+                                <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                                  <span className="text-[#1A73E8]">⚠️</span> Urgency: {job.originalJob.handymanUrgency}
+                                </div>
+                              )}
+                              {job.originalJob.fixingItems && job.originalJob.fixingItems.length > 0 && (
+                                <div className="space-y-1.5">
+                                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Fixing/Installing</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.originalJob.fixingItems.map((item, idx) => (
+                                      <span key={idx} className="inline-flex items-center bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                                        {item}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {job.originalJob.handymanRequirements && job.originalJob.handymanRequirements.length > 0 && (
+                                <div className="space-y-1.5">
+                                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Requirements</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.originalJob.handymanRequirements.map((req, idx) => (
+                                      <span key={idx} className="inline-flex items-center bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                                        {req}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           {/* Extra Service Items */}
                           {job.originalJob?.extraServiceItems && job.originalJob.extraServiceItems.length > 0 && (
                             <div className="space-y-1.5">

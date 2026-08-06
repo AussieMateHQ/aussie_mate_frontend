@@ -198,7 +198,7 @@ const CompleteJobPage = () => {
     }
   };
 
-    const handleCompleteJob = async () => {
+  const handleCompleteJob = async () => {
     if (!beforePhotosUploaded || !afterPhotosUploaded) {
       setUploadError('Please upload both before and after photos to complete the job');
       setTimeout(() => setUploadError(null), 3000);
@@ -236,7 +236,7 @@ const CompleteJobPage = () => {
           navigate('/cleaner-jobs', { state: { tab: 'completed' } });
         }, 1500);
       } else {
-          throw new Error(response.message || 'Failed to update job status');
+        throw new Error(response.message || 'Failed to update job status');
       }
     } catch (error) {
       console.error('Error completing job:', error);
@@ -715,8 +715,8 @@ const CompleteJobPage = () => {
           {/* Complete Job Confirmation Modal */}
           {showCompleteModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div 
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+              <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
                 onClick={() => setShowCompleteModal(false)}
               ></div>
               <div className="relative bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
@@ -725,7 +725,7 @@ const CompleteJobPage = () => {
                   <p className="text-gray-500 text-sm leading-relaxed mb-8">
                     Check your assigned work along with the before and after photos, and complete the job.
                   </p>
-                  
+
                   <div className="flex flex-col gap-3">
                     <button
                       onClick={() => {

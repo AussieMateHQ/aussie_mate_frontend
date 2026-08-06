@@ -62,7 +62,13 @@ const PostNewJobPage = () => {
     needCleaning: '',
     roomsNeedCleaning: '',
     bathroomsNeedCleaning: '',
-    extraServiceItems: []
+    extraServiceItems: [],
+    petType: '',
+    numberOfPets: '',
+    petNeeds: [],
+    fixingItems: [],
+    handymanUrgency: 'Normal',
+    handymanRequirements: []
   });
 
   // File upload states
@@ -625,19 +631,40 @@ const PostNewJobPage = () => {
         },
         customerId,
         // Add dynamic fields dynamically based on category name
-        ...((formData.propertyType || '').toLowerCase().includes('commercial') ? {
-          commercialJobTypeId: formData.commercialJobTypeId,
-          hasPlans: formData.hasPlans,
-          hasCouncilApproval: formData.hasCouncilApproval,
-          budget: formData.budget,
-          jobStage: formData.jobStage
-        } : {
-          needCleaning: formData.needCleaning,
-          roomsNeedCleaning: formData.roomsNeedCleaning,
-          bathroomsNeedCleaning: formData.bathroomsNeedCleaning,
-          extraServiceItems: formData.extraServiceItems,
-          jobStage: formData.jobStage
-        })
+        ...(() => {
+          const categoryLower = (formData.propertyType || '').toLowerCase();
+          if (categoryLower.includes('commercial')) {
+            return {
+              commercialJobTypeId: formData.commercialJobTypeId,
+              hasPlans: formData.hasPlans,
+              hasCouncilApproval: formData.hasCouncilApproval,
+              budget: formData.budget,
+              jobStage: formData.jobStage
+            };
+          } else if (categoryLower.includes('pet')) {
+            return {
+              petType: formData.petType,
+              numberOfPets: formData.numberOfPets,
+              petNeeds: formData.petNeeds,
+              jobStage: formData.jobStage
+            };
+          } else if (categoryLower.includes('handyman')) {
+            return {
+              fixingItems: formData.fixingItems,
+              handymanUrgency: formData.handymanUrgency,
+              handymanRequirements: formData.handymanRequirements,
+              jobStage: formData.jobStage
+            };
+          } else {
+            return {
+              needCleaning: formData.needCleaning,
+              roomsNeedCleaning: formData.roomsNeedCleaning,
+              bathroomsNeedCleaning: formData.bathroomsNeedCleaning,
+              extraServiceItems: formData.extraServiceItems,
+              jobStage: formData.jobStage
+            };
+          }
+        })()
       };
 
       const files = {
@@ -1004,7 +1031,7 @@ const PostNewJobPage = () => {
               }
             }
           `}</style>
-          <div 
+          <div
             className="fixed top-6 left-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md bg-white border border-red-100 shadow-2xl rounded-2xl p-4 flex items-center gap-3"
             style={{
               transform: 'translateX(-50%)',
@@ -1021,7 +1048,7 @@ const PostNewJobPage = () => {
               <h4 className="text-sm font-semibold text-gray-900">Job Posting Requirement</h4>
               <p className="text-xs text-gray-600 mt-0.5">{error}</p>
             </div>
-            <button 
+            <button
               type="button"
               onClick={() => setError('')}
               className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-50 cursor-pointer"

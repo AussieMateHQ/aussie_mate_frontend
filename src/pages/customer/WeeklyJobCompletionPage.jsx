@@ -21,7 +21,7 @@ const WeeklyJobCompletionPage = () => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch job details
         const jobResponse = await jobsAPI.getJobById(jobId);
         const jobData = jobResponse.data || jobResponse;
@@ -34,7 +34,7 @@ const WeeklyJobCompletionPage = () => {
             jobData.repeatWeeks,
             jobData.scheduledDate
           );
-          
+
           // Update schedule with actual payment statuses from backend
           // This would come from your backend API
           const updatedSchedule = await fetchPaymentStatuses(jobId, schedule);
@@ -43,7 +43,7 @@ const WeeklyJobCompletionPage = () => {
 
         // Get total quote amount (this would come from accepted quote)
         setTotalQuote(jobData.quoteAmount || 30); // Placeholder
-        
+
       } catch (error) {
         console.error('Error fetching job details:', error);
         setError('Failed to load job details');
@@ -70,7 +70,7 @@ const WeeklyJobCompletionPage = () => {
     try {
       setConfirmingPayment(true);
       setError('');
-      
+
       // Call API to confirm payment for this specific day
       const response = await paymentService.confirmDailyPayment(jobId, {
         date: day.date,
@@ -79,16 +79,16 @@ const WeeklyJobCompletionPage = () => {
 
       if (response.success) {
         // Update the schedule
-        setPaymentSchedule(prev => 
-          prev.map(d => 
-            d.date === day.date 
+        setPaymentSchedule(prev =>
+          prev.map(d =>
+            d.date === day.date
               ? { ...d, status: 'paid' }
               : d
           )
         );
-        
+
         setSuccessMessage(`Payment confirmed for ${day.displayDate}`);
-        
+
         // Redirect after a short delay
         setTimeout(() => {
           navigate('/my-jobs');

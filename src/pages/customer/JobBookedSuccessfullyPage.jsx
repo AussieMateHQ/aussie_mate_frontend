@@ -12,10 +12,10 @@ import { useGoogleAds } from '../../hooks/useGoogleAds';
 
 const getPreferredDaysDisplay = (preferredDays) => {
   if (!preferredDays || typeof preferredDays !== 'object') return '';
-  
+
   const days = Object.keys(preferredDays).filter(day => preferredDays[day] === true);
   if (days.length === 0) return '';
-  
+
   return days.join(', ');
 };
 
@@ -29,9 +29,9 @@ const getFrequencyDisplay = (job) => {
   const frequency = job.frequency || job.serviceFrequency || job.schedule?.frequency || 'One-time';
   const preferredDays = getPreferredDaysDisplay(job?.preferredDays);
   const repeatWeeks = getRepeatWeeksDisplay(job?.repeatWeeks);
-  
+
   let display = frequency;
-  
+
   if (preferredDays && repeatWeeks) {
     display += ` • ${preferredDays} • ${repeatWeeks}`;
   } else if (preferredDays) {
@@ -39,7 +39,7 @@ const getFrequencyDisplay = (job) => {
   } else if (repeatWeeks) {
     display += ` • ${repeatWeeks}`;
   }
-  
+
   return display;
 };
 
@@ -88,7 +88,7 @@ const JobBookedSuccessfullyPage = () => {
 
           if (!acceptedQuote && (['assigned', 'in_progress', 'completed'].includes(fetchedJobData.status))) {
             const assignedId = fetchedJobData.assignedCleanerId?._id || fetchedJobData.assignedCleanerId || fetchedJobData.assignedCleaner?._id || fetchedJobData.assignedCleaner;
-            
+
             if (assignedId) {
               acceptedQuote = fetchedJobData.quotes?.find(q => {
                 const qCleanerId = q.cleanerId?._id || q.cleanerId;
@@ -128,10 +128,10 @@ const JobBookedSuccessfullyPage = () => {
           let cleanerInfo = acceptedQuote.cleanerId || acceptedQuote.cleaner;
 
           if (typeof cleanerInfo === 'string' || (cleanerInfo && !cleanerInfo.firstName && !cleanerInfo.name)) {
-            const cleanerId = typeof cleanerInfo === 'string' 
-              ? cleanerInfo 
+            const cleanerId = typeof cleanerInfo === 'string'
+              ? cleanerInfo
               : cleanerInfo?._id || cleanerInfo?.id || fetchedJobData.cleanerId;
-            
+
             if (cleanerId) {
               try {
                 const cleanerResponse = await userAPI.getUserById(cleanerId);
@@ -173,7 +173,7 @@ const JobBookedSuccessfullyPage = () => {
           trackBookingCompleted({ value: acceptedQuote.price || 0, currency: 'AUD' });
 
           let avatarUrl = '';
-          
+
           const resolveImageUrl = (image) => {
             if (!image) return '';
             if (typeof image === 'string') return image;
@@ -195,11 +195,11 @@ const JobBookedSuccessfullyPage = () => {
             avatarUrl = resolveImageUrl(cleanerInfo.photo);
           }
 
-          const cleanerId = cleanerInfo._id || 
-                           cleanerInfo.id || 
-                           cleanerInfo.userId || 
-                           acceptedQuote.cleanerId?._id ||
-                           (typeof acceptedQuote.cleanerId === 'string' ? acceptedQuote.cleanerId : null);
+          const cleanerId = cleanerInfo._id ||
+            cleanerInfo.id ||
+            cleanerInfo.userId ||
+            acceptedQuote.cleanerId?._id ||
+            (typeof acceptedQuote.cleanerId === 'string' ? acceptedQuote.cleanerId : null);
 
           setCleaner({
             id: cleanerId,
@@ -294,10 +294,10 @@ const JobBookedSuccessfullyPage = () => {
       {showAnimation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white animate-fadeIn">
           <div className="text-center animate-scaleIn">
-            <img 
-              src={JobLiveIcon} 
-              alt="Success Animation" 
-              className="w-64 h-64 sm:w-80 sm:h-80 mx-auto object-contain drop-shadow-2xl" 
+            <img
+              src={JobLiveIcon}
+              alt="Success Animation"
+              className="w-64 h-64 sm:w-80 sm:h-80 mx-auto object-contain drop-shadow-2xl"
             />
             <h1 className="text-2xl sm:text-3xl font-bold text-primary-500 mt-6 animate-pulse">
               Booking Successful! 🎉
@@ -408,7 +408,7 @@ const JobBookedSuccessfullyPage = () => {
                 >
 
                 </Button>
-                
+
                 {/* Call Button */}
                 <Button
                   onClick={handleCallCleaner}

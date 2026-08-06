@@ -113,41 +113,59 @@ const HomePage = () => {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-2xl font-bold text-[#0a1b3f] mb-8 text-left">Popular Services</h2>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
               {/* Card 1: General Cleaning */}
               <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
-                <div className="w-28 h-28 mb-4 flex items-center justify-center relative">
+                <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-blue-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
-                  <Home className="w-12 h-12 text-blue-500 relative z-10" strokeWidth={1.5} />
+                  <Home className="w-10 h-10 text-blue-500 relative z-10" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-[15px] font-medium text-gray-900">General Cleaning</h3>
+                <h3 className="text-[14px] font-semibold text-gray-900">General Cleaning</h3>
               </Link>
               
               {/* Card 2: Commercial Cleaning */}
               <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
-                <div className="w-28 h-28 mb-4 flex items-center justify-center relative">
+                <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-orange-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
-                  <Building2 className="w-12 h-12 text-orange-400 relative z-10" strokeWidth={1.5} />
+                  <Building2 className="w-10 h-10 text-orange-400 relative z-10" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-[15px] font-medium text-gray-900">Commercial Cleaning</h3>
+                <h3 className="text-[14px] font-semibold text-gray-900">Commercial Cleaning</h3>
               </Link>
 
               {/* Card 3: Bond Cleaning */}
               <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
-                <div className="w-28 h-28 mb-4 flex items-center justify-center relative">
+                <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-teal-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
-                  <Key className="w-12 h-12 text-teal-500 relative z-10" strokeWidth={1.5} />
+                  <Key className="w-10 h-10 text-teal-500 relative z-10" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-[15px] font-medium text-gray-900">Bond Cleaning</h3>
+                <h3 className="text-[14px] font-semibold text-gray-900">Bond Cleaning</h3>
               </Link>
 
-              {/* Card 4: Other Categories */}
+              {/* Card 4: Housekeeper */}
               <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
-                <div className="w-28 h-28 mb-4 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-blue-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
-                  <MoreHorizontal className="w-12 h-12 text-blue-500 relative z-10" strokeWidth={1.5} />
+                <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-purple-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
+                  <Shirt className="w-10 h-10 text-purple-500 relative z-10" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-[15px] font-medium text-gray-900">Other Categories</h3>
+                <h3 className="text-[14px] font-semibold text-gray-900">Housekeeper</h3>
+              </Link>
+
+              {/* Card 5: Pet Sitting */}
+              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+                <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-red-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
+                  <Dog className="w-10 h-10 text-red-400 relative z-10" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-[14px] font-semibold text-gray-900">Pet Sitting</h3>
+              </Link>
+
+              {/* Card 6: Handyman */}
+              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+                <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-green-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
+                  <Wrench className="w-10 h-10 text-green-500 relative z-10" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-[14px] font-semibold text-gray-900">Handyman</h3>
               </Link>
             </div>
           </div>

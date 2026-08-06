@@ -26,10 +26,16 @@ const CleaningJobDetailsForm = ({
   const [commercialJobTypes, setCommercialJobTypes] = useState([]);
   const [extraServiceItems, setExtraServiceItems] = useState([]);
   const [isCommercialTypeOpen, setIsCommercialTypeOpen] = useState(false);
-  
+  const [isPetTypeOpen, setIsPetTypeOpen] = useState(false);
+  const [isNumPetsOpen, setIsNumPetsOpen] = useState(false);
+  const [isHandymanUrgencyOpen, setIsHandymanUrgencyOpen] = useState(false);
+
   const categoryRef = useRef(null);
   const serviceRef = useRef(null);
   const commercialTypeRef = useRef(null);
+  const petTypeRef = useRef(null);
+  const numPetsRef = useRef(null);
+  const handymanUrgencyRef = useRef(null);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -53,7 +59,7 @@ const CleaningJobDetailsForm = ({
         setServiceTypes([]);
         return;
       }
-      
+
       setIsLoading(true);
       try {
         const response = await categoriesAPI.getServiceTypes(formData.categoryId);
@@ -92,11 +98,11 @@ const CleaningJobDetailsForm = ({
   useEffect(() => {
     const selectedCategory = categories.find((c) => c._id === formData.categoryId);
     const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
-    const isDomesticOrRelated = categoryName.includes('domestic') || 
-                                categoryName.includes('general') || 
-                                categoryName.includes('bond') || 
-                                categoryName.includes('lease') || 
-                                categoryName.includes('other');
+    const isDomesticOrRelated = categoryName.includes('domestic') ||
+      categoryName.includes('general') ||
+      categoryName.includes('bond') ||
+      categoryName.includes('lease') ||
+      categoryName.includes('other');
 
     const fetchExtraServiceItems = async () => {
       if (!isDomesticOrRelated) return;
@@ -119,6 +125,9 @@ const CleaningJobDetailsForm = ({
       if (categoryRef.current && !categoryRef.current.contains(event.target)) setIsCategoryOpen(false);
       if (serviceRef.current && !serviceRef.current.contains(event.target)) setIsServiceOpen(false);
       if (commercialTypeRef.current && !commercialTypeRef.current.contains(event.target)) setIsCommercialTypeOpen(false);
+      if (petTypeRef.current && !petTypeRef.current.contains(event.target)) setIsPetTypeOpen(false);
+      if (numPetsRef.current && !numPetsRef.current.contains(event.target)) setIsNumPetsOpen(false);
+      if (handymanUrgencyRef.current && !handymanUrgencyRef.current.contains(event.target)) setIsHandymanUrgencyOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -135,19 +144,23 @@ const CleaningJobDetailsForm = ({
         const normName = normalize(c.name);
         // Direct include match
         if (normName.includes(normPrefill) || normPrefill.includes(normName)) return true;
-        
+
         // Specific checks for common categories
         if (normPrefill.includes('bond') && normName.includes('bond')) return true;
         if (normPrefill.includes('commercial') && normName.includes('commercial')) return true;
         if (normPrefill.includes('general') && normName.includes('general')) return true;
-        
+        if ((normPrefill.includes('housekeeping') || normPrefill.includes('housekeeper')) &&
+            (normName.includes('housekeeping') || normName.includes('housekeeper'))) return true;
+        if (normPrefill.includes('pet') && normName.includes('pet')) return true;
+        if (normPrefill.includes('handyman') && normName.includes('handyman')) return true;
+
         return false;
       });
-      
+
       if (found) {
         onInputChange('categoryId', found._id);
         onInputChange('propertyType', found.name);
-        
+
         // If it's bond cleaning, ensure the toggle is on
         const isBond = found.name.toLowerCase().includes('bond');
         if (isBond && !isBondCleaning && onBondCleaningToggle) {
@@ -179,16 +192,16 @@ const CleaningJobDetailsForm = ({
   const serviceName = (selectedService ? selectedService.name : (formData.serviceDetail || '')).toLowerCase();
 
   const isCommercial = categoryName.includes('commercial');
-  const isDomesticOrRelated = categoryName.includes('domestic') || 
-                              categoryName.includes('general') || 
-                              categoryName.includes('bond') || 
-                              categoryName.includes('lease') || 
-                              categoryName.includes('other');
+  const isPetSitting = categoryName.includes('pet');
+  const isHandyman = categoryName.includes('handyman');
+  const isDomesticOrRelated = categoryName.includes('domestic') ||
+    categoryName.includes('general') ||
+    categoryName.includes('bond') ||
+    categoryName.includes('lease') ||
+    categoryName.includes('housekeeper') ||
+    categoryName.includes('other');
 
-  const isPetSittingOrHandyman = serviceName.includes('pet') || 
-                                 serviceName.includes('handyman');
-
-  const showRoomsAndBathrooms = isDomesticOrRelated && !isPetSittingOrHandyman;
+  const showRoomsAndBathrooms = isDomesticOrRelated && !isPetSitting && !isHandyman;
 
   const handleNeedCleaningChange = (value) => {
     onInputChange('needCleaning', value);
@@ -208,17 +221,17 @@ const CleaningJobDetailsForm = ({
       <div className="space-y-4 sm:space-y-6">
         <div>
           <h2 className="text-[20px] font-semibold text-[#111827] mb-1">
-            Tell us about your property
+            {isPetSitting ? "Tell us about your pet" : isHandyman ? "Tell us about your job" : "Tell us about your property"}
           </h2>
           <p className="text-sm sm:text-base text-gray-400 font-medium">
-            Add property details to ensure the best cleaning plan for you.
+            {isPetSitting ? "Add details to ensure the best pet care plan for you." : isHandyman ? "Add details to ensure the best handyman plan for you." : "Add property details to ensure the best cleaning plan for you."}
           </p>
         </div>
 
         {/* Cleaning Category Dropdown */}
         <div className="space-y-2">
           <label className="block text-sm sm:text-base font-medium text-[#111827]">
-            Cleaning Category
+            Service Category
           </label>
           <div className="relative" ref={categoryRef}>
             <div
@@ -286,9 +299,9 @@ const CleaningJobDetailsForm = ({
               <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-80 overflow-hidden flex flex-col">
                 <div className="px-4 py-2 border-b border-gray-50">
                   <div className="relative">
-                    <SearchIcon 
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-40" 
-                      alt="search"  
+                    <SearchIcon
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-40"
+                      alt="search"
                     />
                     <input
                       type="text"
@@ -341,11 +354,246 @@ const CleaningJobDetailsForm = ({
           </div>
         </div>
 
+        {/* Pet Sitting Fields (Conditional) */}
+        {isPetSitting && (
+          <div className="space-y-4 sm:space-y-6">
+            {/* What type of pet do you have? */}
+            <div className="space-y-2">
+              <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                What type of pet do you have?
+              </label>
+              <div className="relative" ref={petTypeRef}>
+                <div
+                  onClick={() => setIsPetTypeOpen(!isPetTypeOpen)}
+                  className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                >
+                  <span className={formData.petType ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                    {formData.petType || 'Select pet type'}
+                  </span>
+                  <img
+                    src={arrowDownIcon}
+                    alt="Dropdown"
+                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isPetTypeOpen ? 'rotate-180' : ''}`}
+                  />
+                </div>
+                {isPetTypeOpen && (
+                  <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                    {['Dog', 'Cat', 'Bird', 'Rabbit', 'Guinea Pig', 'Other'].map((type) => (
+                      <div
+                        key={type}
+                        className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                        onClick={() => {
+                          onInputChange('petType', type);
+                          setIsPetTypeOpen(false);
+                        }}
+                      >
+                        {type}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* How many pets need care? */}
+            <div className="space-y-2">
+              <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                How many pets need care?
+              </label>
+              <div className="relative" ref={numPetsRef}>
+                <div
+                  onClick={() => setIsNumPetsOpen(!isNumPetsOpen)}
+                  className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                >
+                  <span className={formData.numberOfPets ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                    {formData.numberOfPets === '4 or more' ? '4+' : (formData.numberOfPets || 'Select number of pets')}
+                  </span>
+                  <img
+                    src={arrowDownIcon}
+                    alt="Dropdown"
+                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isNumPetsOpen ? 'rotate-180' : ''}`}
+                  />
+                </div>
+                {isNumPetsOpen && (
+                  <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                    {['1', '2', '3', '4 or more'].map((num) => (
+                      <div
+                        key={num}
+                        className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                        onClick={() => {
+                          onInputChange('numberOfPets', num);
+                          setIsNumPetsOpen(false);
+                        }}
+                      >
+                        {num === '4 or more' ? '4+' : num}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* What else does your pet need? */}
+            <div className="space-y-4 pt-2">
+              <label className="block text-sm sm:text-base font-semibold text-[#111827]">
+                What else does your pet need?
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {['Feeding', 'Walking', 'Medication', 'Playtime', 'Litter cleaning', 'Other'].map((item) => {
+                  const isSelected = (formData.petNeeds || []).includes(item);
+                  return (
+                    <div
+                      key={item}
+                      onClick={() => {
+                        const current = formData.petNeeds || [];
+                        const next = current.includes(item)
+                          ? current.filter(x => x !== item)
+                          : [...current, item];
+                        onInputChange('petNeeds', next);
+                      }}
+                      className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all border rounded-2xl ${isSelected
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-gray-100 hover:border-primary-200 bg-white'
+                        }`}
+                    >
+                      <Checkbox
+                        name={`petNeeds-${item}`}
+                        checked={isSelected}
+                        onChange={() => { }} // Handled by parent div
+                        label={item}
+                        labelClassName="font-medium text-[15px] text-[#111827]"
+                        className="pointer-events-none"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Handyman Fields (Conditional) */}
+        {isHandyman && (
+          <div className="space-y-4 sm:space-y-6">
+            {/* What needs fixing or installing? */}
+            <div className="space-y-4">
+              <label className="block text-sm sm:text-base font-semibold text-[#111827]">
+                What needs fixing or installing?
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {['Door', 'Wall', 'Tap', 'Toilet', 'Shower', 'Light', 'Fan', 'Furniture', 'Cabinet', 'Fence', 'Other'].map((item) => {
+                  const isSelected = (formData.fixingItems || []).includes(item);
+                  return (
+                    <div
+                      key={item}
+                      onClick={() => {
+                        const current = formData.fixingItems || [];
+                        const next = current.includes(item)
+                          ? current.filter(x => x !== item)
+                          : [...current, item];
+                        onInputChange('fixingItems', next);
+                      }}
+                      className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all border rounded-2xl ${isSelected
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-gray-100 hover:border-primary-200 bg-white'
+                        }`}
+                    >
+                      <Checkbox
+                        name={`fixing-${item}`}
+                        checked={isSelected}
+                        onChange={() => { }} // Handled by parent div
+                        label={item}
+                        labelClassName="font-medium text-[15px] text-[#111827]"
+                        className="pointer-events-none"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* How urgent is the job? */}
+            <div className="space-y-2">
+              <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                How urgent is the job?
+              </label>
+              <div className="relative" ref={handymanUrgencyRef}>
+                <div
+                  onClick={() => setIsHandymanUrgencyOpen(!isHandymanUrgencyOpen)}
+                  className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                >
+                  <span className={formData.handymanUrgency ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                    {formData.handymanUrgency || 'Normal'}
+                  </span>
+                  <img
+                    src={arrowDownIcon}
+                    alt="Dropdown"
+                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isHandymanUrgencyOpen ? 'rotate-180' : ''}`}
+                  />
+                </div>
+                {isHandymanUrgencyOpen && (
+                  <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                    {['Normal', 'Urgent'].map((urg) => (
+                      <div
+                        key={urg}
+                        className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                        onClick={() => {
+                          onInputChange('handymanUrgency', urg);
+                          setIsHandymanUrgencyOpen(false);
+                        }}
+                      >
+                        {urg}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* What else is required? */}
+            <div className="space-y-4 pt-2">
+              <label className="block text-sm sm:text-base font-semibold text-[#111827]">
+                What else is required?
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {['Materials supplied', 'Materials needed', 'Disposal required', 'Other'].map((item) => {
+                  const isSelected = (formData.handymanRequirements || []).includes(item);
+                  return (
+                    <div
+                      key={item}
+                      onClick={() => {
+                        const current = formData.handymanRequirements || [];
+                        const next = current.includes(item)
+                          ? current.filter(x => x !== item)
+                          : [...current, item];
+                        onInputChange('handymanRequirements', next);
+                      }}
+                      className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all border rounded-2xl ${isSelected
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-gray-100 hover:border-primary-200 bg-white'
+                        }`}
+                    >
+                      <Checkbox
+                        name={`req-${item}`}
+                        checked={isSelected}
+                        onChange={() => { }} // Handled by parent div
+                        label={item}
+                        labelClassName="font-medium text-[15px] text-[#111827]"
+                        className="pointer-events-none"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Commercial Job Type Dropdown (Conditional) */}
         {isCommercial && (
           <div className="space-y-2">
             <label className="block text-sm sm:text-base font-medium text-[#111827]">
-             Type Of Job 
+              Type Of Job
             </label>
             <div className="relative" ref={commercialTypeRef}>
               <div
@@ -450,16 +698,15 @@ const CleaningJobDetailsForm = ({
                   <div
                     key={item._id}
                     onClick={() => handleExtraServiceToggle(item._id)}
-                    className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all ${
-                      isSelected 
-                        ? 'border-primary-500 bg-primary-50' 
+                    className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all ${isSelected
+                        ? 'border-primary-500 bg-primary-50'
                         : 'border-gray-100 hover:border-primary-200 bg-white'
-                    }`}
+                      }`}
                   >
                     <Checkbox
                       name={`extra-${item._id}`}
                       checked={isSelected}
-                      onChange={() => {}} // Toggle handled by parent div
+                      onChange={() => { }} // Toggle handled by parent div
                       label={item.name}
                       labelClassName="font-medium text-[15px] text-[#111827]"
                       className="pointer-events-none" // Parent div handles click
@@ -487,17 +734,17 @@ const CleaningJobDetailsForm = ({
                   </p>
                 </div>
                 <div className="space-y-4">
-                {['Yes', 'No', 'Not required', 'Not sure whether I need plans'].map((option) => (
-                  <RadioButton
-                    key={option}
-                    name="hasPlans"
-                    value={option}
-                    label={option}
-                    checked={formData.hasPlans === option}
-                    onChange={(e) => onInputChange('hasPlans', e.target.value)}
-                  />
-                ))}
-              </div>
+                  {['Yes', 'No', 'Not required', 'Not sure whether I need plans'].map((option) => (
+                    <RadioButton
+                      key={option}
+                      name="hasPlans"
+                      value={option}
+                      label={option}
+                      checked={formData.hasPlans === option}
+                      onChange={(e) => onInputChange('hasPlans', e.target.value)}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Do you have council approval for this job? */}
@@ -511,17 +758,17 @@ const CleaningJobDetailsForm = ({
                   </p>
                 </div>
                 <div className="space-y-4">
-                {['Yes', 'No', 'Not required', "Not sure whether it's needed"].map((option) => (
-                  <RadioButton
-                    key={option}
-                    name="hasCouncilApproval"
-                    value={option}
-                    label={option}
-                    checked={formData.hasCouncilApproval === option}
-                    onChange={(e) => onInputChange('hasCouncilApproval', e.target.value)}
-                  />
-                ))}
-              </div>
+                  {['Yes', 'No', 'Not required', "Not sure whether it's needed"].map((option) => (
+                    <RadioButton
+                      key={option}
+                      name="hasCouncilApproval"
+                      value={option}
+                      label={option}
+                      checked={formData.hasCouncilApproval === option}
+                      onChange={(e) => onInputChange('hasCouncilApproval', e.target.value)}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Budget */}
@@ -535,23 +782,23 @@ const CleaningJobDetailsForm = ({
                   </p>
                 </div>
                 <div className="space-y-4">
-                {['Under $20,000', '$20,000 - $50,000', '$50,000 - $100,000', 'More than $100,000', 'Not sure'].map((option) => (
-                  <RadioButton
-                    key={option}
-                    name="budget"
-                    value={option}
-                    label={option}
-                    checked={formData.budget === option}
-                    onChange={(e) => onInputChange('budget', e.target.value)}
-                  />
-                ))}
-              </div>
+                  {['Under $20,000', '$20,000 - $50,000', '$50,000 - $100,000', 'More than $100,000', 'Not sure'].map((option) => (
+                    <RadioButton
+                      key={option}
+                      name="budget"
+                      value={option}
+                      label={option}
+                      checked={formData.budget === option}
+                      onChange={(e) => onInputChange('budget', e.target.value)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
-          {/* What stage is your job at? (Shown for all cleaning) */}
-          {(isCommercial || isDomesticOrRelated) && (
+          {/* What stage is your job at? */}
+          {(isCommercial || isDomesticOrRelated || isPetSitting || isHandyman) && (
             <div className="space-y-4">
               <div>
                 <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
@@ -559,17 +806,17 @@ const CleaningJobDetailsForm = ({
                 </h2>
               </div>
               <div className="space-y-4">
-              {['Ready to hire', 'Planning & Budgeting'].map((option) => (
-                <RadioButton
-                  key={option}
-                  name="jobStage"
-                  value={option}
-                  label={option}
-                  checked={formData.jobStage === option}
-                  onChange={(e) => onInputChange('jobStage', e.target.value)}
-                />
-              ))}
-            </div>
+                {['Ready to hire', 'Planning & Budgeting'].map((option) => (
+                  <RadioButton
+                    key={option}
+                    name="jobStage"
+                    value={option}
+                    label={option}
+                    checked={formData.jobStage === option}
+                    onChange={(e) => onInputChange('jobStage', e.target.value)}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>

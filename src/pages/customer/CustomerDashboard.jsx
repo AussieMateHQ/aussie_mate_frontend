@@ -11,7 +11,6 @@ import { jobsAPI, userAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { getStatusChip } from "../../utils/statusUtils";
 import RewardImage from "../../assets/Reward.jpg";
-import CoinImage from "../../assets/coin.png";
 import CalendarIcon from "../../assets/Calendar.svg";
 import PersonIcon from "../../assets/user-check.svg";
 import SearchIcon from "../../assets/search.svg";
@@ -302,10 +301,10 @@ const CustomerDashboard = () => {
           <h3 className="text-[18px] sm:text-xl font-semibold text-[#111827] mb-4">
             Popular Services
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
             <div
-              onClick={() => navigate("/post-new-job", { state: { categoryName: "General Cleaning" } })}
-              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm"
+              onClick={() => navigate("/post-new-job", { state: { categoryName: "Domestic / General Cleaning" } })}
+              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -left-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
@@ -323,7 +322,7 @@ const CustomerDashboard = () => {
 
             <div
               onClick={() => navigate("/post-new-job", { state: { categoryName: "Commercial Cleaning" } })}
-              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm"
+              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -left-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
@@ -338,8 +337,8 @@ const CustomerDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate("/post-new-job", { state: { categoryName: "Bond Cleaning" } })}
-              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm"
+              onClick={() => navigate("/post-new-job", { state: { categoryName: "Bond / End-of-Lease Cleaning" } })}
+              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
@@ -354,18 +353,50 @@ const CustomerDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate("/post-new-job", { state: { categoryName: "Other Categories" } })}
-              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm"
+              onClick={() => navigate("/post-new-job", { state: { categoryName: "HOUSEKEEPER" } })}
+              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
             >
               {/* 🔵 Top-left glow */}
-              <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
+              <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#D6F5FF] opacity-40 blur-[40px] rounded-full"></div>
               <img
-                src={OtherImg}
-                alt="Other Categories"
+                src={HousekeepingImage}
+                alt="Housekeeper"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
               />
               <span className="text-[13px] sm:text-[15px] font-medium text-[#111827] text-center">
-                Other Categories
+                Housekeeper
+              </span>
+            </div>
+
+            <div
+              onClick={() => navigate("/post-new-job", { state: { categoryName: "Pet Sitting" } })}
+              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+            >
+              {/* 🔵 Top-left glow */}
+              <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#FFE4D6] opacity-40 blur-[40px] rounded-full"></div>
+              <img
+                src={PetSittingImage}
+                alt="Pet Sitting"
+                className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
+              />
+              <span className="text-[13px] sm:text-[15px] font-medium text-[#111827] text-center">
+                Pet Sitting
+              </span>
+            </div>
+
+            <div
+              onClick={() => navigate("/post-new-job", { state: { categoryName: "Handyman" } })}
+              className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border-1 border-[#E8EEFF] p-4 sm:p-6 flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+            >
+              {/* 🔵 Top-left glow */}
+              <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#E4FFD6] opacity-40 blur-[40px] rounded-full"></div>
+              <img
+                src={HandymanImage}
+                alt="Handyman"
+                className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
+              />
+              <span className="text-[13px] sm:text-[15px] font-medium text-[#111827] text-center">
+                Handyman
               </span>
             </div>
           </div>

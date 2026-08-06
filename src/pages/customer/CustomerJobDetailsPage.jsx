@@ -1058,8 +1058,8 @@ const CustomerJobDetailsPage = () => {
                           }}
                           variant=""
                           className={`py-3 text-base font-semibold rounded-full border transition-all ${isJobAssigned
-                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white cursor-pointer'
+                            ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'border-[#DCE4FF] bg-white text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white cursor-pointer'
                             }`}
                         >
                           Connect

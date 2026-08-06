@@ -59,7 +59,7 @@ const generateWeeklySchedule = (job, workProgress, occurrences) => {
       status,
       photos,
       amount: occurrence.amount || workProgress?.amountPerOccurrence || 100,
-      occurrence: occurrence 
+      occurrence: occurrence
     };
   });
 };
@@ -1046,15 +1046,15 @@ const CustomerInProgressJobDetailsPage = () => {
         confirmButtonColor="bg-blue-600 hover:bg-blue-700"
       >
         <div className="mt-4 mb-4 text-center">
-          <a 
+          <a
             href={`tel:${phoneToDisplay}`}
             className="inline-flex items-center gap-2 px-5 py-3.5 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-2xl shadow-inner font-medium text-lg text-blue-600 tracking-wide transition-all cursor-pointer"
           >
             📞 {phoneToDisplay}
           </a>
           <p className="text-xs text-gray-400 font-semibold mt-2.5">
-            {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-              ? "📱 Tap the number above to make a direct call." 
+            {/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+              ? "📱 Tap the number above to make a direct call."
               : "💻 Click the number to call, or click Copy below."}
           </p>
           {copied && (
