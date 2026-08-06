@@ -512,43 +512,7 @@ const CleaningJobDetailsForm = ({
               </div>
             </div>
 
-            {/* How urgent is the job? */}
-            <div className="space-y-2">
-              <label className="block text-sm sm:text-base font-medium text-[#111827]">
-                How urgent is the job?
-              </label>
-              <div className="relative" ref={handymanUrgencyRef}>
-                <div
-                  onClick={() => setIsHandymanUrgencyOpen(!isHandymanUrgencyOpen)}
-                  className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
-                >
-                  <span className={formData.handymanUrgency ? 'text-[#111827] font-medium' : 'text-gray-400'}>
-                    {formData.handymanUrgency || 'Normal'}
-                  </span>
-                  <img
-                    src={arrowDownIcon}
-                    alt="Dropdown"
-                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isHandymanUrgencyOpen ? 'rotate-180' : ''}`}
-                  />
-                </div>
-                {isHandymanUrgencyOpen && (
-                  <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
-                    {['Normal', 'Urgent'].map((urg) => (
-                      <div
-                        key={urg}
-                        className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
-                        onClick={() => {
-                          onInputChange('handymanUrgency', urg);
-                          setIsHandymanUrgencyOpen(false);
-                        }}
-                      >
-                        {urg}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+
 
             {/* What else is required? */}
             <div className="space-y-4 pt-2">
