@@ -306,10 +306,10 @@ const MySubscriptionPage = () => {
                               <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center">
                                 <Coins className="w-3.5 h-3.5 text-[#1F6FEB]" />
                               </div>
-                              <span className="text-[#1F6FEB] font-medium text-sm">Shared Credits Pool</span>
+                              <span className="text-[#1F6FEB] font-medium text-sm">Monthly Plan Credits</span>
                             </div>
                             <p className="text-xl font-semibold text-[#111827]">
-                              {availableCredits} Credits
+                              {planInfo.creditsPerMonth || 0} Credits
                             </p>
                           </div>
 
@@ -335,7 +335,12 @@ const MySubscriptionPage = () => {
               {/* Credit Usage Bar */}
               <div className="bg-[#F9FAFB] rounded-2xl shadow-sm border border-[#F3F3F3] p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <p className="text-2xl font-semibold text-[#111827]">Credit Usage</p>
+                  <div>
+                    <p className="text-2xl font-semibold text-[#111827]">Credit Usage</p>
+                    <p className="text-sm text-gray-500 font-medium mt-1">
+                      Shared Pool: <span className="text-[#1F6FEB] font-bold">{availableCredits} Credits available</span> across all active plans.
+                    </p>
+                  </div>
                   <button
                     onClick={() => navigate("/buy-credits")}
                     className="flex items-center gap-2 text-[#1F6FEB] cursor-pointer font-bold text-sm hover:opacity-80 transition-opacity"
@@ -430,10 +435,15 @@ const MySubscriptionPage = () => {
                                   />
                                   {hoveredItemId === item._id && (
                                     <div className="absolute left-6 bottom-0 w-80 p-5 bg-white/95 backdrop-blur-md border border-gray-200/60 rounded-2xl shadow-2xl z-50 text-left text-gray-800 space-y-3 pointer-events-none">
-                                      <div className="border-b border-gray-100 pb-2">
+
+                                      {/* Header: service name, date, location */}
+                                      <div className="border-b border-gray-100 pb-3">
                                         <h4 className="text-sm font-bold text-gray-900 capitalize">
                                           {item.jobId.serviceTypeId?.name || item.jobId.categoryId?.name || "Cleaning Job"}
                                         </h4>
+                                        {item.jobId.commercialJobTypeId?.name && (
+                                          <p className="text-xs text-gray-500 mt-0.5">{item.jobId.commercialJobTypeId.name}</p>
+                                        )}
                                         {item.jobId.scheduledDate && (
                                           <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
                                             <CalendarIcon className="w-3.5 h-3.5 opacity-60" />
@@ -449,6 +459,93 @@ const MySubscriptionPage = () => {
                                           </div>
                                         )}
                                       </div>
+
+                                      {/* Rooms & Bathrooms (Domestic/Bond) */}
+                                      {(item.jobId.roomsNeedCleaning || item.jobId.bathroomsNeedCleaning || item.jobId.needCleaning) && (
+                                        <div className="flex flex-wrap gap-2">
+                                          {(item.jobId.roomsNeedCleaning || item.jobId.needCleaning) && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full font-medium">
+                                              🛏 {item.jobId.roomsNeedCleaning || item.jobId.needCleaning} Room{parseInt(item.jobId.roomsNeedCleaning || item.jobId.needCleaning) > 1 ? "s" : ""}
+                                            </span>
+                                          )}
+                                          {item.jobId.bathroomsNeedCleaning && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full font-medium">
+                                              🚿 {item.jobId.bathroomsNeedCleaning} Bathroom{parseInt(item.jobId.bathroomsNeedCleaning) > 1 ? "s" : ""}
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+
+                                      {/* Extra Services */}
+                                      {item.jobId.extraServiceItems?.length > 0 && (
+                                        <div>
+                                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Extra Services</p>
+                                          <div className="flex flex-wrap gap-1">
+                                            {item.jobId.extraServiceItems.map((srv, si) => (
+                                              <span key={si} className="px-2 py-0.5 bg-blue-50 text-[#1F6FEB] text-xs rounded-full font-medium border border-blue-100">
+                                                {typeof srv === "object" ? srv.name : srv}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Pet Details */}
+                                      {(item.jobId.petType || item.jobId.numberOfPets || item.jobId.petNeeds?.length > 0) && (
+                                        <div>
+                                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pet Details</p>
+                                          <div className="flex flex-wrap gap-1">
+                                            {item.jobId.petType && (
+                                              <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-xs rounded-full font-medium border border-orange-100">
+                                                🐾 {item.jobId.petType}
+                                              </span>
+                                            )}
+                                            {item.jobId.numberOfPets && (
+                                              <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-xs rounded-full font-medium border border-orange-100">
+                                                x{item.jobId.numberOfPets}
+                                              </span>
+                                            )}
+                                            {item.jobId.petNeeds?.map((n, ni) => (
+                                              <span key={ni} className="px-2 py-0.5 bg-orange-50 text-orange-600 text-xs rounded-full font-medium border border-orange-100">{n}</span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Handyman Items */}
+                                      {item.jobId.fixingItems?.length > 0 && (
+                                        <div>
+                                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Items to Fix</p>
+                                          <div className="flex flex-wrap gap-1">
+                                            {item.jobId.fixingItems.map((f, fi) => (
+                                              <span key={fi} className="px-2 py-0.5 bg-yellow-50 text-yellow-700 text-xs rounded-full font-medium border border-yellow-100">{f}</span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Commercial: Has Plans, Council Approval, Budget */}
+                                      {(item.jobId.hasPlans || item.jobId.hasCouncilApproval || item.jobId.budget) && (
+                                        <div className="space-y-1">
+                                          {item.jobId.hasPlans && (
+                                            <p className="text-xs text-gray-600 font-medium">Plans: <span className="font-semibold">{item.jobId.hasPlans}</span></p>
+                                          )}
+                                          {item.jobId.hasCouncilApproval && (
+                                            <p className="text-xs text-gray-600 font-medium">Council Approval: <span className="font-semibold">{item.jobId.hasCouncilApproval}</span></p>
+                                          )}
+                                          {item.jobId.budget && (
+                                            <p className="text-xs text-gray-600 font-medium">Budget: <span className="font-semibold">{item.jobId.budget}</span></p>
+                                          )}
+                                        </div>
+                                      )}
+
+                                      {/* Job Stage */}
+                                      {item.jobId.jobStage && (
+                                        <div>
+                                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Job Stage</p>
+                                          <p className="text-xs font-semibold text-gray-700">{item.jobId.jobStage}</p>
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </span>
@@ -541,11 +638,10 @@ const MySubscriptionPage = () => {
                 return (
                   <div
                     key={plan._id}
-                    className={`rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col group ${
-                      isAlreadySubscribed
+                    className={`rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col group ${isAlreadySubscribed
                         ? "bg-[#F0FDF4] border-[#BBF7D0]"
                         : "bg-[#F9FAFB] border-[#F3F3F3]"
-                    }`}
+                      }`}
                   >
                     {/* BG decoration */}
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] pointer-events-none z-0">

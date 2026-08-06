@@ -64,6 +64,28 @@ const CleanerJobsPage = () => {
   const [cleanerProfile, setCleanerProfile] = useState(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
+  // Helper: find creditsPerLead for a job by matching its category to the cleaner's active plans
+  const getCreditsPerLeadForJob = (job) => {
+    if (!subscriptionStatus) return 20;
+    const jobCategoryId = job?.originalJob?.categoryId?._id || job?.originalJob?.categoryId || job?.categoryId;
+
+    // Check multi-plan subscriptions[] first
+    const multiSubs = subscriptionStatus.subscriptions || [];
+    for (const sub of multiSubs) {
+      if (sub.status !== 'active') continue;
+      const cats = sub.planId?.includedCategories || [];
+      const match = cats.some(c => (c._id || c) === jobCategoryId || (c._id || c)?.toString() === jobCategoryId?.toString());
+      if (match && sub.planId?.creditsPerLead) return sub.planId.creditsPerLead;
+    }
+
+    // Fallback: use any active plan's creditsPerLead
+    const anyPlan = multiSubs.find(s => s.status === 'active' && s.planId?.creditsPerLead);
+    if (anyPlan) return anyPlan.planId.creditsPerLead;
+
+    // Final fallback: legacy subscription
+    return subscriptionStatus?.subscription?.planId?.creditsPerLead || 20;
+  };
+
   // Accept/Reject Confirmation Modals State
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -347,8 +369,10 @@ const CleanerJobsPage = () => {
     if (!jobToAccept) return;
     const jobId = jobToAccept.id;
 
-    // Check if cleaner has active subscription
-    const isSubscribed = subscriptionStatus?.subscription?.status === 'active';
+    // Check if cleaner has active subscription (multi-plan or legacy)
+    const multiSubs = subscriptionStatus?.subscriptions || [];
+    const hasActiveMulti = multiSubs.some(s => s.status === 'active');
+    const isSubscribed = hasActiveMulti || subscriptionStatus?.subscription?.status === 'active';
     if (!isSubscribed) {
       navigate('/my-subscription');
       return;
@@ -527,7 +551,7 @@ const CleanerJobsPage = () => {
                         <div className="flex gap-2">
                           {activeTab === 'posted' && (
                             <span className="text-[12px] font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
-                              Cost:{subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} Credits
+                              Cost: {getCreditsPerLeadForJob(job)} Credits
                             </span>
                           )}
                           {/* {job.isUrgent && (
@@ -927,7 +951,7 @@ const CleanerJobsPage = () => {
         title="Accept Job Interest?"
         message={
           jobToAccept
-            ? `Accepting this job will send an interest message to the customer. This will deduct ${subscriptionStatus?.subscription?.planId?.creditsPerLead || 20} credits from your account.`
+            ? `Accepting this job will send an interest message to the customer. This will deduct ${getCreditsPerLeadForJob(jobToAccept)} credits from your account.`
             : "Accepting this job will deduct credits from your account."
         }
         confirmText="Confirm Accept"
