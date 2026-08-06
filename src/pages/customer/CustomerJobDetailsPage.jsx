@@ -810,6 +810,73 @@ const CustomerJobDetailsPage = () => {
               </div>
             )}
 
+            {(job.petType || job.numberOfPets || (job.petNeeds && job.petNeeds.length > 0)) && (
+              <div className="space-y-3 mb-4">
+                {(job.petType || job.numberOfPets) && (
+                  <div className="flex flex-wrap gap-2">
+                    {job.petType && (
+                      <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                         Pet Type: {job.petType}
+                      </div>
+                    )}
+                    {job.numberOfPets && (
+                      <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                         Number of Pets: {job.numberOfPets}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {job.petNeeds && job.petNeeds.length > 0 && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pet Needs</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.petNeeds.map((item, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {((job.fixingItems && job.fixingItems.length > 0) || job.handymanUrgency || (job.handymanRequirements && job.handymanRequirements.length > 0)) && (
+              <div className="space-y-3 mb-4">
+                {job.handymanUrgency && (
+                  <div className="flex flex-wrap gap-2">
+                    <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                      <span className="text-[#1A73E8]">⚠️</span> Urgency: {job.handymanUrgency}
+                    </div>
+                  </div>
+                )}
+                {job.fixingItems && job.fixingItems.length > 0 && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Fixing/Installing</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.fixingItems.map((item, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                          🔨 {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {job.handymanRequirements && job.handymanRequirements.length > 0 && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Requirements</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {job.handymanRequirements.map((item, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
+                          📋 {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Additional details */}
             {(job.hasPlans || job.hasCouncilApproval || job.budget || job.jobStage) && (
               <div className="grid gap-3 sm:grid-cols-2 mt-4 mb-6">
