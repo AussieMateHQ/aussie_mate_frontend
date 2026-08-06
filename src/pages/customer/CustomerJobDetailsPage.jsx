@@ -841,15 +841,8 @@ const CustomerJobDetailsPage = () => {
               </div>
             )}
 
-            {((job.fixingItems && job.fixingItems.length > 0) || job.handymanUrgency || (job.handymanRequirements && job.handymanRequirements.length > 0)) && (
+            {((job.fixingItems && job.fixingItems.length > 0) || (job.handymanRequirements && job.handymanRequirements.length > 0)) && (
               <div className="space-y-3 mb-4">
-                {job.handymanUrgency && (
-                  <div className="flex flex-wrap gap-2">
-                    <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                      <span className="text-[#1A73E8]">⚠️</span> Urgency: {job.handymanUrgency}
-                    </div>
-                  </div>
-                )}
                 {job.fixingItems && job.fixingItems.length > 0 && (
                   <div className="space-y-1.5">
                     <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Fixing/Installing</h4>

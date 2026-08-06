@@ -251,15 +251,8 @@ const JobOverviewCard = ({
           </div>
         )}
 
-        {((fixingItems && fixingItems.length > 0) || handymanUrgency || (handymanRequirements && handymanRequirements.length > 0)) && (
+        {((fixingItems && fixingItems.length > 0) || (handymanRequirements && handymanRequirements.length > 0)) && (
           <div className="space-y-3 pt-1">
-            {handymanUrgency && (
-              <div className="flex flex-wrap gap-2">
-                <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                  <span className="text-[#1A73E8]">⚠️</span> Urgency: {handymanUrgency}
-                </div>
-              </div>
-            )}
 
             {fixingItems && fixingItems.length > 0 && (
               <div className="space-y-1.5">
