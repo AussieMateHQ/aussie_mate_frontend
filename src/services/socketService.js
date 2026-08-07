@@ -13,20 +13,20 @@ class SocketService {
     if (this.socket && this.isConnected) {
       return;
     }
-    
+
     if (this.socket && !this.isConnected) {
       this.disconnect();
     }
 
     let backendURL = API_CONFIG.BASE_URL;
-    
+
     if (backendURL && backendURL.endsWith('/api')) {
       backendURL = backendURL.slice(0, -4);
     }
 
     if (!backendURL || backendURL.includes('undefined')) {
       console.error('❌ [SOCKET] VITE_BACKEND_URL environment variable is not set');
-      console.error('📋 Current API_CONFIG.BASE_URL:', API_CONFIG.BASE_URL);
+      console.error('Current API_CONFIG.BASE_URL:', API_CONFIG.BASE_URL);
       return;
     }
 
@@ -46,7 +46,7 @@ class SocketService {
 
     this.socket.on('connect', () => {
       this.isConnected = true;
-      
+
       try {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -59,7 +59,7 @@ class SocketService {
       } catch (e) {
         console.error('❌ Error parsing user data:', e);
       }
-      
+
       this.notifyListeners('connectionStatus', true);
     });
 
@@ -72,7 +72,7 @@ class SocketService {
     this.socket.on('chat_joined', (data) => {
       this.notifyListeners('chatJoined', data);
     });
-    
+
     this.socket.on('chat_history', (messages) => {
       this.notifyListeners('chatHistory', messages);
     });
@@ -80,7 +80,7 @@ class SocketService {
     this.socket.on('chat_not_found', (data) => {
       this.notifyListeners('chatNotFound', data);
     });
-    
+
     this.socket.on('receive_message', (message) => {
       this.notifyListeners('newMessage', message);
     });
@@ -88,7 +88,7 @@ class SocketService {
     this.socket.on('new_message', (message) => {
       this.notifyListeners('newMessage', message);
     });
-    
+
     this.socket.on('chat_notification', (notification) => {
       this.notifyListeners('chatNotification', notification);
     });
@@ -150,12 +150,12 @@ class SocketService {
       if (error.message === 'Failed to join chat') {
         return;
       } else if (error.message === 'Access denied') {
-        this.notifyListeners('error', { 
-          message: 'Access denied. Please check your login status or contact support.' 
+        this.notifyListeners('error', {
+          message: 'Access denied. Please check your login status or contact support.'
         });
       } else if (error.message === 'You must submit a quote before starting a chat') {
-        this.notifyListeners('error', { 
-          message: 'You must submit a quote for this job first. Once the customer accepts your quote, you can start chatting.' 
+        this.notifyListeners('error', {
+          message: 'You must submit a quote for this job first. Once the customer accepts your quote, you can start chatting.'
         });
       } else {
         this.notifyListeners('error', error);
@@ -164,7 +164,7 @@ class SocketService {
 
     this.socket.on('connect_error', (error) => {
       console.error('❌ Socket connection error:', error.message);
-      this.notifyListeners('error', { 
+      this.notifyListeners('error', {
         message: 'Failed to connect to chat server. Please check if the backend is running.'
       });
     });
@@ -193,7 +193,7 @@ class SocketService {
 
   notifyListeners(event, data) {
     const matchingListeners = this.listeners.filter(listener => listener.event === event);
-      matchingListeners.forEach((listener, index) => {
+    matchingListeners.forEach((listener, index) => {
       listener.callback(data);
     });
   }
@@ -215,8 +215,8 @@ class SocketService {
   sendMessage(chatRoomId, content, messageType = 'text') {
     const validation = validateMessageForPhoneNumbers(content);
     if (!validation.isValid) {
-      this.notifyListeners('error', { 
-        message: validation.message 
+      this.notifyListeners('error', {
+        message: validation.message
       });
       return;
     }
@@ -233,8 +233,8 @@ class SocketService {
   sendQuote(chatRoomId, price, message) {
     const validation = validateMessageForPhoneNumbers(message);
     if (!validation.isValid) {
-      this.notifyListeners('error', { 
-        message: 'Phone numbers are not allowed in quote messages. Please contact through the platform.' 
+      this.notifyListeners('error', {
+        message: 'Phone numbers are not allowed in quote messages. Please contact through the platform.'
       });
       return;
     }
@@ -310,8 +310,8 @@ class SocketService {
   sendAdminMessage(adminChatRoomId, content, messageType = 'text', fileData = null) {
     const validation = validateMessageForPhoneNumbers(content);
     if (!validation.isValid) {
-      this.notifyListeners('error', { 
-        message: validation.message 
+      this.notifyListeners('error', {
+        message: validation.message
       });
       return;
     }
