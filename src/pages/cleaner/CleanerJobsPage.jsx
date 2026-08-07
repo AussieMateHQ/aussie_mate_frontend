@@ -649,7 +649,7 @@ const CleanerJobsPage = () => {
                           {/* Handyman Details */}
                           {((job.originalJob?.fixingItems && job.originalJob.fixingItems.length > 0) || job.originalJob?.handymanUrgency || (job.originalJob?.handymanRequirements && job.originalJob.handymanRequirements.length > 0)) && (
                             <div className="space-y-3">
-                              {job.originalJob.handymanUrgency && (
+                              {job.originalJob.handymanUrgency && job.originalJob.handymanUrgency !== 'Normal' && (
                                 <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
                                   Urgency: {job.originalJob.handymanUrgency}
                                 </div>
