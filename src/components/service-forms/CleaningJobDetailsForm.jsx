@@ -29,6 +29,10 @@ const CleaningJobDetailsForm = ({
   const [isPetTypeOpen, setIsPetTypeOpen] = useState(false);
   const [isNumPetsOpen, setIsNumPetsOpen] = useState(false);
   const [isHandymanUrgencyOpen, setIsHandymanUrgencyOpen] = useState(false);
+  const [dynamicPetTypes, setDynamicPetTypes] = useState(['Dog', 'Cat', 'Bird', 'Rabbit', 'Guinea Pig', 'Other']);
+  const [dynamicPetNeeds, setDynamicPetNeeds] = useState(['Feeding', 'Walking', 'Medication', 'Playtime', 'Litter cleaning', 'Other']);
+  const [dynamicFixingItems, setDynamicFixingItems] = useState(['Door', 'Wall', 'Tap', 'Toilet', 'Shower', 'Light', 'Fan', 'Furniture', 'Cabinet', 'Fence', 'Other']);
+  const [dynamicHandymanRequirements, setDynamicHandymanRequirements] = useState(['Materials supplied', 'Materials needed', 'Disposal required', 'Other']);
 
   const categoryRef = useRef(null);
   const serviceRef = useRef(null);
@@ -116,6 +120,46 @@ const CleaningJobDetailsForm = ({
       }
     };
     fetchExtraServiceItems();
+  }, [formData.categoryId, categories]);
+
+  // Fetch pet settings if pet sitting category selected
+  useEffect(() => {
+    const selectedCategory = categories.find((c) => c._id === formData.categoryId);
+    const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
+    if (!categoryName.includes('pet')) return;
+
+    const fetchPetSettings = async () => {
+      try {
+        const response = await categoriesAPI.getPetSettings();
+        if (response.success && response.data) {
+          if (response.data.petTypes) setDynamicPetTypes(response.data.petTypes);
+          if (response.data.petNeeds) setDynamicPetNeeds(response.data.petNeeds);
+        }
+      } catch (error) {
+        console.error('Error fetching pet settings:', error);
+      }
+    };
+    fetchPetSettings();
+  }, [formData.categoryId, categories]);
+
+  // Fetch handyman settings if handyman category selected
+  useEffect(() => {
+    const selectedCategory = categories.find((c) => c._id === formData.categoryId);
+    const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
+    if (!categoryName.includes('handyman')) return;
+
+    const fetchHandymanSettings = async () => {
+      try {
+        const response = await categoriesAPI.getHandymanSettings();
+        if (response.success && response.data) {
+          if (response.data.fixingItems) setDynamicFixingItems(response.data.fixingItems);
+          if (response.data.handymanRequirements) setDynamicHandymanRequirements(response.data.handymanRequirements);
+        }
+      } catch (error) {
+        console.error('Error fetching handyman settings:', error);
+      }
+    };
+    fetchHandymanSettings();
   }, [formData.categoryId, categories]);
 
 
@@ -378,18 +422,33 @@ const CleaningJobDetailsForm = ({
                 </div>
                 {isPetTypeOpen && (
                   <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
-                    {['Dog', 'Cat', 'Bird', 'Rabbit', 'Guinea Pig', 'Other'].map((type) => (
-                      <div
-                        key={type}
-                        className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
-                        onClick={() => {
-                          onInputChange('petType', type);
-                          setIsPetTypeOpen(false);
-                        }}
-                      >
-                        {type}
-                      </div>
-                    ))}
+                    {dynamicPetTypes.map((type) => {
+                      const currentSelected = formData.petType
+                        ? formData.petType.split(',').map(s => s.trim()).filter(Boolean)
+                        : [];
+                      const isSelected = currentSelected.includes(type);
+                      return (
+                        <div
+                          key={type}
+                          className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium flex items-center justify-between"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const nextSelected = isSelected
+                              ? currentSelected.filter(x => x !== type)
+                              : [...currentSelected, type];
+                            onInputChange('petType', nextSelected.join(', '));
+                          }}
+                        >
+                          <span>{type}</span>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            readOnly
+                            className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -439,7 +498,7 @@ const CleaningJobDetailsForm = ({
                 What else does your pet need?
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {['Feeding', 'Walking', 'Medication', 'Playtime', 'Litter cleaning', 'Other'].map((item) => {
+                {dynamicPetNeeds.map((item) => {
                   const isSelected = (formData.petNeeds || []).includes(item);
                   return (
                     <div
@@ -452,7 +511,7 @@ const CleaningJobDetailsForm = ({
                         onInputChange('petNeeds', next);
                       }}
                       className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all border rounded-2xl ${isSelected
-                          ? 'border-primary-500 bg-primary-50'
+                          ? 'border-[#1A73E8] bg-[#E8F0FE]'
                           : 'border-gray-100 hover:border-primary-200 bg-white'
                         }`}
                     >
@@ -481,7 +540,7 @@ const CleaningJobDetailsForm = ({
                 What needs fixing or installing?
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {['Door', 'Wall', 'Tap', 'Toilet', 'Shower', 'Light', 'Fan', 'Furniture', 'Cabinet', 'Fence', 'Other'].map((item) => {
+                {dynamicFixingItems.map((item) => {
                   const isSelected = (formData.fixingItems || []).includes(item);
                   return (
                     <div
@@ -494,7 +553,7 @@ const CleaningJobDetailsForm = ({
                         onInputChange('fixingItems', next);
                       }}
                       className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all border rounded-2xl ${isSelected
-                          ? 'border-primary-500 bg-primary-50'
+                          ? 'border-[#1A73E8] bg-[#E8F0FE]'
                           : 'border-gray-100 hover:border-primary-200 bg-white'
                         }`}
                     >
@@ -520,7 +579,7 @@ const CleaningJobDetailsForm = ({
                 What else is required?
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {['Materials supplied', 'Materials needed', 'Disposal required', 'Other'].map((item) => {
+                {dynamicHandymanRequirements.map((item) => {
                   const isSelected = (formData.handymanRequirements || []).includes(item);
                   return (
                     <div
@@ -533,7 +592,7 @@ const CleaningJobDetailsForm = ({
                         onInputChange('handymanRequirements', next);
                       }}
                       className={`flex items-center gap-3 px-6 py-4 cursor-pointer transition-all border rounded-2xl ${isSelected
-                          ? 'border-primary-500 bg-primary-50'
+                          ? 'border-[#1A73E8] bg-[#E8F0FE]'
                           : 'border-gray-100 hover:border-primary-200 bg-white'
                         }`}
                     >

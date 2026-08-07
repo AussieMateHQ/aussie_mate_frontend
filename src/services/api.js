@@ -1386,6 +1386,16 @@ export const categoriesAPI = {
   getExtraServiceItems: async () => {
     return apiRequest('/categories/extra-service-items');
   },
+
+  // Get pet settings (types and needs)
+  getPetSettings: async () => {
+    return apiRequest('/categories/pet-settings');
+  },
+
+  // Get handyman settings (fixing items and requirements)
+  getHandymanSettings: async () => {
+    return apiRequest('/categories/handyman-settings');
+  },
 };
 
 // File upload helper (Cloudinary)

@@ -494,7 +494,6 @@ const InProgressJobDetailsPage = () => {
                     }
                 }
             } catch (paymentError) {
-                console.warn('⚠️ Payment capture failed or not needed:', paymentError);
             }
 
             const response = await jobPhotosAPI.updateJobStatus(jobId, 'pending_customer_confirmation', occId);

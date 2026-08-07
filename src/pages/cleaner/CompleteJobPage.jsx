@@ -225,7 +225,6 @@ const CompleteJobPage = () => {
           }
         }
       } catch (paymentError) {
-        console.warn('⚠️ Could not capture payment automatically:', paymentError);
       }
 
       const response = await jobPhotosAPI.updateJobStatus(jobId, 'pending_customer_confirmation', occurrenceId);

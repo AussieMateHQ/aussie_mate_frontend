@@ -789,12 +789,12 @@ const CustomerInProgressJobDetailsPage = () => {
                   <div className="flex flex-wrap gap-2">
                     {job.petType && (
                       <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                         Pet Type: {job.petType}
+                        Pet Type: {job.petType}
                       </div>
                     )}
                     {job.numberOfPets && (
                       <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                         Number of Pets: {job.numberOfPets}
+                        Number of Pets: {job.numberOfPets}
                       </div>
                     )}
                   </div>
@@ -822,7 +822,7 @@ const CustomerInProgressJobDetailsPage = () => {
                     <div className="flex flex-wrap gap-2">
                       {job.fixingItems.map((item, idx) => (
                         <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
-                          🔨 {item}
+                          {item}
                         </span>
                       ))}
                     </div>

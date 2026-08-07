@@ -842,7 +842,7 @@ const PostNewJobPage = () => {
           {(!selectedLocation.address || selectedLocation.address === 'Location not set') && (
             <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-yellow-800 text-sm">
-                ⚠️ Please set your address in profile before posting jobs
+                Please set your address in profile before posting jobs
               </p>
             </div>
           )}

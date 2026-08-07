@@ -27,30 +27,28 @@ const CleanerJobsPage = () => {
 
   const [subFilter, setSubFilter] = useState('request_sent');
 
-  // Update tab if location state changes (e.g. navigating from dashboard to a specific tab)
   useEffect(() => {
     if (location.state?.tab) {
       setActiveTab(normalizeTab(location.state.tab));
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state]);
+  }, [location.state, navigate]);
 
 
 
   const [showSortModal, setShowSortModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [jobs, setJobs] = useState([]); // jobs for the current page
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [requireVerification, setRequireVerification] = useState(false);
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
   const jobsPerPage = 10;
 
-  // Filters / other state kept same
   const [distance, setDistance] = useState(25);
   const [customDistance, setCustomDistance] = useState('');
 
@@ -64,12 +62,10 @@ const CleanerJobsPage = () => {
   const [cleanerProfile, setCleanerProfile] = useState(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
 
-  // Helper: find creditsPerLead for a job by matching its category to the cleaner's active plans
   const getCreditsPerLeadForJob = (job) => {
     if (!subscriptionStatus) return 20;
     const jobCategoryId = job?.originalJob?.categoryId?._id || job?.originalJob?.categoryId || job?.categoryId;
 
-    // Check multi-plan subscriptions[] first
     const multiSubs = subscriptionStatus.subscriptions || [];
     for (const sub of multiSubs) {
       if (sub.status !== 'active') continue;
@@ -78,15 +74,12 @@ const CleanerJobsPage = () => {
       if (match && sub.planId?.creditsPerLead) return sub.planId.creditsPerLead;
     }
 
-    // Fallback: use any active plan's creditsPerLead
     const anyPlan = multiSubs.find(s => s.status === 'active' && s.planId?.creditsPerLead);
     if (anyPlan) return anyPlan.planId.creditsPerLead;
 
-    // Final fallback: legacy subscription
     return subscriptionStatus?.subscription?.planId?.creditsPerLead || 20;
   };
 
-  // Accept/Reject Confirmation Modals State
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [jobToAccept, setJobToAccept] = useState(null);
@@ -95,11 +88,9 @@ const CleanerJobsPage = () => {
   const [modalError, setModalError] = useState('');
   const [expandedJobId, setExpandedJobId] = useState(null);
 
-  // --- NEW: cache and abort refs ---
-  const apiCache = useRef({}); // cache per status: { statusKey: { data, total } }
+  const apiCache = useRef({});
   const activeController = useRef(null);
 
-  // load cleaner profile/reviews once
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -631,12 +622,12 @@ const CleanerJobsPage = () => {
                               <div className="flex flex-wrap gap-2">
                                 {job.originalJob.petType && (
                                   <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                                    <span className="text-[#1A73E8]">🐾</span> Pet: {job.originalJob.petType}
+                                    Pet: {job.originalJob.petType}
                                   </div>
                                 )}
                                 {job.originalJob.numberOfPets && (
                                   <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                                    <span className="text-[#1A73E8]">🔢</span> Count: {job.originalJob.numberOfPets}
+                                    Count: {job.originalJob.numberOfPets}
                                   </div>
                                 )}
                               </div>
@@ -660,7 +651,7 @@ const CleanerJobsPage = () => {
                             <div className="space-y-3">
                               {job.originalJob.handymanUrgency && (
                                 <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                                  <span className="text-[#1A73E8]">⚠️</span> Urgency: {job.originalJob.handymanUrgency}
+                                  Urgency: {job.originalJob.handymanUrgency}
                                 </div>
                               )}
                               {job.originalJob.fixingItems && job.originalJob.fixingItems.length > 0 && (
@@ -697,7 +688,7 @@ const CleanerJobsPage = () => {
                               <div className="flex flex-wrap gap-2">
                                 {job.originalJob.extraServiceItems.map((item, idx) => (
                                   <span key={item._id || idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
-                                     {item.name || item}
+                                    {item.name || item}
                                   </span>
                                 ))}
                               </div>

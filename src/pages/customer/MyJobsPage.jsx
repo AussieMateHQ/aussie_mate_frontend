@@ -30,7 +30,7 @@ const formatDate = (iso) => {
 
   try {
     const d = new Date(iso);
-              
+
     if (Number.isNaN(d.getTime())) {
       console.warn('Invalid date:', iso);
       return '';
@@ -454,7 +454,7 @@ const MyJobsPage = () => {
               className="bg-white rounded-2xl border border-gray-200 shadow-custom p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200"
             >
 
-            
+
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[12px] font-medium text-gray-500 tracking-wide capitalize">
                   {job?.category}
@@ -546,12 +546,12 @@ const MyJobsPage = () => {
                         <div className="flex flex-wrap gap-2">
                           {job.originalJob.petType && (
                             <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                                Pet Type: {job.originalJob.petType}
+                              Pet Type: {job.originalJob.petType}
                             </div>
                           )}
                           {job.originalJob.numberOfPets && (
                             <div className="inline-flex items-center gap-1.5 bg-[#F3F4F6] border border-[#E5E7EB] px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
-                                Number of Pets: {job.originalJob.numberOfPets}
+                              Number of Pets: {job.originalJob.numberOfPets}
                             </div>
                           )}
                         </div>
@@ -579,7 +579,7 @@ const MyJobsPage = () => {
                           <div className="flex flex-wrap gap-2">
                             {job.originalJob.fixingItems.map((item, idx) => (
                               <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
-                                🔨 {item}
+                                {item}
                               </span>
                             ))}
                           </div>
@@ -607,7 +607,7 @@ const MyJobsPage = () => {
                       <div className="flex flex-wrap gap-2">
                         {job.originalJob.extraServiceItems.map((item, idx) => (
                           <span key={item._id || idx} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-700">
-                             {item.name || item}
+                            {item.name || item}
                           </span>
                         ))}
                       </div>
@@ -668,7 +668,7 @@ const MyJobsPage = () => {
                       }}
                       className="py-2 px-5 text-xs font-semibold rounded-full border border-[#DCE4FF] bg-[#EBF2FD] text-[#1F6FEB] hover:bg-[#1F6FEB] hover:text-white transition-all cursor-pointer text-center"
                     >
-                      { (job.status === 'completed' || job.status === 'assigned' || job.status === 'accepted') ? '✓ View Completed Job' : 'Manage Job / View Quotes' }
+                      {(job.status === 'completed' || job.status === 'assigned' || job.status === 'accepted') ? '✓ View Completed Job' : 'Manage Job / View Quotes'}
                     </button>
                   </div>
                 </div>
