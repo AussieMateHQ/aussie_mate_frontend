@@ -50,6 +50,7 @@ const PostNewJobPage = () => {
     serviceType: 'cleaning',
     serviceDetail: '',
     propertyType: '',
+    categoryName: '',
     instructions: '',
     frequency: 'One-time',
     categoryId: '',
@@ -59,6 +60,9 @@ const PostNewJobPage = () => {
     budget: '',
     jobStage: '',
     commercialJobTypeId: '',
+    commercialCleaningType: '',
+    areasNeedCleaning: [],
+    preferredCleaningTime: '',
     needCleaning: '',
     roomsNeedCleaning: '',
     bathroomsNeedCleaning: '',
@@ -632,13 +636,14 @@ const PostNewJobPage = () => {
         customerId,
         // Add dynamic fields dynamically based on category name
         ...(() => {
-          const categoryLower = (formData.propertyType || '').toLowerCase();
+          const categoryLower = (formData.categoryName || formData.propertyType || '').toLowerCase();
           if (categoryLower.includes('commercial')) {
             return {
+              propertyType: formData.propertyType,
               commercialJobTypeId: formData.commercialJobTypeId,
-              hasPlans: formData.hasPlans,
-              hasCouncilApproval: formData.hasCouncilApproval,
-              budget: formData.budget,
+              commercialCleaningType: formData.commercialCleaningType,
+              areasNeedCleaning: formData.areasNeedCleaning,
+              preferredCleaningTime: formData.preferredCleaningTime,
               jobStage: formData.jobStage
             };
           } else if (categoryLower.includes('pet')) {
@@ -804,7 +809,7 @@ const PostNewJobPage = () => {
                   '& .MuiInputBase-root': {
                     borderRadius: '9999px',
                     border: 'gray-100',
-                    backgroundColor: '',
+                    backgroundColor: '',/*  */
                     paddingRight: '16px'
                   },
                   '& .MuiOutlinedInput-notchedOutline': { border: 'gray-100' }

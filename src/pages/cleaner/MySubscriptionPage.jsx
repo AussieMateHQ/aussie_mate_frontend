@@ -524,18 +524,21 @@ const MySubscriptionPage = () => {
                                         </div>
                                       )}
 
-                                      {/* Commercial: Has Plans, Council Approval, Budget */}
-                                      {(item.jobId.hasPlans || item.jobId.hasCouncilApproval || item.jobId.budget) && (
+                                      {/* Commercial: Has Plans, Council Approval, Budget, or Commercial fields */}
+                                      {(item.jobId.hasPlans || item.jobId.hasCouncilApproval || item.jobId.budget || item.jobId.propertyType || item.jobId.commercialCleaningType || item.jobId.preferredCleaningTime || (item.jobId.areasNeedCleaning && item.jobId.areasNeedCleaning.length > 0)) && (
                                         <div className="space-y-1">
-                                          {item.jobId.hasPlans && (
-                                            <p className="text-xs text-gray-600 font-medium">Plans: <span className="font-semibold">{item.jobId.hasPlans}</span></p>
-                                          )}
-                                          {item.jobId.hasCouncilApproval && (
-                                            <p className="text-xs text-gray-600 font-medium">Council Approval: <span className="font-semibold">{item.jobId.hasCouncilApproval}</span></p>
-                                          )}
-                                          {item.jobId.budget && (
-                                            <p className="text-xs text-gray-600 font-medium">Budget: <span className="font-semibold">{item.jobId.budget}</span></p>
-                                          )}
+                                          {((item.jobId.categoryId?.name?.toLowerCase().includes('commercial') || item.jobId.propertyType || item.jobId.commercialCleaningType) ? [
+                                            { label: 'Property Type', value: item.jobId.propertyType },
+                                            { label: 'Cleaning Service Type', value: item.jobId.commercialCleaningType },
+                                            { label: 'Areas to Clean', value: item.jobId.areasNeedCleaning && item.jobId.areasNeedCleaning.length > 0 ? item.jobId.areasNeedCleaning.join(', ') : null },
+                                            { label: 'Preferred Time', value: item.jobId.preferredCleaningTime },
+                                          ] : [
+                                            { label: 'Plans', value: item.jobId.hasPlans },
+                                            { label: 'Council Approval', value: item.jobId.hasCouncilApproval },
+                                            { label: 'Budget', value: item.jobId.budget },
+                                          ]).filter(spec => spec.value).map((spec, idx) => (
+                                            <p key={idx} className="text-xs text-gray-600 font-medium">{spec.label}: <span className="font-semibold">{spec.value}</span></p>
+                                          ))}
                                         </div>
                                       )}
 

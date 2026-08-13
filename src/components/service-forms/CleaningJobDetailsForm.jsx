@@ -29,10 +29,25 @@ const CleaningJobDetailsForm = ({
   const [isPetTypeOpen, setIsPetTypeOpen] = useState(false);
   const [isNumPetsOpen, setIsNumPetsOpen] = useState(false);
   const [isHandymanUrgencyOpen, setIsHandymanUrgencyOpen] = useState(false);
+  
+  // New states for Commercial Cleaning dropdowns
+  const [isCleaningServiceOpen, setIsCleaningServiceOpen] = useState(false);
+  const [isFrequencyOpen, setIsFrequencyOpen] = useState(false);
+  const [isAreasOpen, setIsAreasOpen] = useState(false);
+  const [isTimeOpen, setIsTimeOpen] = useState(false);
+  const [isStageOpen, setIsStageOpen] = useState(false);
+
   const [dynamicPetTypes, setDynamicPetTypes] = useState(['Dog', 'Cat', 'Bird', 'Rabbit', 'Guinea Pig', 'Other']);
   const [dynamicPetNeeds, setDynamicPetNeeds] = useState(['Feeding', 'Walking', 'Medication', 'Playtime', 'Litter cleaning', 'Other']);
   const [dynamicFixingItems, setDynamicFixingItems] = useState(['Door', 'Wall', 'Tap', 'Toilet', 'Shower', 'Light', 'Fan', 'Furniture', 'Cabinet', 'Fence', 'Other']);
   const [dynamicHandymanRequirements, setDynamicHandymanRequirements] = useState(['Materials supplied', 'Materials needed', 'Disposal required', 'Other']);
+
+  // Dynamic states for Commercial Cleaning options
+  const [dynamicCleaningTypes, setDynamicCleaningTypes] = useState(['Regular Maintenance Cleaning', 'One‑off General Clean', 'Deep Clean / Sanitisation', 'End‑of‑Lease Clean', 'Post‑Construction / Builders Clean', 'Carpet Steam Cleaning', 'Window Cleaning', 'Pressure Cleaning', 'Other']);
+  const [dynamicFrequencies, setDynamicFrequencies] = useState(['One‑off', 'Weekly', 'Fortnightly', 'Monthly', 'Other']);
+  const [dynamicAreas, setDynamicAreas] = useState(['Offices', 'Workstations', 'Meeting Rooms', 'Kitchens', 'Bathrooms', 'Toilets', 'Common Areas', 'Reception', 'Hallways', 'Carpets', 'Windows', 'Outdoor Areas', 'Other']);
+  const [dynamicTimes, setDynamicTimes] = useState(['During business hours', 'After hours', 'Early morning', 'Night shift', 'Other']);
+  const [dynamicStages, setDynamicStages] = useState(['Ready to hire', 'Planning & Budgeting']);
 
   const categoryRef = useRef(null);
   const serviceRef = useRef(null);
@@ -40,6 +55,27 @@ const CleaningJobDetailsForm = ({
   const petTypeRef = useRef(null);
   const numPetsRef = useRef(null);
   const handymanUrgencyRef = useRef(null);
+
+  // New refs for Commercial Cleaning dropdowns
+  const cleaningServiceRef = useRef(null);
+  const frequencyRef = useRef(null);
+  const areasRef = useRef(null);
+  const timeRef = useRef(null);
+  const stageRef = useRef(null);
+
+  const formatServiceAsProperty = (serviceName) => {
+    let name = serviceName;
+    name = name.replace(/\s+clean(ing)?$/i, '');
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
+
+  const handleCommercialPropertySelect = (service) => {
+    const propertyLabel = formatServiceAsProperty(service.name);
+    onInputChange('propertyType', propertyLabel);
+    onInputChange('serviceTypeId', service._id);
+    onInputChange('serviceDetail', service.name);
+    setIsServiceOpen(false);
+  };
 
   // Fetch categories on mount
   useEffect(() => {
@@ -162,6 +198,29 @@ const CleaningJobDetailsForm = ({
     fetchHandymanSettings();
   }, [formData.categoryId, categories]);
 
+  // Fetch commercial settings if commercial category selected
+  useEffect(() => {
+    const selectedCategory = categories.find((c) => c._id === formData.categoryId);
+    const categoryName = (selectedCategory ? selectedCategory.name : '').toLowerCase();
+    if (!categoryName.includes('commercial')) return;
+
+    const fetchCommercialSettings = async () => {
+      try {
+        const response = await categoriesAPI.getCommercialSettings();
+        if (response.success && response.data) {
+          if (response.data.cleaningTypes) setDynamicCleaningTypes(response.data.cleaningTypes);
+          if (response.data.frequencies) setDynamicFrequencies(response.data.frequencies);
+          if (response.data.areas) setDynamicAreas(response.data.areas);
+          if (response.data.times) setDynamicTimes(response.data.times);
+          if (response.data.stages) setDynamicStages(response.data.stages);
+        }
+      } catch (error) {
+        console.error('Error fetching commercial settings:', error);
+      }
+    };
+    fetchCommercialSettings();
+  }, [formData.categoryId, categories]);
+
 
 
   useEffect(() => {
@@ -172,6 +231,11 @@ const CleaningJobDetailsForm = ({
       if (petTypeRef.current && !petTypeRef.current.contains(event.target)) setIsPetTypeOpen(false);
       if (numPetsRef.current && !numPetsRef.current.contains(event.target)) setIsNumPetsOpen(false);
       if (handymanUrgencyRef.current && !handymanUrgencyRef.current.contains(event.target)) setIsHandymanUrgencyOpen(false);
+      if (cleaningServiceRef.current && !cleaningServiceRef.current.contains(event.target)) setIsCleaningServiceOpen(false);
+      if (frequencyRef.current && !frequencyRef.current.contains(event.target)) setIsFrequencyOpen(false);
+      if (areasRef.current && !areasRef.current.contains(event.target)) setIsAreasOpen(false);
+      if (timeRef.current && !timeRef.current.contains(event.target)) setIsTimeOpen(false);
+      if (stageRef.current && !stageRef.current.contains(event.target)) setIsStageOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -203,7 +267,9 @@ const CleaningJobDetailsForm = ({
 
       if (found) {
         onInputChange('categoryId', found._id);
-        onInputChange('propertyType', found.name);
+        const isComm = found.name.toLowerCase().includes('commercial');
+        onInputChange('propertyType', isComm ? '' : found.name);
+        onInputChange('categoryName', found.name);
 
         // If it's bond cleaning, ensure the toggle is on
         const isBond = found.name.toLowerCase().includes('bond');
@@ -299,7 +365,9 @@ const CleaningJobDetailsForm = ({
                     className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
                     onClick={() => {
                       onInputChange('categoryId', category._id);
-                      onInputChange('propertyType', category.name); // Keep for compatibility if needed
+                      const isComm = category.name.toLowerCase().includes('commercial');
+                      onInputChange('propertyType', isComm ? '' : category.name);
+                      onInputChange('categoryName', category.name);
                       onInputChange('serviceTypeId', ''); // Reset service type
                       onInputChange('serviceDetail', '');
                       setIsCategoryOpen(false);
@@ -319,7 +387,7 @@ const CleaningJobDetailsForm = ({
         {/* Type of Service Dropdown */}
         <div className="space-y-2">
           <label className="block text-sm sm:text-base font-medium text-[#111827]">
-            Type of Service
+            {isCommercial ? 'What type of property?' : 'Type of Service'}
           </label>
           <div className="relative" ref={serviceRef}>
             <div
@@ -330,8 +398,8 @@ const CleaningJobDetailsForm = ({
               }}
               className={`flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors ${!formData.categoryId ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <span className={formData.serviceTypeId ? 'text-[#111827] font-medium' : 'text-gray-400'}>
-                {getServiceName()}
+              <span className={(isCommercial ? formData.propertyType : formData.serviceTypeId) ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                {isCommercial ? (formData.propertyType || 'Select property type') : getServiceName()}
               </span>
               <img
                 src={arrowDownIcon}
@@ -369,25 +437,46 @@ const CleaningJobDetailsForm = ({
                     </div>
                   ) : (
                     <>
-                      {serviceTypes
-                        .filter(option => option.name.toLowerCase().includes(serviceSearch.toLowerCase()))
-                        .map((service) => (
-                          <div
-                            key={service._id}
-                            className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
-                            onClick={() => {
-                              onInputChange('serviceTypeId', service._id);
-                              onInputChange('serviceDetail', service.name); // Keep for compatibility
-                              setIsServiceOpen(false);
-                              setServiceSearch('');
-                            }}
-                          >
-                            {service.name}
-                          </div>
-                        ))}
-                      {serviceTypes.filter(option => option.name.toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
+                      {isCommercial ? (
+                        serviceTypes
+                          .filter(service => formatServiceAsProperty(service.name).toLowerCase().includes(serviceSearch.toLowerCase()))
+                          .map((service) => (
+                            <div
+                              key={service._id}
+                              className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                              onClick={() => {
+                                handleCommercialPropertySelect(service);
+                              }}
+                            >
+                              {formatServiceAsProperty(service.name)}
+                            </div>
+                          ))
+                      ) : (
+                        serviceTypes
+                          .filter(option => option.name.toLowerCase().includes(serviceSearch.toLowerCase()))
+                          .map((service) => (
+                            <div
+                              key={service._id}
+                              className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                              onClick={() => {
+                                onInputChange('serviceTypeId', service._id);
+                                onInputChange('serviceDetail', service.name); // Keep for compatibility
+                                setIsServiceOpen(false);
+                                setServiceSearch('');
+                              }}
+                            >
+                              {service.name}
+                            </div>
+                          ))
+                      )}
+                      {!isCommercial && serviceTypes.filter(option => option.name.toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
                         <div className="px-6 py-4 text-gray-400 text-center text-sm">
                           No matching services found
+                        </div>
+                      )}
+                      {isCommercial && serviceTypes.filter(service => formatServiceAsProperty(service.name).toLowerCase().includes(serviceSearch.toLowerCase())).length === 0 && (
+                        <div className="px-6 py-4 text-gray-400 text-center text-sm">
+                          No matching property types found
                         </div>
                       )}
                     </>
@@ -745,83 +834,216 @@ const CleaningJobDetailsForm = ({
         <div className="space-y-8 pt-4">
           {/* Commercial Specific Fields */}
           {isCommercial && (
-            <div className="space-y-8">
-              {/* Do you have plans for this job? */}
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
-                    Do you have plans for this job?
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-500">
-                    Select one
-                  </p>
-                </div>
-                <div className="space-y-4">
-                  {['Yes', 'No', 'Not required', 'Not sure whether I need plans'].map((option) => (
-                    <RadioButton
-                      key={option}
-                      name="hasPlans"
-                      value={option}
-                      label={option}
-                      checked={formData.hasPlans === option}
-                      onChange={(e) => onInputChange('hasPlans', e.target.value)}
+            <div className="space-y-6">
+              {/* What type of cleaning service? */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                  What type of cleaning service?
+                </label>
+                <div className="relative" ref={cleaningServiceRef}>
+                  <div
+                    onClick={() => setIsCleaningServiceOpen(!isCleaningServiceOpen)}
+                    className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                  >
+                    <span className={formData.commercialCleaningType ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                      {formData.commercialCleaningType || 'Select type of cleaning service'}
+                    </span>
+                    <img
+                      src={arrowDownIcon}
+                      alt="Dropdown"
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isCleaningServiceOpen ? 'rotate-180' : ''}`}
                     />
-                  ))}
+                  </div>
+                  {isCleaningServiceOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                      {dynamicCleaningTypes.map((option) => (
+                        <div
+                          key={option}
+                          className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                          onClick={() => {
+                            onInputChange('commercialCleaningType', option);
+                            setIsCleaningServiceOpen(false);
+                          }}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Do you have council approval for this job? */}
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
-                    Do you have council approval for this job?
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-500">
-                    Select one
-                  </p>
-                </div>
-                <div className="space-y-4">
-                  {['Yes', 'No', 'Not required', "Not sure whether it's needed"].map((option) => (
-                    <RadioButton
-                      key={option}
-                      name="hasCouncilApproval"
-                      value={option}
-                      label={option}
-                      checked={formData.hasCouncilApproval === option}
-                      onChange={(e) => onInputChange('hasCouncilApproval', e.target.value)}
+              {/* How often do you need cleaning? */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                  How often do you need cleaning?
+                </label>
+                <div className="relative" ref={frequencyRef}>
+                  <div
+                    onClick={() => setIsFrequencyOpen(!isFrequencyOpen)}
+                    className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                  >
+                    <span className={formData.frequency ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                      {formData.frequency || 'Select frequency'}
+                    </span>
+                    <img
+                      src={arrowDownIcon}
+                      alt="Dropdown"
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isFrequencyOpen ? 'rotate-180' : ''}`}
                     />
-                  ))}
+                  </div>
+                  {isFrequencyOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                      {dynamicFrequencies.map((option) => (
+                        <div
+                          key={option}
+                          className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                          onClick={() => {
+                            onInputChange('frequency', option);
+                            setIsFrequencyOpen(false);
+                          }}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Budget */}
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">
-                    Budget
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-400">
-                    Select one
-                  </p>
-                </div>
-                <div className="space-y-4">
-                  {['Under $20,000', '$20,000 - $50,000', '$50,000 - $100,000', 'More than $100,000', 'Not sure'].map((option) => (
-                    <RadioButton
-                      key={option}
-                      name="budget"
-                      value={option}
-                      label={option}
-                      checked={formData.budget === option}
-                      onChange={(e) => onInputChange('budget', e.target.value)}
+              {/* What areas need cleaning? */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                  What areas need cleaning?
+                </label>
+                <div className="relative" ref={areasRef}>
+                  <div
+                    onClick={() => setIsAreasOpen(!isAreasOpen)}
+                    className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                  >
+                    <span className={(formData.areasNeedCleaning && formData.areasNeedCleaning.length > 0) ? 'text-[#111827] font-medium truncate pr-4' : 'text-gray-400'}>
+                      {(formData.areasNeedCleaning && formData.areasNeedCleaning.length > 0)
+                        ? formData.areasNeedCleaning.join(', ')
+                        : 'Select areas'}
+                    </span>
+                    <img
+                      src={arrowDownIcon}
+                      alt="Dropdown"
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isAreasOpen ? 'rotate-180' : ''}`}
                     />
-                  ))}
+                  </div>
+                  {isAreasOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                      {dynamicAreas.map((area) => {
+                        const currentSelected = formData.areasNeedCleaning || [];
+                        const isSelected = currentSelected.includes(area);
+                        return (
+                          <div
+                            key={area}
+                            className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium flex items-center justify-between"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const nextSelected = isSelected
+                                ? currentSelected.filter(x => x !== area)
+                                : [...currentSelected, area];
+                              onInputChange('areasNeedCleaning', nextSelected);
+                            }}
+                          >
+                            <span>{area}</span>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              readOnly
+                              className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500 cursor-pointer"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Preferred cleaning time (optional) */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                  Preferred cleaning time (optional)
+                </label>
+                <div className="relative" ref={timeRef}>
+                  <div
+                    onClick={() => setIsTimeOpen(!isTimeOpen)}
+                    className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                  >
+                    <span className={formData.preferredCleaningTime ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                      {formData.preferredCleaningTime || 'Select preferred cleaning time'}
+                    </span>
+                    <img
+                      src={arrowDownIcon}
+                      alt="Dropdown"
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isTimeOpen ? 'rotate-180' : ''}`}
+                    />
+                  </div>
+                  {isTimeOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                      {dynamicTimes.map((option) => (
+                        <div
+                          key={option}
+                          className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                          onClick={() => {
+                            onInputChange('preferredCleaningTime', option);
+                            setIsTimeOpen(false);
+                          }}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* What stage is your job at? */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-[#111827]">
+                  What stage is your job at?
+                </label>
+                <div className="relative" ref={stageRef}>
+                  <div
+                    onClick={() => setIsStageOpen(!isStageOpen)}
+                    className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
+                  >
+                    <span className={formData.jobStage ? 'text-[#111827] font-medium' : 'text-gray-400'}>
+                      {formData.jobStage || 'Select stage'}
+                    </span>
+                    <img
+                      src={arrowDownIcon}
+                      alt="Dropdown"
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isStageOpen ? 'rotate-180' : ''}`}
+                    />
+                  </div>
+                  {isStageOpen && (
+                    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
+                      {dynamicStages.map((option) => (
+                        <div
+                          key={option}
+                          className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
+                          onClick={() => {
+                            onInputChange('jobStage', option);
+                            setIsStageOpen(false);
+                          }}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           )}
 
           {/* What stage is your job at? */}
-          {(isCommercial || isDomesticOrRelated || isPetSitting || isHandyman) && (
+          {(!isCommercial && (isCommercial || isDomesticOrRelated || isPetSitting || isHandyman)) && (
             <div className="space-y-4">
               <div>
                 <h2 className="text-sm sm:text-base font-medium text-[#111827] mb-1">

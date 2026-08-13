@@ -445,12 +445,18 @@ const JobDetailsPage = () => {
               handymanUrgency={job?.handymanUrgency}
               handymanRequirements={job?.handymanRequirements || []}
               roleSections={{
-                cleaner: [
+                cleaner: ((job?.categoryId?.name?.toLowerCase().includes('commercial') || job?.propertyType || job?.commercialCleaningType) ? [
+                  { label: 'Property Type', value: job?.propertyType },
+                  { label: 'Cleaning Service Type', value: job?.commercialCleaningType },
+                  { label: 'Areas to Clean', value: job?.areasNeedCleaning && job.areasNeedCleaning.length > 0 ? job.areasNeedCleaning.join(', ') : null },
+                  { label: 'Preferred Time', value: job?.preferredCleaningTime },
+                  { label: 'Job Stage', value: job?.jobStage },
+                ] : [
                   { label: 'Plans', value: job?.hasPlans },
                   { label: 'Council Approval', value: job?.hasCouncilApproval },
                   { label: 'Budget', value: job?.budget },
                   { label: 'Job Stage', value: job?.jobStage },
-                ].filter(item => item.value)
+                ]).filter(item => item.value)
               }}
             />
           </div>

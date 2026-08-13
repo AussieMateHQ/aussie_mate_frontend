@@ -1396,6 +1396,11 @@ export const categoriesAPI = {
   getHandymanSettings: async () => {
     return apiRequest('/categories/handyman-settings');
   },
+
+  // Get commercial settings (types, frequencies, areas, times, stages)
+  getCommercialSettings: async () => {
+    return apiRequest('/categories/commercial-settings');
+  },
 };
 
 // File upload helper (Cloudinary)

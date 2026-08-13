@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Check, X, Calendar, MapPin } from 'lucide-react';
+import { Check, X, Calendar, MapPin, Star } from 'lucide-react';
 import { Button, PageHeader, Loader } from '../../components';
 import { jobsAPI, jobPhotosAPI, jobDetailsAPI, reviewsAPI } from '../../services/api';
 import { handleAPIError } from '../../services/api';
@@ -259,6 +259,43 @@ const JobDetailsCompletedPage = () => {
     }
   };
 
+  const handleTagToggle = (tag) => {
+    if (selectedTags.includes(tag)) {
+      setSelectedTags(prev => prev.filter(t => t !== tag));
+    } else {
+      setSelectedTags(prev => [...prev, tag]);
+    }
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (selectedRating === 0) {
+      setErrorMessage('Please select a star rating.');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      const response = await reviewsAPI.createReview(jobId, selectedRating, selectedTags, feedback);
+
+      if (response.success) {
+        setHasReviewed(true);
+        setSuccessMessage(existingReview ? 'Review updated successfully!' : 'Review submitted successfully!');
+        setExistingReview(response.data?.review || { rating: selectedRating, likedAspects: selectedTags, feedback });
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        setErrorMessage(response.message || 'Failed to submit review.');
+      }
+    } catch (error) {
+      setErrorMessage(handleAPIError(error));
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   if (loading) {
     return <Loader fullscreen message="Loading job details..." />;
   }
@@ -506,6 +543,93 @@ const JobDetailsCompletedPage = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Review Form Card */}
+        {jobData.status?.toLowerCase() === 'completed' && (
+          <div className="px-4 mt-6">
+            <div className="bg-white rounded-3xl p-6 border border-[#E9EFFF] shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {hasReviewed ? 'Your Review for Cleaner' : 'Rate Your Cleaner'}
+              </h3>
+              <p className="text-gray-500 text-sm mb-6">
+                {hasReviewed ? 'You have already reviewed this cleaner. You can edit your review below.' : 'Share your experience to help others.'}
+              </p>
+
+              <form onSubmit={handleReviewSubmit} className="space-y-6">
+                {/* Star Rating */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Rating</label>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setSelectedRating(star)}
+                        className="focus:outline-none transition-transform active:scale-95 cursor-pointer"
+                      >
+                        <Star
+                          className={`w-8 h-8 ${
+                            star <= selectedRating
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tags */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">What did you like?</label>
+                  <div className="flex flex-wrap gap-2">
+                    {feedbackTags.map((tag) => {
+                      const isSelected = selectedTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => handleTagToggle(tag)}
+                          className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-primary-500 border-primary-500 text-white shadow-sm'
+                              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Feedback Comment */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Comments (Optional)</label>
+                  <textarea
+                    rows={4}
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder="Tell us more about your experience..."
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none text-sm text-gray-700 resize-none transition-all"
+                  />
+                </div>
+
+                {/* Submit button */}
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="py-3 px-8 rounded-2xl font-bold text-sm shadow-md"
+                    disabled={submittingReview}
+                  >
+                    {submittingReview ? 'Saving...' : hasReviewed ? 'Update Review' : 'Submit Review'}
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
         )}

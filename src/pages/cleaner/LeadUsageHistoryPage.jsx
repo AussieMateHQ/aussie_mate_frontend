@@ -285,33 +285,26 @@ const LeadUsageHistoryPage = () => {
                                       </div>
                                     )}
 
-                                    {/* Grid details: Plans, Council Approval, Budget, Job Stage */}
-                                    {(item.jobId.hasPlans || item.jobId.hasCouncilApproval || item.jobId.budget || item.jobId.jobStage) && (
+                                    {/* Grid details: Plans, Council Approval, Budget, Job Stage, and Commercial Fields */}
+                                    {(item.jobId.hasPlans || item.jobId.hasCouncilApproval || item.jobId.budget || item.jobId.jobStage || item.jobId.propertyType || item.jobId.commercialCleaningType || item.jobId.preferredCleaningTime || (item.jobId.areasNeedCleaning && item.jobId.areasNeedCleaning.length > 0)) && (
                                       <div className="grid grid-cols-2 gap-2 text-[11px]">
-                                        {item.jobId.hasPlans && (
-                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
-                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Plans</div>
-                                            <div className="font-semibold text-gray-700">{item.jobId.hasPlans}</div>
+                                        {((item.jobId.categoryId?.name?.toLowerCase().includes('commercial') || item.jobId.propertyType || item.jobId.commercialCleaningType) ? [
+                                          { label: 'Property Type', value: item.jobId.propertyType },
+                                          { label: 'Cleaning Service Type', value: item.jobId.commercialCleaningType },
+                                          { label: 'Areas to Clean', value: item.jobId.areasNeedCleaning && item.jobId.areasNeedCleaning.length > 0 ? item.jobId.areasNeedCleaning.join(', ') : null },
+                                          { label: 'Preferred Time', value: item.jobId.preferredCleaningTime },
+                                          { label: 'Job Stage', value: item.jobId.jobStage },
+                                        ] : [
+                                          { label: 'Plans', value: item.jobId.hasPlans },
+                                          { label: 'Council Approval', value: item.jobId.hasCouncilApproval },
+                                          { label: 'Budget', value: item.jobId.budget },
+                                          { label: 'Job Stage', value: item.jobId.jobStage },
+                                        ]).filter(spec => spec.value).map((spec, idx) => (
+                                          <div key={idx} className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
+                                            <div className="text-[9px] uppercase text-gray-400 font-bold">{spec.label}</div>
+                                            <div className="font-semibold text-gray-700">{spec.value}</div>
                                           </div>
-                                        )}
-                                        {item.jobId.hasCouncilApproval && (
-                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
-                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Council Approval</div>
-                                            <div className="font-semibold text-gray-700">{item.jobId.hasCouncilApproval}</div>
-                                          </div>
-                                        )}
-                                        {item.jobId.budget && (
-                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
-                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Budget</div>
-                                            <div className="font-semibold text-gray-700">{item.jobId.budget}</div>
-                                          </div>
-                                        )}
-                                        {item.jobId.jobStage && (
-                                          <div className="bg-gray-50/50 p-2 rounded-lg border border-gray-100/30">
-                                            <div className="text-[9px] uppercase text-gray-400 font-bold">Job Stage</div>
-                                            <div className="font-semibold text-gray-700">{item.jobId.jobStage}</div>
-                                          </div>
-                                        )}
+                                        ))}
                                       </div>
                                     )}
 

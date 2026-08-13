@@ -10,6 +10,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Star,
 } from 'lucide-react';
 
 import { Button, ConfirmationModal, PageHeader, JobOverviewCard } from '../../components';
@@ -21,7 +22,7 @@ import GoldBadgeIcon from '../../assets/goldBadge.svg';
 import BronzeBadgeIcon from '../../assets/bronzeBadge.svg';
 
 import CloseIcon from '../../assets/close.svg';
-import { jobsAPI, quotesAPI } from '../../services/api';
+import { jobsAPI, quotesAPI, reviewsAPI } from '../../services/api';
 import { chatAPI } from '../../services/chatAPI';
 
 const CleanerAvatar = ({ src, name, className = "w-16 h-16" }) => {
@@ -71,6 +72,9 @@ const CustomerJobDetailsPage = () => {
   const [waitlistedCleaners, setWaitlistedCleaners] = useState([]);
   const [chatRooms, setChatRooms] = useState([]);
   const dropdownRef = useRef(null);
+  const [selectedCleanerForModal, setSelectedCleanerForModal] = useState(null);
+  const [cleanerReviews, setCleanerReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -671,6 +675,21 @@ const CustomerJobDetailsPage = () => {
     };
   };
 
+  const handleCleanerClick = async (cleaner) => {
+    setSelectedCleanerForModal(cleaner);
+    setCleanerReviews([]);
+    setLoadingReviews(true);
+    try {
+      const response = await reviewsAPI.getCleanerReviews(cleaner.id);
+      if (response.success && response.data) {
+        setCleanerReviews(response.data.reviews || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch cleaner reviews:', err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -871,14 +890,20 @@ const CustomerJobDetailsPage = () => {
             )}
 
             {/* Additional details */}
-            {(job.hasPlans || job.hasCouncilApproval || job.budget || job.jobStage) && (
+            {(job.hasPlans || job.hasCouncilApproval || job.budget || job.jobStage || job.propertyType || job.commercialCleaningType || job.preferredCleaningTime || (job.areasNeedCleaning && job.areasNeedCleaning.length > 0)) && (
               <div className="grid gap-3 sm:grid-cols-2 mt-4 mb-6">
-                {[
+                {((job.categoryId?.name?.toLowerCase().includes('commercial') || job.propertyType || job.commercialCleaningType) ? [
+                  { label: 'Property Type', value: job.propertyType },
+                  { label: 'Cleaning Service Type', value: job.commercialCleaningType },
+                  { label: 'Areas to Clean', value: job.areasNeedCleaning && job.areasNeedCleaning.length > 0 ? job.areasNeedCleaning.join(', ') : null },
+                  { label: 'Preferred Time', value: job.preferredCleaningTime },
+                  { label: 'Job Stage', value: job.jobStage },
+                ] : [
                   { label: 'Plans', value: job.hasPlans },
                   { label: 'Council Approval', value: job.hasCouncilApproval },
                   { label: 'Budget', value: job.budget },
                   { label: 'Job Stage', value: job.jobStage },
-                ].filter(item => item.value).map((item, index) => (
+                ]).filter(item => item.value).map((item, index) => (
                   <div
                     key={index}
                     className="p-3 rounded-xl border border-[#E2E8FF] bg-[#F8FAFF]"
@@ -937,11 +962,34 @@ const CustomerJobDetailsPage = () => {
                     {/* Header: Avatar, Info, and Tier */}
                     <div className="flex items-start justify-between mb-5">
                       <div className="flex gap-4">
-                        <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-16 h-16" />
+                        <div onClick={() => handleCleanerClick(cleaner)} className="cursor-pointer hover:opacity-90 active:scale-95 transition-all">
+                          <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-16 h-16" />
+                        </div>
                         <div>
-                          <h4 className="text-lg font-medium text-gray-900 mb-1 capitalize">
+                          <h4 
+                            onClick={() => handleCleanerClick(cleaner)}
+                            className="text-lg font-medium text-gray-900 mb-1 capitalize cursor-pointer hover:text-primary-500 hover:underline transition-all"
+                          >
                             {cleaner.name}
                           </h4>
+                          
+                          <div className="flex items-center gap-1 mt-0.5 mb-1.5">
+                            <div className="flex text-yellow-400">
+                              {[1, 2, 3, 4, 5].map((s) => (
+                                <Star
+                                  key={s}
+                                  className={`w-3.5 h-3.5 ${
+                                    s <= Math.round(cleaner.rating)
+                                      ? 'fill-yellow-400 text-yellow-400'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-gray-500 font-semibold ml-1">
+                              {cleaner.rating > 0 ? cleaner.rating.toFixed(1) : 'No reviews'} ({cleaner.reviews} reviews)
+                            </span>
+                          </div>
 
                           {(cleaner.phone || cleaner.email) && (
                             <div className="my-3 border border-gray-200 rounded-2xl bg-white overflow-hidden max-w-sm w-full">
@@ -1069,11 +1117,35 @@ const CustomerJobDetailsPage = () => {
                       <div className="mb-5">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex min-w-0 flex-1 gap-4">
-                            <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-12 h-12" />
+                            <div onClick={() => handleCleanerClick(cleaner)} className="cursor-pointer hover:opacity-90 active:scale-95 transition-all">
+                              <CleanerAvatar src={cleaner.photo} name={cleaner.name} className="w-12 h-12" />
+                            </div>
                             <div className="min-w-0 flex-1">
-                              <h4 className="text-lg font-semibold text-gray-900 capitalize leading-tight">
+                              <h4 
+                                onClick={() => handleCleanerClick(cleaner)}
+                                className="text-lg font-semibold text-gray-900 capitalize leading-tight cursor-pointer hover:text-primary-500 hover:underline transition-all"
+                              >
                                 {cleaner.name}
                               </h4>
+                              
+                              <div className="flex items-center gap-1 mt-0.5 mb-1">
+                                <div className="flex text-yellow-400">
+                                  {[1, 2, 3, 4, 5].map((s) => (
+                                    <Star
+                                      key={s}
+                                      className={`w-3 h-3 ${
+                                        s <= Math.round(cleaner.rating)
+                                          ? 'fill-yellow-400 text-yellow-400'
+                                          : 'text-gray-300'
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-[11px] text-gray-500 font-semibold ml-1">
+                                  {cleaner.rating > 0 ? cleaner.rating.toFixed(1) : 'No reviews'} ({cleaner.reviews} reviews)
+                                </span>
+                              </div>
+                              
                               <p className="text-xs text-gray-500 font-medium">
                                 {cleaner.distance}
                               </p>
@@ -1221,6 +1293,196 @@ const CustomerJobDetailsPage = () => {
         isLoading={isHiring}
         errorMessage={hireError}
       />
+
+      {/* Cleaner Details Modal */}
+      {selectedCleanerForModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in"
+            onClick={() => setSelectedCleanerForModal(null)}
+          />
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-3xl w-full max-w-xl max-h-[85vh] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col">
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedCleanerForModal(null)}
+              className="absolute right-5 top-5 w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors z-10 cursor-pointer"
+            >
+              <span className="text-xl font-medium leading-none">&times;</span>
+            </button>
+
+            <div className="overflow-y-auto p-6 sm:p-8 space-y-6">
+              {/* Profile Header */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div className="relative flex-shrink-0">
+                  <CleanerAvatar
+                    src={selectedCleanerForModal.photo}
+                    name={selectedCleanerForModal.name}
+                    className="w-24 h-24 sm:w-28 sm:h-28 text-3xl"
+                  />
+                </div>
+                <div className="text-center sm:text-left space-y-2 flex-1">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <h3 className="text-2xl font-bold text-gray-900 capitalize">
+                      {selectedCleanerForModal.name}
+                    </h3>
+                    {selectedCleanerForModal.tier && selectedCleanerForModal.tier !== 'none' && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-50 border border-primary-100 text-primary-700 capitalize">
+                        {selectedCleanerForModal.tier} Tier
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Rating Stars Summary */}
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <div className="flex text-yellow-400">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={`w-4 h-4 ${
+                            s <= Math.round(selectedCleanerForModal.rating)
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700">
+                      {selectedCleanerForModal.rating > 0
+                        ? selectedCleanerForModal.rating.toFixed(1)
+                        : 'No rating'}
+                    </span>
+                    <span className="text-sm text-gray-400 font-medium">•</span>
+                    <span className="text-sm text-gray-500 font-semibold">
+                      {selectedCleanerForModal.reviews} reviews
+                    </span>
+                  </div>
+
+                  {/* Distance */}
+                  <p className="text-sm text-gray-500 font-medium">
+                    📍 {selectedCleanerForModal.distance}
+                  </p>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-gray-100" />
+
+              {/* Contact Info (If available) */}
+              {(selectedCleanerForModal.phone || selectedCleanerForModal.email) && (
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Contact Info</h4>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {selectedCleanerForModal.phone && (
+                      <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100">
+                        <div className="w-10 h-10 rounded-xl bg-[#F4F3ED] text-gray-700 flex items-center justify-center flex-shrink-0">
+                          <Phone className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] text-gray-400 font-bold uppercase">Phone</p>
+                          <p className="text-sm font-semibold text-gray-800 truncate">{selectedCleanerForModal.phone}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedCleanerForModal.email && (
+                      <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100">
+                        <div className="w-10 h-10 rounded-xl bg-[#F4F3ED] text-gray-700 flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] text-gray-400 font-bold uppercase">Email</p>
+                          <p className="text-sm font-semibold text-gray-800 truncate">{selectedCleanerForModal.email}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Reviews List */}
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Customer Reviews ({cleanerReviews.length})
+                </h4>
+
+                {loadingReviews ? (
+                  <div className="py-8 flex flex-col items-center justify-center gap-2 text-gray-400">
+                    <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs font-semibold">Loading reviews...</span>
+                  </div>
+                ) : cleanerReviews.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-gray-400 font-medium">
+                    No reviews received yet.
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[30vh] overflow-y-auto pr-1">
+                    {cleanerReviews.map((rev) => (
+                      <div key={rev.id} className="p-4 bg-gray-50 border border-gray-100 rounded-2xl space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-gray-850 capitalize">
+                            {rev.customer?.name || 'Anonymous Customer'}
+                          </p>
+                          <span className="text-[10px] text-gray-400 font-semibold">
+                            {rev.createdAt
+                              ? new Date(rev.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                })
+                              : ''}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex text-yellow-400">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className={`w-3 h-3 ${
+                                  s <= rev.rating
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-300'
+                                  }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        {rev.feedback && (
+                          <p className="text-xs text-gray-650 leading-relaxed font-medium">
+                            {rev.feedback}
+                          </p>
+                        )}
+                        {rev.likedAspects && rev.likedAspects.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {rev.likedAspects.map((aspect) => (
+                              <span
+                                key={aspect}
+                                className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 border border-green-100 text-green-700"
+                              >
+                                {aspect}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Close footer button */}
+            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button
+                onClick={() => setSelectedCleanerForModal(null)}
+                className="py-2.5 px-6 rounded-2xl bg-white border border-gray-200 hover:bg-gray-100 font-bold text-xs text-gray-600 cursor-pointer transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

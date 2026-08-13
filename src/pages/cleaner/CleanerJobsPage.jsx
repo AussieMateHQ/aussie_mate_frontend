@@ -695,15 +695,21 @@ const CleanerJobsPage = () => {
                             </div>
                           )}
 
-                          {/* Additional Specs: Plans, Council, Budget, Job Stage */}
-                          {(job.originalJob?.hasPlans || job.originalJob?.hasCouncilApproval || job.originalJob?.budget || job.originalJob?.jobStage) && (
+                          {/* Additional Specs: Plans, Council, Budget, Job Stage, and Commercial Fields */}
+                          {(job.originalJob?.hasPlans || job.originalJob?.hasCouncilApproval || job.originalJob?.budget || job.originalJob?.jobStage || job.originalJob?.propertyType || job.originalJob?.commercialCleaningType || job.originalJob?.preferredCleaningTime || (job.originalJob?.areasNeedCleaning && job.originalJob?.areasNeedCleaning.length > 0)) && (
                             <div className="grid gap-3 grid-cols-1">
-                              {[
+                              {((job.originalJob?.categoryId?.name?.toLowerCase().includes('commercial') || job.originalJob?.propertyType || job.originalJob?.commercialCleaningType) ? [
+                                { label: 'Property Type', value: job.originalJob.propertyType },
+                                { label: 'Cleaning Service Type', value: job.originalJob.commercialCleaningType },
+                                { label: 'Areas to Clean', value: job.originalJob.areasNeedCleaning && job.originalJob.areasNeedCleaning.length > 0 ? job.originalJob.areasNeedCleaning.join(', ') : null },
+                                { label: 'Preferred Time', value: job.originalJob.preferredCleaningTime },
+                                { label: 'Job Stage', value: job.originalJob.jobStage },
+                              ] : [
                                 { label: 'Plans', value: job.originalJob.hasPlans },
                                 { label: 'Council Approval', value: job.originalJob.hasCouncilApproval },
                                 { label: 'Budget', value: job.originalJob.budget },
                                 { label: 'Job Stage', value: job.originalJob.jobStage },
-                              ].filter(item => item.value).map((item, idx) => (
+                              ]).filter(item => item.value).map((item, idx) => (
                                 <div
                                   key={idx}
                                   className="p-3 rounded-xl border border-[#E2E8FF] bg-[#F8FAFF]"
