@@ -590,7 +590,7 @@ const JobDetailsCompletedPage = () => {
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
                     placeholder="Tell us more about your experience..."
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none text-sm text-gray-700 resize-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl! border border-gray-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none text-sm text-gray-700 resize-none transition-all"
                   />
                 </div>
 

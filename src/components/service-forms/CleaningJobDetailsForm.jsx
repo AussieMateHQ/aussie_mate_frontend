@@ -313,9 +313,13 @@ const CleaningJobDetailsForm = ({
 
   const showRoomsAndBathrooms = isDomesticOrRelated && !isPetSitting && !isHandyman;
 
-  const handleNeedCleaningChange = (value) => {
-    onInputChange('needCleaning', value);
-  };
+  const planText = isPetSitting
+    ? "Add details to ensure the best pet care plan for you."
+    : isHandyman
+    ? "Add details to ensure the best handyman plan for you."
+    : categoryName
+    ? `Add property details to ensure the best ${categoryName.includes('cleaning') ? categoryName : `${categoryName} cleaning`} plan for you.`
+    : "Add property details to ensure the best cleaning plan for you.";
 
   const handleExtraServiceToggle = (itemId) => {
     const currentItems = formData.extraServiceItems || [];
@@ -334,7 +338,7 @@ const CleaningJobDetailsForm = ({
             {isPetSitting ? "Tell us about your pet" : isHandyman ? "Tell us about your job" : "Tell us about your property"}
           </h2>
           <p className="text-sm sm:text-base text-gray-400 font-medium">
-            {isPetSitting ? "Add details to ensure the best pet care plan for you." : isHandyman ? "Add details to ensure the best handyman plan for you." : "Add property details to ensure the best cleaning plan for you."}
+            {planText}
           </p>
         </div>
 

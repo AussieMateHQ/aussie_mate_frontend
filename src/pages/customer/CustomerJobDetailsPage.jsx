@@ -77,6 +77,17 @@ const CustomerJobDetailsPage = () => {
   const [loadingReviews, setLoadingReviews] = useState(false);
 
   useEffect(() => {
+    if (selectedCleanerForModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedCleanerForModal]);
+
+  useEffect(() => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
@@ -890,10 +901,11 @@ const CustomerJobDetailsPage = () => {
             )}
 
             {/* Additional details */}
-            {(job.hasPlans || job.hasCouncilApproval || job.budget || job.jobStage || job.propertyType || job.commercialCleaningType || job.preferredCleaningTime || (job.areasNeedCleaning && job.areasNeedCleaning.length > 0)) && (
+            {(job.hasPlans || job.hasCouncilApproval || job.budget || job.jobStage || job.propertyType || job.commercialCleaningType || job.preferredCleaningTime || (job.areasNeedCleaning && job.areasNeedCleaning.length > 0) || job.commercialJobTypeId) && (
               <div className="grid gap-3 sm:grid-cols-2 mt-4 mb-6">
-                {((job.categoryId?.name?.toLowerCase().includes('commercial') || job.propertyType || job.commercialCleaningType) ? [
+                {((job.categoryId?.name?.toLowerCase().includes('commercial') || job.propertyType || job.commercialCleaningType || job.commercialJobTypeId) ? [
                   { label: 'Property Type', value: job.propertyType },
+                  { label: 'Type Of Job', value: job.commercialJobTypeId?.name || job.commercialJobTypeId },
                   { label: 'Cleaning Service Type', value: job.commercialCleaningType },
                   { label: 'Areas to Clean', value: job.areasNeedCleaning && job.areasNeedCleaning.length > 0 ? job.areasNeedCleaning.join(', ') : null },
                   { label: 'Preferred Time', value: job.preferredCleaningTime },
@@ -1358,11 +1370,6 @@ const CustomerJobDetailsPage = () => {
                       {selectedCleanerForModal.reviews} reviews
                     </span>
                   </div>
-
-                  {/* Distance */}
-                  <p className="text-sm text-gray-500 font-medium">
-                    📍 {selectedCleanerForModal.distance}
-                  </p>
                 </div>
               </div>
 
@@ -1457,16 +1464,6 @@ const CustomerJobDetailsPage = () => {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Close footer button */}
-            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-              <button
-                onClick={() => setSelectedCleanerForModal(null)}
-                className="py-2.5 px-6 rounded-2xl bg-white border border-gray-200 hover:bg-gray-100 font-bold text-xs text-gray-600 cursor-pointer transition-colors"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
