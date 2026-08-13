@@ -1452,18 +1452,6 @@ const CustomerJobDetailsPage = () => {
                             {rev.feedback}
                           </p>
                         )}
-                        {rev.likedAspects && rev.likedAspects.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {rev.likedAspects.map((aspect) => (
-                              <span
-                                key={aspect}
-                                className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 border border-green-100 text-green-700"
-                              >
-                                {aspect}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>

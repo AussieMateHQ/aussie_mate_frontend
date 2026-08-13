@@ -208,16 +208,6 @@ const CleanerJobCompletedPage = () => {
                 <p className="text-[#111827] font-Medium text-lg leading-snug mb-6">
                   {customerReview.feedback || "The customer didn't leave a written review."}
                 </p>
-
-                {customerReview.likedAspects?.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {customerReview.likedAspects.map(aspect => (
-                      <span key={aspect} className="px-5 py-2 rounded-full border border-blue-100 bg-blue-50 text-blue-600 font-medium text-sm">
-                        {aspect}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             ) : (
               <div className="bg-gray-50 rounded-2xl p-8 border border-dashed border-gray-200 text-center">

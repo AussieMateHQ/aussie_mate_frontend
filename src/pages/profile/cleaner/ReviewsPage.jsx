@@ -243,20 +243,6 @@ const ReviewsPage = () => {
                         </p>
                       )}
 
-                      {/* Liked Aspects */}
-                      {review.likedAspects && review.likedAspects.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4 max-sm:gap-1.5 max-sm:mb-3">
-                          {review.likedAspects.map((aspect, aspectIndex) => (
-                            <span 
-                              key={aspectIndex}
-                              className="px-4 py-2 bg-[#E6F0FF] text-[#2563EB] text-sm font-medium rounded-full border border-[#BFDBFE] max-sm:px-3 max-sm:py-1 max-sm:text-xs"
-                            >
-                              {aspect}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
                  
                       {/* Backward Compatibility for comment */}
                       {!review.feedback && review.comment && (

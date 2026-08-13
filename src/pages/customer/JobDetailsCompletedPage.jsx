@@ -582,30 +582,6 @@ const JobDetailsCompletedPage = () => {
                   </div>
                 </div>
 
-                {/* Tags */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">What did you like?</label>
-                  <div className="flex flex-wrap gap-2">
-                    {feedbackTags.map((tag) => {
-                      const isSelected = selectedTags.includes(tag);
-                      return (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => handleTagToggle(tag)}
-                          className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-primary-500 border-primary-500 text-white shadow-sm'
-                              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                          }`}
-                        >
-                          {tag}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
                 {/* Feedback Comment */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Comments (Optional)</label>
