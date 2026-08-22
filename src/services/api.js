@@ -177,7 +177,7 @@ export const authAPI = {
 
   // Delete user account
   deleteAccount: async () => {
-    return apiRequest('/auth/account', {
+    return apiRequest('/auth/delete', {
       method: 'DELETE'
     });
   },
