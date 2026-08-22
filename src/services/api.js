@@ -175,6 +175,13 @@ export const authAPI = {
     localStorage.removeItem('userLocation');
   },
 
+  // Delete user account
+  deleteAccount: async () => {
+    return apiRequest('/auth/account', {
+      method: 'DELETE'
+    });
+  },
+
 
   // Forgot password
   forgotPassword: async (email) => {

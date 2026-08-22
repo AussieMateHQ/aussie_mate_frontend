@@ -705,49 +705,6 @@ const CleaningJobDetailsForm = ({
           </div>
         )}
 
-        {/* Commercial Job Type Dropdown (Conditional) */}
-        {isCommercial && (
-          <div className="space-y-2">
-            <label className="block text-sm sm:text-base font-medium text-[#111827]">
-              Type Of Job
-            </label>
-            <div className="relative" ref={commercialTypeRef}>
-              <div
-                onClick={() => setIsCommercialTypeOpen(!isCommercialTypeOpen)}
-                className="flex items-center justify-between w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-200 rounded-full bg-white cursor-pointer hover:border-blue-400 transition-colors"
-              >
-                <span className={formData.commercialJobTypeId ? 'text-[#111827] font-medium' : 'text-gray-400'}>
-                  {getCommercialTypeName()}
-                </span>
-                <img
-                  src={arrowDownIcon}
-                  alt="Dropdown"
-                  className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isCommercialTypeOpen ? 'rotate-180' : ''}`}
-                />
-              </div>
-              {isCommercialTypeOpen && (
-                <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 max-h-60 overflow-auto">
-                  {commercialJobTypes.map((type) => (
-                    <div
-                      key={type._id}
-                      className="px-6 py-3 hover:bg-gray-50 cursor-pointer text-[#111827] text-sm sm:text-base font-medium"
-                      onClick={() => {
-                        onInputChange('commercialJobTypeId', type._id);
-                        setIsCommercialTypeOpen(false);
-                      }}
-                    >
-                      {type.name}
-                    </div>
-                  ))}
-                  {commercialJobTypes.length === 0 && (
-                    <div className="px-6 py-3 text-gray-400 text-sm italic">No job types found</div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Need Cleaning Radio Options (Conditional) */}
         {showRoomsAndBathrooms && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { userAPI, jobsAPI, matePointsAPI } from '../../services/api';
+import { userAPI, jobsAPI, matePointsAPI, authAPI } from '../../services/api';
 import { Button, PageHeader, Loader } from '../../components';
 import {
   Edit,
@@ -21,7 +21,8 @@ import {
   MapPin,
   BookOpen,
   Briefcase,
-  Crown
+  Crown,
+  Trash2
 } from 'lucide-react';
 import ProfileBG from '../../assets/CardBG7.png';
 import EditIcon from '../../assets/Editicon.svg';
@@ -35,6 +36,8 @@ const ProfilePage = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [jobStats, setJobStats] = useState({ jobs: 0, completed: 0, reviews: 0 });
   const [matePoints, setMatePoints] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -162,6 +165,34 @@ const ProfilePage = () => {
 
   const cancelLogout = () => {
     setShowLogoutModal(false);
+  };
+
+  const handleDeleteAccount = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setDeleting(true);
+      const response = await authAPI.deleteAccount();
+      if (response.success) {
+        logout();
+        await new Promise(resolve => setTimeout(resolve, 100));
+        navigate('/');
+      } else {
+        alert(response.message || 'Failed to delete account');
+      }
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      alert('Failed to delete account. Please try again.');
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const cancelDeleteAccount = () => {
+    setShowDeleteModal(false);
   };
 
   const handleEditProfile = () => {
@@ -311,12 +342,26 @@ const ProfilePage = () => {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-between p-3 sm:p-4 md:p-6 hover:bg-red-50 transition-colors text-red-600 cursor-pointer"
+              className="w-full flex items-center justify-between p-3 sm:p-4 md:p-6 hover:bg-red-50 transition-colors text-red-600 cursor-pointer border-b border-gray-100"
             >
               <div className="flex items-center space-x-3 sm:space-x-4">
                 <LogOut className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 flex-shrink-0" />
                 <span className="text-xs sm:text-sm md:text-base font-medium">
                   Logout
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
+            </button>
+
+            {/* Delete Account Button */}
+            <button
+              onClick={handleDeleteAccount}
+              className="w-full flex items-center justify-between p-3 sm:p-4 md:p-6 hover:bg-red-50 transition-colors text-red-600 cursor-pointer"
+            >
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 flex-shrink-0" />
+                <span className="text-xs sm:text-sm md:text-base font-medium">
+                  Delete Account
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
@@ -351,6 +396,41 @@ const ProfilePage = () => {
                 className="flex-1"
               >
                 Logout
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        >
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-auto shadow-custom border border-gray-200">
+            <h2 className="text-xl font-semibold text-red-650 mb-4 text-center">
+              Delete Account?
+            </h2>
+            <p className="text-gray-500 font-medium text-center mb-6 text-sm leading-relaxed">
+              Are you sure you want to permanently delete your account? This action is irreversible and all your data, jobs, quotes, and messages will be permanently lost.
+            </p>
+            <div className="flex space-x-3">
+              <Button
+                onClick={cancelDeleteAccount}
+                variant="outline"
+                size="md"
+                className="flex-1 bg-[#E5E7EB] hover:bg-gray-300 text-gray-800"
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeleteAccount}
+                size="md"
+                className="flex-1 bg-red-650 hover:bg-red-700 text-white"
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
               </Button>
             </div>
           </div>
