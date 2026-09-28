@@ -16,8 +16,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import dayjs from "dayjs";
-import { subscriptionsAPI, categoriesAPI } from "../../services/api";
-import { Button, Loader, PageHeader, ConfirmationModal } from "../../components";
+import { subscriptionsAPI, categoriesAPI, authAPI } from "../../services/api";
+import { Button, Loader, PageHeader, ConfirmationModal, FloatingLabelInput, FileUploadArea } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import BGVector from "../../assets/BG Vectorr.svg";
 import GiftIcon from "../../assets/Gift.svg";
@@ -27,9 +27,26 @@ import TrueIcon from '../../assets/true.svg';
 
 const MySubscriptionPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [plans, setPlans] = useState([]);
+
+  // --- Guest provider flow: picking a plan while logged out opens this
+  // instead of navigating away — same details form that already exists
+  // for providers (name/email/phone + document uploads), just reached
+  // from here, verified by OTP instead of a signup page. ---
+  const [guestFormActive, setGuestFormActive] = useState(false);
+  const [pendingPlanId, setPendingPlanId] = useState(null);
+  const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [abnNumber, setAbnNumber] = useState('');
+  const [providerDocs, setProviderDocs] = useState({ policeCheck: null, photoId: null, trainingCertificates: null });
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [devMode, setDevMode] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState('');
 
   // NEW: array of all active subscriptions
   const [activeSubscriptions, setActiveSubscriptions] = useState([]);
@@ -139,7 +156,7 @@ const MySubscriptionPage = () => {
     }
   };
 
-  const handleSubscribe = async (planId) => {
+  const proceedToCheckout = async (planId) => {
     setLoading(true);
     try {
       const res = await subscriptionsAPI.checkoutPlan(planId);
@@ -155,6 +172,101 @@ const MySubscriptionPage = () => {
       setError(err.message || "An error occurred during checkout.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubscribe = async (planId) => {
+    // Guests can browse plans freely; picking one is the point where an
+    // account is actually needed — show the details form right here
+    // instead of navigating away.
+    if (!user) {
+      setPendingPlanId(planId);
+      setGuestFormActive(true);
+      return;
+    }
+    await proceedToCheckout(planId);
+  };
+
+  // --- Guest provider flow handlers ---
+  const handleProviderFileChange = (e, fieldName) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setOtpError('File size must be less than 5MB');
+      return;
+    }
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      setOtpError('Only PDF, JPEG, JPG, and PNG files are allowed');
+      return;
+    }
+    setOtpError('');
+    setProviderDocs(prev => ({ ...prev, [fieldName]: file }));
+  };
+
+  const handleProviderFileRemove = (fieldName) => {
+    setProviderDocs(prev => ({ ...prev, [fieldName]: null }));
+  };
+
+  const handleRequestProviderOtp = async () => {
+    setOtpError('');
+    if (!contactName.trim()) {
+      setOtpError('Please enter your name');
+      return;
+    }
+    const cleanedPhone = contactPhone.replace(/[\s\-\(\)]/g, '');
+    if (!/^(?:\+?61|0)4\d{8}$/.test(cleanedPhone)) {
+      setOtpError('Please enter a valid Australian mobile number');
+      return;
+    }
+    setOtpLoading(true);
+    try {
+      const response = await authAPI.requestJobOtp(cleanedPhone);
+      if (response.success) {
+        setOtpSent(true);
+        setDevMode(!!response.data?.devMode);
+      } else {
+        setOtpError(response.message || 'Could not send verification code');
+      }
+    } catch (err) {
+      setOtpError(err.message || 'Could not send verification code');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleVerifyProviderOtpAndSubscribe = async () => {
+    setOtpError('');
+    if (!otpCode.trim()) {
+      setOtpError('Enter the code we sent you');
+      return;
+    }
+    setOtpLoading(true);
+    try {
+      const cleanedPhone = contactPhone.replace(/[\s\-\(\)]/g, '');
+      const response = await authAPI.verifyProviderOtp({
+        name: contactName.trim(),
+        email: contactEmail.trim() || undefined,
+        phone: cleanedPhone,
+        otp: otpCode.trim(),
+        abnNumber: abnNumber.trim() || undefined,
+        documents: providerDocs
+      });
+
+      if (!response.success) {
+        setOtpError(response.message || 'Incorrect code');
+        return;
+      }
+
+      updateUser(response.data.user);
+      setGuestFormActive(false);
+      // pendingPlanId, not the (still-null-in-this-closure) user, drives
+      // this — proceedToCheckout doesn't re-check auth state.
+      await proceedToCheckout(pendingPlanId);
+    } catch (err) {
+      setOtpError(err.message || 'Incorrect code');
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -198,6 +310,169 @@ const MySubscriptionPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader fullscreen message="Loading subscription details..." />
+      </div>
+    );
+  }
+
+  if (guestFormActive) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-12">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <PageHeader
+            title="Provider Details"
+            onBack={() => {
+              if (otpSent) {
+                setOtpSent(false);
+                setOtpCode('');
+                setOtpError('');
+                return;
+              }
+              setGuestFormActive(false);
+              setPendingPlanId(null);
+            }}
+            className="mb-4"
+          />
+
+          <div className="space-y-6 bg-white rounded-2xl p-6 sm:p-8 shadow-custom">
+            <div>
+              <h2 className="text-[20px] font-semibold text-[#111827]">Set up your account</h2>
+              <p className="text-gray-500 text-sm mt-1">
+                We'll use these details to verify you and set up your account.
+              </p>
+            </div>
+
+            {otpError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                {otpError}
+              </div>
+            )}
+
+            {!otpSent ? (
+              <>
+                <div className="space-y-4">
+                  <FloatingLabelInput
+                    id="providerName"
+                    name="providerName"
+                    label="Full name"
+                    type="text"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    required
+                  />
+                  <FloatingLabelInput
+                    id="providerPhone"
+                    name="providerPhone"
+                    label="Phone number"
+                    type="tel"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    required
+                  />
+                  <FloatingLabelInput
+                    id="providerEmail"
+                    name="providerEmail"
+                    label="Email address"
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                  />
+                  <FloatingLabelInput
+                    id="abnNumber"
+                    name="abnNumber"
+                    label="ABN Number (11-digit)"
+                    type="text"
+                    value={abnNumber}
+                    onChange={(e) => setAbnNumber(e.target.value)}
+                    maxLength={11}
+                  />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-primary-500 mb-1">Identity & Work Rights</h3>
+                  <h4 className="text-sm font-medium text-primary-500 mb-1">Police Check</h4>
+                  <p className="text-xs text-primary-200 font-medium mb-3">Recent background check, mandatory for all cleaners.</p>
+                  <FileUploadArea
+                    fieldName="policeCheck"
+                    title=""
+                    description=""
+                    placeholder="to Upload PDF/JPEG"
+                    onFileSelect={handleProviderFileChange}
+                    selectedFile={providerDocs.policeCheck}
+                    onRemove={handleProviderFileRemove}
+                    className="mb-0!"
+                  />
+                </div>
+
+                <FileUploadArea
+                  fieldName="photoId"
+                  title="Photo ID"
+                  description="To verify your identity. Accepted: Passport / Driver's License / Visa / Others."
+                  placeholder="to Upload Documents"
+                  onFileSelect={handleProviderFileChange}
+                  selectedFile={providerDocs.photoId}
+                  onRemove={handleProviderFileRemove}
+                />
+
+                <FileUploadArea
+                  fieldName="trainingCertificates"
+                  title="Training Certificates (Optional)"
+                  description="NDIS/Other certifications if applicable."
+                  placeholder="to Upload Documents"
+                  onFileSelect={handleProviderFileChange}
+                  selectedFile={providerDocs.trainingCertificates}
+                  onRemove={handleProviderFileRemove}
+                />
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleRequestProviderOtp}
+                    disabled={otpLoading}
+                    loading={otpLoading}
+                  >
+                    Send code
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4 max-w-md">
+                <p className="text-gray-600 text-sm">
+                  Enter the code we texted to <span className="font-medium">{contactPhone}</span>.
+                </p>
+                {devMode && (
+                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    Dev mode (no SMS provider connected yet) — enter any 6-digit number to continue.
+                  </p>
+                )}
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="6-digit code"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  maxLength={6}
+                  className="w-full px-5 py-4 border border-gray-200 rounded-full focus:outline-none focus:border-primary-600 bg-[#F9FAFB] tracking-[0.3em] text-center text-lg"
+                />
+                <div className="flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={handleRequestProviderOtp}
+                    disabled={otpLoading}
+                    className="text-sm text-primary-600 font-medium hover:underline"
+                  >
+                    Resend code
+                  </button>
+                  <Button
+                    onClick={handleVerifyProviderOtpAndSubscribe}
+                    disabled={otpLoading || loading}
+                    loading={otpLoading || loading}
+                  >
+                    Verify & continue
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     );
   }
