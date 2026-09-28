@@ -5,7 +5,7 @@ import {
   Loader
 } from '../../components';
 import MapPinIcon from '../../assets/map-pin 1.png';
-import { jobsAPI, userAPI } from '../../services/api';
+import { jobsAPI, userAPI, authAPI } from '../../services/api';
 import { format } from 'date-fns';
 import Calendar from '../../components/form-controls/Calendar';
 import CalendarIcon from '../../assets/Calendar.svg';
@@ -15,6 +15,7 @@ import { MapPin, Navigation, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useGoogleAds } from '../../hooks/useGoogleAds';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Map container style
 const mapContainerStyle = {
@@ -37,6 +38,8 @@ const PostNewJobPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { trackQuoteSubmitted } = useGoogleAds();
+  const { user, updateUser } = useAuth();
+  const isGuest = !user;
 
   // Step management (Step 1: Job Details, Step 2: Final Details, Step 3: Success)
   const [currentStep, setCurrentStep] = useState(1);
@@ -93,6 +96,17 @@ const PostNewJobPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [addressError, setAddressError] = useState('');
+
+  // --- Guest contact-details / OTP step (step 3, guests only) ---
+  // Collected at the very end, right before the account is auto-created.
+  const [contactName, setContactName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [devMode, setDevMode] = useState(false); // true only when Sinch isn't configured yet (local testing)
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState('');
 
   // UI states
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -204,8 +218,11 @@ const PostNewJobPage = () => {
     };
   }, []);
 
-  // Load user location from profile (same as Header)
+  // Load user location from profile (same as Header).
+  // Guests have no profile to fetch from — their location lives in
+  // localStorage only (set via the location step), so skip the API call.
   const updateLocation = async () => {
+    if (isGuest) return;
     try {
       const userProfile = await userAPI.getProfile();
 
@@ -713,6 +730,88 @@ const PostNewJobPage = () => {
     }
   };
 
+  // contactPhone only ever holds the local part (user never types +61 —
+  // it's shown as a fixed prefix, same treatment as the login page).
+  // This turns whatever's typed (with or without a leading 0) into the
+  // full +61 format the backend expects.
+  const getNormalizedContactPhone = () =>
+    `+61${contactPhone.replace(/[\s\-\(\)]/g, '').replace(/^0/, '')}`;
+
+  const handleRequestOtp = async () => {
+    setOtpError('');
+    setError('');
+
+    // Same checks that used to gate "Post Job" for a guest — still needed
+    // here now that Send Code sits on this same page.
+    if (!selectedDate) {
+      setError('Please select a date for the service');
+      return;
+    }
+    if (!selectedLocation?.address || selectedLocation.address === 'Location not set') {
+      setError('Please set your job location before continuing');
+      setAddressError('Please set your address before posting jobs');
+      return;
+    }
+    if (!contactName.trim()) {
+      setOtpError('Please enter your name');
+      return;
+    }
+    const cleanedPhone = getNormalizedContactPhone();
+    if (!/^\+614\d{8}$/.test(cleanedPhone)) {
+      setOtpError('Please enter a valid Australian mobile number');
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      const response = await authAPI.requestJobOtp(cleanedPhone);
+      if (response.success) {
+        setOtpSent(true);
+        setDevMode(!!response.data?.devMode);
+      } else {
+        setOtpError(response.message || 'Could not send verification code');
+      }
+    } catch (err) {
+      setOtpError(err.message || 'Could not send verification code');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleVerifyOtpAndPost = async () => {
+    setOtpError('');
+
+    if (!otpCode.trim()) {
+      setOtpError('Enter the code we sent you');
+      return;
+    }
+
+    setOtpLoading(true);
+    try {
+      const cleanedPhone = getNormalizedContactPhone();
+      const response = await authAPI.verifyJobOtp({
+        name: contactName.trim(),
+        email: contactEmail.trim() || undefined,
+        phone: cleanedPhone,
+        otp: otpCode.trim()
+      });
+
+      if (!response.success) {
+        setOtpError(response.message || 'Incorrect code');
+        return;
+      }
+
+      // Sync the freshly created/matched account into auth context, then
+      // reuse the normal (already-authenticated) job submission path.
+      updateUser(response.data.user);
+      await handlePostJob();
+    } catch (err) {
+      setOtpError(err.message || 'Incorrect code');
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   // Render different steps
   const renderStepContent = () => {
     switch (currentStep) {
@@ -971,15 +1070,94 @@ const PostNewJobPage = () => {
           )}
         </div>
 
+        {/* Guest contact details — collected right here instead of a
+            separate screen, per client request. Only shown for guests;
+            logged-in users go straight to Post Job as before. */}
+        {isGuest && (
+          <div className="space-y-4 pt-2 border-t border-gray-100 mt-2">
+            <h3 className="text-[16px] font-semibold text-[#111827] pt-4">Your details</h3>
+            <p className="text-gray-500 text-sm -mt-2">
+              We'll use these to set up your account and send your quotes.
+            </p>
+
+            {otpError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                {otpError}
+              </div>
+            )}
+
+            {!otpSent ? (
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Full name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  className="w-full px-5 py-4 border border-gray-200 rounded-full focus:outline-none focus:border-primary-600 bg-[#F9FAFB]"
+                />
+                <div className="w-full flex items-center border border-gray-200 rounded-full focus-within:border-primary-600 bg-[#F9FAFB] overflow-hidden">
+                  <span className="pl-5 pr-2 py-4 text-gray-500 font-medium select-none border-r border-gray-200">+61</span>
+                  <input
+                    type="tel"
+                    placeholder="4XX XXX XXX"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    className="flex-1 px-4 py-4 bg-transparent focus:outline-none min-w-0"
+                  />
+                </div>
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  className="w-full px-5 py-4 border border-gray-200 rounded-full focus:outline-none focus:border-primary-600 bg-[#F9FAFB]"
+                />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-gray-600 text-sm">
+                  Enter the code we texted to <span className="font-medium">+61{contactPhone.replace(/[\s\-\(\)]/g, '').replace(/^0/, '')}</span>.
+                </p>
+                {devMode && (
+                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    Dev mode (no SMS provider connected yet) — enter any 6-digit number to continue.
+                  </p>
+                )}
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="6-digit code"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  maxLength={6}
+                  className="w-full px-5 py-4 border border-gray-200 rounded-full focus:outline-none focus:border-primary-600 bg-[#F9FAFB] tracking-[0.3em] text-center text-lg"
+                />
+                <button
+                  type="button"
+                  onClick={handleRequestOtp}
+                  disabled={otpLoading}
+                  className="text-sm text-primary-600 font-medium hover:underline"
+                >
+                  Resend code
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Post Job Action */}
         <div className="pt-4 flex justify-end">
           <Button
-            onClick={handlePostJob}
-            disabled={isLoading}
-            loading={isLoading}
+            onClick={
+              !isGuest ? handlePostJob
+              : !otpSent ? handleRequestOtp
+              : handleVerifyOtpAndPost
+            }
+            disabled={isLoading || otpLoading}
+            loading={isLoading || otpLoading}
             className="rounded-full text-lg font-medium bg-[#1A73E8]"
           >
-            Post Job
+            {!isGuest ? 'Post Job' : !otpSent ? 'Send code' : 'Verify & Post Job'}
           </Button>
         </div>
       </div>
