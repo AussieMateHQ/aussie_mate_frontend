@@ -31,8 +31,11 @@ function AppContent() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow flex flex-col [&>div]:flex-grow">
         <Routes>
-          {/* Public */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Public — the bare domain shows the marketing landing page, not a
+              login wall. HomePage itself already redirects a logged-in
+              visitor onward to their dashboard, so this covers both guests
+              and returning users correctly. */}
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/about" element={<AboutPage />} />
