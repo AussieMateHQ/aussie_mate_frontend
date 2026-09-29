@@ -197,6 +197,62 @@ export const authAPI = {
       method: 'POST',
       body: JSON.stringify({ token, password, confirmPassword }),
     });
+  };
+    
+  // ---  phone OTP flow (login, guest job posting, provider signup) ---
+  requestJobOtp: async (phone) => {
+    return apiRequest('/auth/request-otp', {
+      method: 'POST',
+      body: JSON.stringify({ phone }),
+    });
+  },
+
+  verifyJobOtp: async ({ name, email, phone, otp }) => {
+    const response = await apiRequest('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, phone, otp, role: 'Customer' }),
+    });
+    if (response.success && response.data && response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response;
+  },
+
+  loginVerifyOtp: async (phone, otp) => {
+    const response = await apiRequest('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ phone, otp }),
+    });
+    if (response.success && response.data && response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response;
+  },
+
+  completeSignup: async ({ phone, name, email, role, verifiedSessionToken, abnNumber, documents }) => {
+    const response = await apiRequest('/auth/complete-signup', {
+      method: 'POST',
+      body: JSON.stringify({ phone, name, email, role, verifiedSessionToken, abnNumber, documents }),
+    });
+    if (response.success && response.data && response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response;
+  },
+
+  verifyProviderOtp: async ({ name, email, phone, otp, abnNumber, documents }) => {
+    const response = await apiRequest('/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, phone, otp, role: 'Cleaner', abnNumber, documents }),
+    });
+    if (response.success && response.data && response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    return response;
   },
 };
 
