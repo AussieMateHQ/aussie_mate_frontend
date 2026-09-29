@@ -197,7 +197,7 @@ export const authAPI = {
       method: 'POST',
       body: JSON.stringify({ token, password, confirmPassword }),
     });
-  };
+  },
     
   // ---  phone OTP flow (login, guest job posting, provider signup) ---
   requestJobOtp: async (phone) => {
