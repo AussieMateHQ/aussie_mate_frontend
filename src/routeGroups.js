@@ -126,20 +126,23 @@ export const authRoutes = [
 
   { path: '/login', component: LoginPage },
 
-  { path: '/select-role', component: RoleSelectionPage },
+  // Old password-based signup/reset flow — replaced by the universal OTP
+  // login page (it creates an account automatically for a brand-new phone
+  // number), so these just redirect there instead of showing a dead-end
+  // password form.
+  { path: '/select-role', component: () => <Navigate to="/login" replace /> },
 
-  { path: '/signup', component: SignupPage },
+  { path: '/signup', component: () => <Navigate to="/login" replace /> },
 
   { path: '/ndis-plan-info', component: NDISPlanInfoPage },
 
-  { path: '/forgot-password', component: ForgotPasswordPage },
+  { path: '/forgot-password', component: () => <Navigate to="/login" replace /> },
 
-  { path: '/reset-password', component: ResetPasswordPage },
+  { path: '/reset-password', component: () => <Navigate to="/login" replace /> },
 
   { path: '/platform-policy', component: PlatformPolicyPage, showHeader: true },
 
 ]
-
 
 
 export const customerRoutes = [
