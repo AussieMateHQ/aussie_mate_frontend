@@ -36,7 +36,7 @@ const CustomerDashboard = () => {
   const swiperRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  const isGuest = !user;
   const goToPrev = () => {
     if (swiperRef.current) {
       swiperRef.current.swiper.slidePrev();
@@ -79,6 +79,10 @@ const CustomerDashboard = () => {
 
   // Get current user ID
   useEffect(() => {
+        if (isGuest) {
+      setLoading(false);
+      return;
+    }
     const getCurrentUserId = async () => {
       try {
         if (user?.id) {
