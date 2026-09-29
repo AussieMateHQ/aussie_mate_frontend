@@ -195,19 +195,13 @@ const Header = () => {
                 {user.firstName || user.name || 'User'}
               </span>
             </div>
-          ) : (
+                   ) : (
             <div className="flex items-center space-x-2">
               <Link
                 to="/login"
-                className="text-base text-primary-200 font-medium hover:text-gray-800 px-3 py-1 rounded hover:bg-gray-100"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
                 className="text-sm bg-primary-500 text-white px-3 py-1 rounded hover:bg-primary-600"
               >
-                Sign Up
+                Login / Sign Up
               </Link>
             </div>
           )}
