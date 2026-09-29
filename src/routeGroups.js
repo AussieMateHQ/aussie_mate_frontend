@@ -144,7 +144,11 @@ export const authRoutes = [
 
 export const customerRoutes = [
 
-  { path: '/customer-dashboard', component: CustomerDashboard },
+  // '/customer-dashboard' moved to a public route in App.jsx, and is now the
+  // landing page at '/': CustomerDashboard already renders fine without a
+  // user (guest-safe fetch guards added), so it no longer sits behind
+  // ProtectedRoute. Logged-in customers still see their real data — the
+  // component itself checks `user` from context either way.
 
   // '/post-new-job' moved to a public route in App.jsx: PostNewJobPage
   // already supports posting as a guest (isGuest = !user), so it no longer
