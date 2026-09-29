@@ -1,9 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Mail, MapPin } from 'lucide-react';
 import logo from '../../assets/logo.svg';
 
 const Footer = () => {
+  const location = useLocation();
+  // Company registration details (ABN, entity name) are kept off the public
+  // landing page per client request. They stay fully visible on /about,
+  // /contact, /privacy-policy and /terms-and-conditions for Apple App Store
+  // verification and legal requirements.
+  const isLandingPage = location.pathname === '/home' || location.pathname === '/';
+
   return (
     <footer className="bg-white pt-10 pb-10 font-sans text-gray-500">
       <div className="max-w-6xl mx-auto px-6">
@@ -15,8 +22,8 @@ const Footer = () => {
               <img src={logo} alt="Aussiemate" className="h-10 sm:h-12 md:h-14 w-auto" />
             </Link>
             <p className="mb-8 leading-relaxed">
-              Australia's trusted home & business services platform.<br />
-              Operated by PATEL HOUSE PTY LTD.
+              Australia's trusted home & business services platform.
+              {!isLandingPage && (<><br />Operated by PATEL HOUSE PTY LTD.</>)}
             </p>
             
             <div className="space-y-3 text-sm">
@@ -62,9 +69,15 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-100 flex flex-col space-y-4 text-sm text-gray-400">
-          <p>
-            Aussiemate is operated by PATEL HOUSE PTY LTD · ABN: 86687008591 · Geebung, QLD · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
-          </p>
+          {isLandingPage ? (
+            <p>
+              &copy; {new Date().getFullYear()} Aussie Mate · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
+            </p>
+          ) : (
+            <p>
+              Aussiemate is operated by PATEL HOUSE PTY LTD · ABN: 86687008591 · Geebung, QLD · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
+            </p>
+          )}
           {/* <div className="flex space-x-6">
             <Link to="/privacy-policy" className="hover:text-blue-600 transition-colors">Privacy</Link>
             <Link to="/terms-and-conditions" className="hover:text-blue-600 transition-colors">Terms</Link>

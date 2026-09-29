@@ -69,15 +69,26 @@ const LocationPage = () => {
   // Google Maps API key
   const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 
-  // Check if user is logged in when page loads
+  // Check if user is logged in when page loads.
+  // Exception: a guest posting a job from the landing page arrives here from
+  // PostNewJobPage (which already supports posting without an account) and
+  // must be allowed through without a login redirect. Every other entry
+  // point (header "Change location", dashboards, etc.) still requires an
+  // account, same as before.
   useEffect(() => {
+    const cameFromGuestJobPost =
+      location.state?.from === '/post-new-job' ||
+      localStorage.getItem('navigatingToLocation') === 'true';
+
+    if (cameFromGuestJobPost) return;
+
     const userStr = localStorage.getItem('user');
     const user = userStr ? JSON.parse(userStr) : null;
 
     if (!user) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, location.state]);
   // Load Google Maps
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -358,6 +369,29 @@ const LocationPage = () => {
 
     try {
       setIsLoading(true);
+
+      // Guests (posting a job from the landing page, no account yet) have no
+      // profile to save a location against — same as PostNewJobPage's own
+      // guest handling. Their location lives in localStorage only.
+      if (!user) {
+        localStorage.setItem("userLocation", JSON.stringify(locationData));
+        window.dispatchEvent(new CustomEvent("locationUpdated", {
+          detail: {
+            address: selectedLocation.address || selectedLocation.fullAddress,
+            city: city,
+            coordinates: [selectedLocation.lng, selectedLocation.lat]
+          }
+        }));
+        setIsLoading(false);
+        if (location.state?.from) {
+          const redirectPath = location.state.from.startsWith('/')
+            ? location.state.from
+            : `/${location.state.from}`;
+          return navigate(redirectPath, { state: { ...location.state } });
+        }
+        return navigate('/post-new-job');
+      }
+
       // BACKEND API CALL
       const response = await userAPI.updateLocation(locationData);
 

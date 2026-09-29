@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { AuthProvider } from './contexts/AuthContext'
 const HomePage = React.lazy(() => import('./pages/HomePage'))
 import { ProtectedRoute, ScrollToTop, Loader, Footer } from './components'
+import AppLayout from './components/layout/AppLayout'
 import { authRoutes, customerRoutes, cleanerRoutes, CLEANER_ROLES } from './routeGroups'
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'))
 
@@ -12,6 +13,13 @@ const ContactPage = React.lazy(() => import('./pages/legal/ContactPage'))
 const PrivacyPolicyPage = React.lazy(() => import('./pages/legal/PrivacyPolicyPage'))
 const TermsPage = React.lazy(() => import('./pages/legal/TermsPage'))
 const ServicesPage = React.lazy(() => import('./pages/ServicesPage'))
+
+// Public — no login/signup wall. Both already support being used without an
+// account: PostNewJobPage collects guest name/phone/email via OTP at the
+// final step, and LocationPage's own guard only requires an account outside
+// the guest-post-a-job path (see routeGroups.js for the detail).
+const PostNewJobPage = React.lazy(() => import('./pages/customer/PostNewJobPage'))
+const LocationPage = React.lazy(() => import('./pages/customer/LocationPage'))
 
 function AppContent() {
   const location = useLocation()
@@ -31,6 +39,8 @@ function AppContent() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-and-conditions" element={<TermsPage />} />
+          <Route path="/post-new-job" element={<AppLayout><PostNewJobPage /></AppLayout>} />
+          <Route path="/location" element={<AppLayout showHeader={false}><LocationPage /></AppLayout>} />
           {authRoutes.map(({ path, component: Component }, i) => (
             <Route key={i} path={path} element={<Component />} />
           ))}

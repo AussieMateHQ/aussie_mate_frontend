@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Shield, CheckSquare, Plus, ArrowRight, MoreHorizontal, Home, Building2, Key, Wrench, Dog, Shirt, BriefcaseBusiness, Info } from 'lucide-react';
+import { MapPin, Shield, CheckSquare, Plus, ArrowRight, MoreHorizontal, Home, Building2, Key, Wrench, Dog, Shirt, BriefcaseBusiness, Info, Search } from 'lucide-react';
 import logo from '../assets/logo.svg';
 import { useAuth } from '../contexts/AuthContext';
 import { CLEANER_ROLES } from '../routeGroups';
@@ -8,6 +8,7 @@ import { CLEANER_ROLES } from '../routeGroups';
 const HomePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -19,6 +20,23 @@ const HomePage = () => {
       }
     }
   }, [user, navigate]);
+
+  // Goes straight to the existing, already-approved job-posting form — no
+  // separate landing-page form, no forced login/signup (guests can post a
+  // job there and are only asked for name/phone/email at the final step).
+  // The typed text is passed through as the category; PostNewJobPage's
+  // fuzzy category matcher (matched against the real /categories list from
+  // the backend) resolves it, or falls back to manual selection in the form
+  // if nothing matches (e.g. a category like "Painting" that doesn't exist
+  // in the backend yet).
+  const goToJobForm = (categoryName) => {
+    navigate('/post-new-job', { state: { categoryName } });
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    goToJobForm(searchTerm.trim());
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -72,25 +90,51 @@ const HomePage = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl">
-              Book verified professionals for cleaning, handyman work, pet sitting and more — fast, simple, and reliable. Operated by PATEL HOUSE PTY LTD.
+              Book verified professionals for cleaning, handyman work, pet sitting and more — fast, simple, and reliable.
             </p>
-            
+
+            {/* Search bar — matches a category (fuzzy, same matching the job form
+                already uses) and jumps straight into the existing, approved
+                job-posting form with that category pre-selected. No login/signup
+                wall: PostNewJobPage already supports posting as a guest. */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="w-full max-w-2xl mb-8 flex flex-col sm:flex-row items-stretch gap-3 bg-white rounded-2xl sm:rounded-full p-2 shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-gray-100"
+            >
+              <div className="flex-1 flex items-center px-4">
+                <Search className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="What do you need done? e.g. Bond cleaning, handyman…"
+                  className="w-full py-3 sm:py-2 text-gray-900 placeholder-gray-400 focus:outline-none bg-transparent"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-8 py-3.5 sm:py-3 bg-blue-600 hover:bg-blue-700 rounded-xl sm:rounded-full font-bold text-white transition-colors flex items-center justify-center"
+              >
+                Get Quotes
+              </button>
+            </form>
+
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
-              <button 
+              <button
                 onClick={() => navigate('/about')}
                 className="px-8 py-3.5 bg-white rounded-lg font-bold text-gray-900 transition-colors w-full sm:w-auto flex items-center justify-center shadow-sm"
               >
                 <Info className="w-5 h-5 mr-2" />
                 Learn More
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/services')}
                 className="px-8 py-3.5 bg-white rounded-lg font-bold text-gray-900 transition-colors w-full sm:w-auto shadow-sm"
               >
                 Browse Services
               </button>
             </div>
-            
+
             <div className="flex flex-wrap items-center justify-center text-sm font-medium text-gray-500 gap-x-4 gap-y-2">
               <div className="flex items-center">
                 <Shield className="w-4 h-4 text-green-500 mr-1.5" />
@@ -115,58 +159,58 @@ const HomePage = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
               {/* Card 1: General Cleaning */}
-              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+              <button type="button" onClick={() => goToJobForm('General Cleaning')} className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
                 <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-blue-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
                   <Home className="w-10 h-10 text-blue-500 relative z-10" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-[14px] font-semibold text-gray-900">General Cleaning</h3>
-              </Link>
-              
+              </button>
+
               {/* Card 2: Commercial Cleaning */}
-              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+              <button type="button" onClick={() => goToJobForm('Commercial Cleaning')} className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
                 <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-orange-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
                   <Building2 className="w-10 h-10 text-orange-400 relative z-10" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-[14px] font-semibold text-gray-900">Commercial Cleaning</h3>
-              </Link>
+              </button>
 
               {/* Card 3: Bond Cleaning */}
-              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+              <button type="button" onClick={() => goToJobForm('Bond Cleaning')} className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
                 <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-teal-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
                   <Key className="w-10 h-10 text-teal-500 relative z-10" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-[14px] font-semibold text-gray-900">Bond Cleaning</h3>
-              </Link>
+              </button>
 
               {/* Card 4: Housekeeper */}
-              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+              <button type="button" onClick={() => goToJobForm('Housekeeper')} className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
                 <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-purple-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
                   <Shirt className="w-10 h-10 text-purple-500 relative z-10" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-[14px] font-semibold text-gray-900">Housekeeper</h3>
-              </Link>
+              </button>
 
               {/* Card 5: Pet Sitting */}
-              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+              <button type="button" onClick={() => goToJobForm('Pet Sitting')} className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
                 <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-red-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
                   <Dog className="w-10 h-10 text-red-400 relative z-10" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-[14px] font-semibold text-gray-900">Pet Sitting</h3>
-              </Link>
+              </button>
 
               {/* Card 6: Handyman */}
-              <Link to="/services" className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
+              <button type="button" onClick={() => goToJobForm('Handyman')} className="bg-white p-6 rounded-2xl border border-[#fbf5ff] shadow-[0_4px_20px_rgba(244,235,255,0.6)] hover:shadow-[0_6px_25px_rgba(244,235,255,1)] hover:border-[#f3e5ff] transition-all group flex flex-col items-center text-center">
                 <div className="w-24 h-24 mb-4 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-green-50/50 rounded-full scale-[0.8] group-hover:scale-100 transition-transform"></div>
                   <Wrench className="w-10 h-10 text-green-500 relative z-10" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-[14px] font-semibold text-gray-900">Handyman</h3>
-              </Link>
+              </button>
             </div>
           </div>
         </section>
@@ -262,68 +306,24 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* 6. About Section */}
+        {/* 6. About Section — kept deliberately free of registered-company
+            details (name, ABN, registration address). Those stay in full on
+            the /about page for Apple App Store verification and legal
+            requirements; this section is just a friendly teaser + link. */}
         <section className="py-15 px-6 bg-white">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-6 leading-tight">
-                About Aussiemate & PATEL HOUSE PTY LTD
-              </h2>
-              <div className="text-gray-600 space-y-6 text-lg">
-                <p>
-                  Aussiemate is a digital service marketplace owned and operated by PATEL HOUSE PTY LTD, an Australian company based in Geebung, Queensland.
-                </p>
-                <p>
-                  We connect customers with trusted professionals for cleaning, handyman, pet sitting, and more. Our mission is to make booking services simple, fast, and reliable.
-                </p>
-                <p>
-                  All Aussiemate services and platform operations are managed by PATEL HOUSE PTY LTD.
-                </p>
-              </div>
-            </div>
-            
-            <div className="bg-blue-50/50 rounded-[32px] p-8 border border-blue-100 relative">
-              <div className="flex items-center space-x-3 mb-8">
-                <Building2 className="w-6 h-6 text-blue-600" />
-                <h3 className="text-sm font-bold text-blue-700 uppercase tracking-wide">PATEL HOUSE PTY LTD</h3>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="flex items-start border-b border-blue-100 pb-6">
-                  <div className="w-10 flex shrink-0">
-                    <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="block text-sm text-blue-400 font-medium mb-1">ABN</span>
-                    <span className="block font-medium text-gray-900">86 687 008 591</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-start border-b border-blue-100 pb-6">
-                  <div className="w-10 flex shrink-0">
-                    <MapPin className="w-6 h-6 text-blue-500" />
-                  </div>
-                  <div>
-                    <span className="block text-sm text-blue-400 font-medium mb-1">Location</span>
-                    <span className="block font-medium text-gray-900">Geebung, QLD, Australia</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className="w-10 flex shrink-0">
-                    <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="block text-sm text-blue-400 font-medium mb-1">Email</span>
-                    <span className="block font-medium text-gray-900"><a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a></span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-6 leading-tight">
+              About Aussiemate
+            </h2>
+            <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
+              Aussiemate is a digital service marketplace connecting customers with trusted, verified professionals for cleaning, handyman, pet sitting, and more — making booking services simple, fast, and reliable.
+            </p>
+            <button
+              onClick={() => navigate('/about')}
+              className="inline-flex items-center px-6 py-3 rounded-full border border-gray-300 font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
+            >
+              Learn more about us <ArrowRight className="w-4 h-4 ml-2" />
+            </button>
           </div>
         </section>
 

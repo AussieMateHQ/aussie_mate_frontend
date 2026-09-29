@@ -39,8 +39,6 @@ const VerifyDocumentsPage = React.lazy(() => import('./pages/auth/VerifyDocument
 
 const CustomerDashboard = React.lazy(() => import('./pages/customer/CustomerDashboard'))
 
-const PostNewJobPage = React.lazy(() => import('./pages/customer/PostNewJobPage'))
-
 const JobSuccessPage = React.lazy(() => import('./pages/customer/JobSuccessPage'))
 
 const MyJobsPage = React.lazy(() => import('./pages/customer/MyJobsPage'))
@@ -58,8 +56,6 @@ const JobBookedSuccessfullyPage = React.lazy(() => import('./pages/customer/JobB
 const CustomerInProgressJobDetailsPage = React.lazy(() => import('./pages/customer/CustomerInProgressJobDetailsPage'))
 
 const JobDetailsPage = React.lazy(() => import('./pages/cleaner/JobDetailsPage'))
-
-const LocationPage = React.lazy(() => import('./pages/customer/LocationPage'))
 
 const PaymentSuccessCallbackPage = React.lazy(() => import('./pages/customer/PaymentSuccessCallbackPage'))
 
@@ -150,7 +146,10 @@ export const customerRoutes = [
 
   { path: '/customer-dashboard', component: CustomerDashboard },
 
-  { path: '/post-new-job', component: PostNewJobPage },
+  // '/post-new-job' moved to a public route in App.jsx: PostNewJobPage
+  // already supports posting as a guest (isGuest = !user), so it no longer
+  // sits behind ProtectedRoute — that's how the landing page reaches the
+  // existing, approved job form without a login/signup wall.
 
   { path: '/job-success', component: JobSuccessPage },
 
@@ -237,6 +236,10 @@ export const cleanerRoutes = [
 
   { path: '/platform-policy', component: PlatformPolicyPage },
 
-  { path: '/location', component: LocationPage, allowedRoles: ['Customer', ...CLEANER_ROLES], showHeader: false },
+  // '/location' moved to a public route in App.jsx alongside '/post-new-job':
+  // guests posting a job from the landing page need to set a location before
+  // an account exists. LocationPage itself still sends a signed-in-required
+  // visitor to /login for every other entry point (header "Change location",
+  // dashboards, etc.) — only the guest-from-post-new-job path is exempt.
 
 ]
