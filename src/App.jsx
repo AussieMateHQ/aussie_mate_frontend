@@ -21,6 +21,13 @@ const ServicesPage = React.lazy(() => import('./pages/ServicesPage'))
 const PostNewJobPage = React.lazy(() => import('./pages/customer/PostNewJobPage'))
 const LocationPage = React.lazy(() => import('./pages/customer/LocationPage'))
 
+// Public — this is the actual landing page (per client direction): the
+// "Book a cleaner" dashboard with Popular Services / My Jobs, not the
+// separate marketing HomePage. CustomerDashboard's own data-fetching effects
+// are guest-safe (skip user-only API calls when there's no logged-in user),
+// and it shows a logged-in customer's real data normally when there is one.
+const CustomerDashboard = React.lazy(() => import('./pages/customer/CustomerDashboard'))
+
 function AppContent() {
   const location = useLocation()
   
@@ -31,11 +38,14 @@ function AppContent() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow flex flex-col [&>div]:flex-grow">
         <Routes>
-          {/* Public — the bare domain shows the marketing landing page, not a
-              login wall. HomePage itself already redirects a logged-in
-              visitor onward to their dashboard, so this covers both guests
-              and returning users correctly. */}
-          <Route path="/" element={<Navigate to="/home" replace />} />
+          {/* Public — the bare domain shows the "Book a cleaner" dashboard
+              (CustomerDashboard) as the landing page, per client direction.
+              It renders correctly for guests (no login wall) and shows a
+              logged-in customer's real data when there is one, so this
+              covers both cases correctly. The marketing HomePage stays
+              reachable at /home for anything still linking to it. */}
+          <Route path="/" element={<Navigate to="/customer-dashboard" replace />} />
+          <Route path="/customer-dashboard" element={<AppLayout><CustomerDashboard /></AppLayout>} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/about" element={<AboutPage />} />
