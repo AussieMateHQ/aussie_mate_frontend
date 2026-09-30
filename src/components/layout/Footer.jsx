@@ -33,10 +33,16 @@ const Footer = () => {
                   support@aussiemate.com.au
                 </a>
               </p>
-              <p className="flex items-center">
-                <MapPin className="w-4 h-4 mr-3 text-gray-400" />
-                Geebung, QLD, Australia
-              </p>
+              {/* Address is kept off the public landing page per client request,
+                  same as the company name above. Still shown on /about,
+                  /contact, /privacy-policy and /terms-and-conditions for
+                  Apple App Store verification and legal requirements. */}
+              {!isLandingPage && (
+                <p className="flex items-center">
+                  <MapPin className="w-4 h-4 mr-3 text-gray-400" />
+                  Geebung, QLD, Australia
+                </p>
+              )}
             </div>
           </div>
 
