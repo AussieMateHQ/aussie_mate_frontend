@@ -417,7 +417,18 @@ const LocationPage = () => {
       }));
 
     } catch (error) {
+      // Previously this only logged the error and fell through to the
+      // redirect logic below regardless — so a failed save (timeout, server
+      // error, expired session, etc.) still sent the person on to their
+      // dashboard looking like it worked, and the address was never actually
+      // stored. Show the failure and stop here instead of pretending it saved.
       console.error("Location update failed:", error);
+      setIsLoading(false);
+      setError(
+        error?.message ||
+        "Could not save your location right now. Please check your connection and try again."
+      );
+      return;
     } finally {
       setIsLoading(false);
     }
