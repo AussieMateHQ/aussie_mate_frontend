@@ -130,18 +130,17 @@ export const authRoutes = [
   // login page (it creates an account automatically for a brand-new phone
   // number), so these just redirect there instead of showing a dead-end
   // password form.
-  { path: '/select-role', component: () => <Navigate to="/login" replace /> },
+  { path: '/select-role', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
 
-  { path: '/signup', component: () => <Navigate to="/login" replace /> },
+  { path: '/signup', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
 
   { path: '/ndis-plan-info', component: NDISPlanInfoPage },
 
-  { path: '/forgot-password', component: () => <Navigate to="/login" replace /> },
+  { path: '/forgot-password', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
 
-  { path: '/reset-password', component: () => <Navigate to="/login" replace /> },
+  { path: '/reset-password', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
 
   { path: '/platform-policy', component: PlatformPolicyPage, showHeader: true },
-
 ]
 
 
