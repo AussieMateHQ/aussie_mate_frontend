@@ -424,8 +424,15 @@ const LocationPage = () => {
       // stored. Show the failure and stop here instead of pretending it saved.
       console.error("Location update failed:", error);
       setIsLoading(false);
+      // Only show the person a message that came from the server (e.g. a
+      // validation message) — never a raw JS/runtime error like "Cannot
+      // access 'X' before initialization", which is meaningless and alarming
+      // to someone just trying to save an address. Anything else falls back
+      // to one plain, friendly line; the real error is still logged above.
+      const isServerMessage = typeof error?.message === 'string' &&
+        !/^(Cannot|Uncaught|ReferenceError|TypeError|undefined is not|null is not)/i.test(error.message);
       setError(
-        error?.message ||
+        (isServerMessage && error.message) ||
         "Could not save your location right now. Please check your connection and try again."
       );
       return;
