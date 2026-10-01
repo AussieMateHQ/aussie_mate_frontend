@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { userAPI, jobsAPI, matePointsAPI, authAPI } from '../../services/api';
+import { userAPI, jobsAPI, matePointsAPI, authAPI, subscriptionsAPI } from '../../services/api';
 import { Button, PageHeader, Loader } from '../../components';
 import {
   Edit,
@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import ProfileBG from '../../assets/CardBG7.png';
 import EditIcon from '../../assets/Editicon.svg';
+import BoldJobIcon from '../../assets/boldJob.svg';
 
 
 const ProfilePage = () => {
@@ -38,6 +39,44 @@ const ProfilePage = () => {
   const [matePoints, setMatePoints] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [liveJobsCount, setLiveJobsCount] = useState(0);
+  const [loadingLiveJobs, setLoadingLiveJobs] = useState(false);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+
+  // Cleaners only: show how many live/ongoing jobs are available right now,
+  // directly from the Profile page. Tapping through reuses the existing
+  // job-details flow, which already redirects to /my-subscription if the
+  // cleaner tries to accept without an active plan.
+  useEffect(() => {
+    if (!user || user.role === 'Customer') return;
+
+    const fetchLiveJobs = async () => {
+      try {
+        setLoadingLiveJobs(true);
+        const res = await jobsAPI
+          .getCleanerJobFeed({ tab: 'posted', page: 1, limit: 1 })
+          .catch(() => null);
+        const count = res?.totalAvailable ?? res?.data?.length ?? 0;
+        setLiveJobsCount(count);
+      } catch (error) {
+        console.error('Error fetching live jobs count:', error);
+      } finally {
+        setLoadingLiveJobs(false);
+      }
+    };
+
+    const fetchSubscription = async () => {
+      try {
+        const res = await subscriptionsAPI.getMyStatus().catch(() => ({ success: false }));
+        setHasActiveSubscription(!!(res?.success && res.data?.subscription?.status === 'active'));
+      } catch (error) {
+        console.error('Error fetching subscription status:', error);
+      }
+    };
+
+    fetchLiveJobs();
+    fetchSubscription();
+  }, [user]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -316,7 +355,35 @@ const ProfilePage = () => {
           </div>
         </div>
 
-
+        {/* Ongoing Jobs (Cleaners only) */}
+        {user?.role !== 'Customer' && (
+          <div
+            className="mb-8 sm:mb-10 bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex justify-between items-center shadow-sm cursor-pointer hover:border-primary-200 hover:shadow-md transition-all group"
+            onClick={() =>
+              hasActiveSubscription
+                ? navigate('/cleaner-jobs', { state: { tab: 'live-jobs' } })
+                : navigate('/my-subscription')
+            }
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <img src={BoldJobIcon} alt="jobs" className="w-10 h-10" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                Ongoing Jobs Near You
+              </h3>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-primary-600 font-semibold text-sm bg-primary-50/50 px-3 py-1.5 rounded-full">
+                <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                {loadingLiveJobs ? 'Loading...' : `${liveJobsCount || 0} ${liveJobsCount === 1 ? 'Job' : 'Jobs'} Found`}
+              </div>
+              <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary-600" />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Navigation Menu */}
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
