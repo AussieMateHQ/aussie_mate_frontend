@@ -62,38 +62,34 @@ const formatCleanerData = (quote) => {
   };
 };
 
-// Helper function to get message count for a job
-const getMessageCountForJob = async (jobId) => {
-  try {
-    const response = await chatAPI.getUnreadCount();
-
-    if (response.success && response.data) {
-      // Handle different response formats
-      let dataArray = [];
-
-      if (Array.isArray(response.data)) {
-        dataArray = response.data;
-      } else if (response.data.messages && Array.isArray(response.data.messages)) {
-        dataArray = response.data.messages;
-      } else if (response.data.unreadCounts && Array.isArray(response.data.unreadCounts)) {
-        dataArray = response.data.unreadCounts;
-      } else if (typeof response.data === 'object') {
-        // If data is an object, try to find job-specific data
-        const jobData = response.data[jobId] || response.data[jobId?.toString()];
-        return jobData ? (jobData.unreadCount || jobData.count || 0) : 0;
-      }
-
-      // Find messages for this specific job
-      const jobMessages = dataArray.find(item =>
-        item.jobId === jobId || item.jobId?._id === jobId || item.jobId?.id === jobId
-      );
-      return jobMessages ? (jobMessages.unreadCount || jobMessages.count || 0) : 0;
-    }
-    return 0;
-  } catch (error) {
-    console.error('Error fetching message count:', error);
-    return 0;
+// Builds a `jobId -> unread count` lookup from a SINGLE chatAPI.getUnreadCount()
+// response. Previously this endpoint (which returns unread counts for every
+// job at once) was called again from scratch for every job in the list -
+// an N+1 pattern that multiplied network calls by the number of jobs on the
+// page. Now it's fetched once per page load and reused here.
+const buildUnreadCountLookup = (response) => {
+  if (!response?.success || !response.data) {
+    return () => 0;
   }
+
+  // Object keyed by jobId (not an array of per-job entries)
+  if (!Array.isArray(response.data) && !Array.isArray(response.data.messages) && !Array.isArray(response.data.unreadCounts) && typeof response.data === 'object') {
+    return (jobId) => {
+      const jobData = response.data[jobId] || response.data[jobId?.toString()];
+      return jobData ? (jobData.unreadCount || jobData.count || 0) : 0;
+    };
+  }
+
+  const dataArray = Array.isArray(response.data)
+    ? response.data
+    : (response.data.messages || response.data.unreadCounts || []);
+
+  return (jobId) => {
+    const jobMessages = dataArray.find(item =>
+      item.jobId === jobId || item.jobId?._id === jobId || item.jobId?.id === jobId
+    );
+    return jobMessages ? (jobMessages.unreadCount || jobMessages.count || 0) : 0;
+  };
 };
 
 const MyJobsPage = () => {
@@ -290,6 +286,12 @@ const MyJobsPage = () => {
           setTotalPages(1);
         }
 
+        const unreadCountResponse = await chatAPI.getUnreadCount().catch((error) => {
+          console.error('Error fetching message counts:', error);
+          return null;
+        });
+        const getMessageCount = buildUnreadCountLookup(unreadCountResponse);
+
         const normalized = await Promise.all(
           jobList.map(async (job) => {
             const statusRaw = (job.status || '').toString();
@@ -313,7 +315,7 @@ const MyJobsPage = () => {
             const quotes = job.quotesReceivedDisplay || (shouldShowQuotes ? `${quoteCount} Quotes Received` : null);
 
             const jobIdentifier = job._id?.toString?.() || job.id || job.jobId || `job-${Math.random()}`;
-            const messageCount = await getMessageCountForJob(jobIdentifier);
+            const messageCount = getMessageCount(jobIdentifier);
 
             const assignedCleanerName = (() => {
               const cleaner = job.assignedCleaner || job.assignedCleanerId || job.cleaner || job.completedBy;
