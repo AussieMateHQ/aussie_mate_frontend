@@ -801,23 +801,15 @@ const PostNewJobPage = () => {
         return;
       }
 
-      // This phone number already belongs to a Service Provider account.
-      // Logging straight into it mid-job-post (same as any other returning
-      // number) used to happen silently - the guest would suddenly find
-      // themselves looking at their provider dashboard instead of their
-      // job, with no explanation ("profile mixed up"). Surface it instead
-      // of quietly switching who they're signed in as.
-      const matchedRole = response.data.user?.role || response.data.user?.userType;
-      if (matchedRole && matchedRole !== 'Customer') {
-        setOtpError(
-          `This mobile number is already registered as a service provider account (${matchedRole}). ` +
-          `Log in with that account to post this as a job for yourself, or use a different number to continue as a new customer.`
-        );
-        return;
-      }
-
-      // Sync the freshly created/matched account into auth context, then
-      // reuse the normal (already-authenticated) job submission path.
+      // This phone number may already belong to a Service Provider account -
+      // that's fine, per product decision: anyone can post a job regardless
+      // of their account role, it just doesn't change what the rest of the
+      // app shows them (provider dashboard/features stay separate). Signing
+      // into whichever account owns this phone number is what lets the job
+      // actually get tied to them and tracked afterwards; routeGroups.js
+      // deliberately allows provider roles onto the job-tracking routes
+      // (my-jobs, customer-job-details, etc.) so "View My Job" from here
+      // keeps working no matter which kind of account posted it.
       updateUser(response.data.user);
       await handlePostJob();
     } catch (err) {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -9,6 +9,7 @@ import { BriefcaseBusiness, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button, Loader } from "../../components";
 import { jobsAPI, userAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { CLEANER_ROLES } from "../../routeGroups";
 import { getStatusChip } from "../../utils/statusUtils";
 import RewardImage from "../../assets/Reward.jpg";
 import CalendarIcon from "../../assets/Calendar.svg";
@@ -37,6 +38,16 @@ const CustomerDashboard = () => {
   const location = useLocation();
   const { user } = useAuth();
   const isGuest = !user;
+  const userRole = user?.role || user?.userType;
+  // This page is public (guests land here too), so it isn't behind
+  // ProtectedRoute's role check - a logged-in provider could otherwise
+  // land on the customer homepage/features, which is exactly the "profile
+  // mixed up" confusion reported before. Send them to their own dashboard
+  // instead; posting a job as a provider still works via the dedicated
+  // "Post a Job" entry point on the cleaner dashboard, not from here.
+  if (user && CLEANER_ROLES.includes(userRole)) {
+    return <Navigate to="/cleaner-dashboard" replace />;
+  }
   // Set by ProtectedRoute when it bounces someone here because they tried to
   // open a provider-only page while logged in as a customer - without this,
   // landing here looks like the app randomly swapped them to the wrong

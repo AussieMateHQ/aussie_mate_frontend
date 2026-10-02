@@ -146,9 +146,16 @@ export const customerRoutes = [
   // sits behind ProtectedRoute — that's how the landing page reaches the
   // existing, approved job form without a login/signup wall.
 
-  { path: '/job-success', component: JobSuccessPage },
+  // A provider account can post a job too (guest OTP flow on
+  // PostNewJobPage, or while logged in via the cleaner dashboard's "Post a
+  // Job" entry point) - these routes are how they track that one job
+  // afterwards. The backend already scopes them by who posted the job, not
+  // by account role, so the role check here only needs to not get in the
+  // way; everything else about the provider/customer features stays
+  // separate as normal.
+  { path: '/job-success', component: JobSuccessPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/my-jobs', component: MyJobsPage },
+  { path: '/my-jobs', component: MyJobsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
   { path: '/profile', component: ProfilePage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
@@ -170,19 +177,19 @@ export const customerRoutes = [
 
   { path: '/live-chat', component: LiveChatPage },
 
-  { path: '/customer-job-details/:jobId', component: CustomerJobDetailsPage },
+  { path: '/customer-job-details/:jobId', component: CustomerJobDetailsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/job-completed/:jobId', component: JobDetailsCompletedPage },
+  { path: '/job-completed/:jobId', component: JobDetailsCompletedPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/customer-chat/:jobId', component: CustomerChatPage },
+  { path: '/customer-chat/:jobId', component: CustomerChatPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/confirm-cleaner/:jobId', component: ConfirmYourCleanerPage },
+  { path: '/confirm-cleaner/:jobId', component: ConfirmYourCleanerPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/booking-confirmation/:jobId', component: JobBookedSuccessfullyPage },
+  { path: '/booking-confirmation/:jobId', component: JobBookedSuccessfullyPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/customer-in-progress-job/:jobId', component: CustomerInProgressJobDetailsPage },
+  { path: '/customer-in-progress-job/:jobId', component: CustomerInProgressJobDetailsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
-  { path: '/payment/success', component: PaymentSuccessCallbackPage },
+  { path: '/payment/success', component: PaymentSuccessCallbackPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
   { path: '/platform-policy', component: PlatformPolicyPage },
 
@@ -203,12 +210,18 @@ export const cleanerRoutes = [
   { path: '/reviews', component: ReviewsPage },
 
   { path: '/set-cleaner-location', component: SetCleanerLocationPage },
-  { path: '/my-subscription', component: MySubscriptionPage },
+  // A Customer account can also subscribe as a provider (guest OTP flow on
+  // MySubscriptionPage) without it changing their main account experience -
+  // these routes are how they manage that subscription afterwards, same
+  // reasoning as the job-tracking routes above. '/cleaner-dashboard' itself
+  // is deliberately NOT included here - that's the one place that should
+  // always stay provider-only.
+  { path: '/my-subscription', component: MySubscriptionPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
   { path: '/cleaner-dashboard', component: CleanerDashboard },
-  { path: '/buy-credits', component: BuyCreditsPage },
-  { path: '/subscription/success', component: SubscriptionSuccessPage },
-  { path: '/credits-success', component: CreditsSuccessPage },
-  { path: '/lead-usage-history', component: LeadUsageHistoryPage },
+  { path: '/buy-credits', component: BuyCreditsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
+  { path: '/subscription/success', component: SubscriptionSuccessPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
+  { path: '/credits-success', component: CreditsSuccessPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
+  { path: '/lead-usage-history', component: LeadUsageHistoryPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
   { path: '/subscription/cancel', component: () => React.createElement(Navigate, { to: "/my-subscription", replace: true }) },
 
   { path: '/cleaner-jobs', component: CleanerJobsPage },
