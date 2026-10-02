@@ -801,6 +801,21 @@ const PostNewJobPage = () => {
         return;
       }
 
+      // This phone number already belongs to a Service Provider account.
+      // Logging straight into it mid-job-post (same as any other returning
+      // number) used to happen silently - the guest would suddenly find
+      // themselves looking at their provider dashboard instead of their
+      // job, with no explanation ("profile mixed up"). Surface it instead
+      // of quietly switching who they're signed in as.
+      const matchedRole = response.data.user?.role || response.data.user?.userType;
+      if (matchedRole && matchedRole !== 'Customer') {
+        setOtpError(
+          `This mobile number is already registered as a service provider account (${matchedRole}). ` +
+          `Log in with that account to post this as a job for yourself, or use a different number to continue as a new customer.`
+        );
+        return;
+      }
+
       // Sync the freshly created/matched account into auth context, then
       // reuse the normal (already-authenticated) job submission path.
       updateUser(response.data.user);

@@ -258,6 +258,20 @@ const MySubscriptionPage = () => {
         return;
       }
 
+      // Mirror of the same guard on the guest job-posting flow: this phone
+      // number already belongs to a Customer account, so logging straight
+      // into it here would silently swap this person into their customer
+      // profile mid-subscription instead of letting them continue as a
+      // provider ("profile mixed up").
+      const matchedRole = response.data.user?.role || response.data.user?.userType;
+      if (matchedRole && matchedRole === 'Customer') {
+        setOtpError(
+          `This mobile number is already registered as a customer account. ` +
+          `Log in with that account to manage it from there, or use a different number to continue as a new service provider.`
+        );
+        return;
+      }
+
       updateUser(response.data.user);
       setGuestFormActive(false);
       // pendingPlanId, not the (still-null-in-this-closure) user, drives
