@@ -100,14 +100,10 @@ const ContactPage = () => {
             <div className="space-y-6">
               {/* Dark Card */}
               <div className="rounded-2xl p-8">
-                <p className="text-[#6A8CA7] text-sm font-medium mb-1">Platform operated by</p>
-                <h2 className="text-2xl font-bold mb-8">PATEL HOUSE PTY LTD</h2>
+                <p className="text-[#6A8CA7] text-sm font-medium mb-1">Platform</p>
+                <h2 className="text-2xl font-bold mb-8">Aussie Mate</h2>
 
                 <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-[#6A8CA7] text-sm font-medium mb-1">ABN</p>
-                    <p className="text-[#E58B2E] font-semibold">86 687 008 591</p>
-                  </div>
                   <div>
                     <p className="text-[#6A8CA7] text-sm font-medium mb-1">Location</p>
                     <p className="text-[#E58B2E] font-semibold">Geebung, QLD</p>

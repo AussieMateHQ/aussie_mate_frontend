@@ -5,11 +5,12 @@ import logo from '../../assets/logo.svg';
 
 const Footer = () => {
   const location = useLocation();
-  // Company registration details (ABN, entity name) are kept off the public
-  // landing page per client request. They stay fully visible on /about,
-  // /contact, /privacy-policy and /terms-and-conditions for Apple App Store
-  // verification and legal requirements.
-  const isLandingPage = location.pathname === '/home' || location.pathname === '/';
+  // Company registration details (ABN, entity name) are kept off every
+  // public-facing page per client request (2026-10-02) - branding stays
+  // focused on Aussie Mate. They remain only on /privacy-policy and
+  // /terms-and-conditions, where they're required for legal purposes.
+  const showCompanyDetails = location.pathname === '/privacy-policy' ||
+    location.pathname === '/terms-and-conditions';
 
   return (
     <footer className="bg-white pt-10 pb-10 font-sans text-gray-500">
@@ -23,7 +24,6 @@ const Footer = () => {
             </Link>
             <p className="mb-8 leading-relaxed">
               Australia's trusted home & business services platform.
-              {!isLandingPage && (<><br />Operated by PATEL HOUSE PTY LTD.</>)}
             </p>
             
             <div className="space-y-3 text-sm">
@@ -33,11 +33,11 @@ const Footer = () => {
                   support@aussiemate.com.au
                 </a>
               </p>
-              {/* Address is kept off the public landing page per client request,
-                  same as the company name above. Still shown on /about,
-                  /contact, /privacy-policy and /terms-and-conditions for
-                  Apple App Store verification and legal requirements. */}
-              {!isLandingPage && (
+              {/* Address is kept off every public-facing page per client
+                  request, same as the company name below. Still shown on
+                  /privacy-policy and /terms-and-conditions for legal
+                  requirements. */}
+              {showCompanyDetails && (
                 <p className="flex items-center">
                   <MapPin className="w-4 h-4 mr-3 text-gray-400" />
                   Geebung, QLD, Australia
@@ -75,13 +75,13 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-100 flex flex-col space-y-4 text-sm text-gray-400">
-          {isLandingPage ? (
+          {showCompanyDetails ? (
             <p>
-              &copy; {new Date().getFullYear()} Aussie Mate · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
+              Aussiemate is operated by PATEL HOUSE PTY LTD · ABN: 86687008591 · Geebung, QLD · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
             </p>
           ) : (
             <p>
-              Aussiemate is operated by PATEL HOUSE PTY LTD · ABN: 86687008591 · Geebung, QLD · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
+              &copy; {new Date().getFullYear()} Aussie Mate · <a href="mailto:support@aussiemate.com.au" className="hover:text-blue-600 transition-colors">support@aussiemate.com.au</a>
             </p>
           )}
           {/* <div className="flex space-x-6">

@@ -45,8 +45,7 @@ const AboutPage = () => {
             </div>
             
             <h1 className="text-2xl md:text-4xl font-semibold text-[#111827] leading-tight mb-4">
-              About Aussiemate & <br className="hidden md:block"/>
-              PATEL HOUSE PTY LTD
+              About Aussie Mate
             </h1>
             
             <p className="text-lg text-gray-600 mb-8 max-w-xl">
@@ -75,7 +74,7 @@ const AboutPage = () => {
                   Built for homeowners, renters, and businesses who need reliable help — fast.
                 </p>
                 <p>
-                  Aussiemate is a digital service marketplace created and operated by PATEL HOUSE PTY LTD, an Australian company based in Geebung, Queensland. We connect customers with trusted service providers across multiple categories including domestic cleaning, commercial cleaning, bond cleaning, handyman services, pet sitting, housekeeping, and general home services.
+                  Aussiemate is a digital service marketplace based in Geebung, Queensland. We connect customers with trusted service providers across multiple categories including domestic cleaning, commercial cleaning, bond cleaning, handyman services, pet sitting, housekeeping, and general home services.
                 </p>
                 <p>
                   Our goal is to make booking services simple, transparent, and reliable. We provide a secure platform where customers can find verified service providers, compare quotes, and book with confidence.
@@ -91,17 +90,12 @@ const AboutPage = () => {
                     <Building2 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#0a1b3f]">PATEL HOUSE PTY LTD</h3>
-                    <p className="text-gray-500 text-sm">Australian Registered Company</p>
+                    <h3 className="text-lg font-bold text-[#0a1b3f]">Aussie Mate</h3>
+                    <p className="text-gray-500 text-sm">Australian Service Marketplace</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-0 text-[15px]">
-                  <div className="flex justify-between items-center py-4 border-b border-blue-100">
-                    <span className="text-gray-400 font-medium">ABN</span>
-                    <span className="font-medium text-blue-600">86 687 008 591</span>
-                  </div>
-                  
                   <div className="flex justify-between items-center py-4 border-b border-blue-100">
                     <span className="text-gray-400 font-medium">Location</span>
                     <span className="font-medium text-blue-600">Geebung, QLD</span>
@@ -128,7 +122,7 @@ const AboutPage = () => {
               
               <div className="bg-blue-100/50 px-8 py-4 flex items-center text-sm font-medium text-gray-600">
                 <div className="w-2 h-2 rounded-full bg-blue-500 mr-3"></div>
-                Fully owned & operated by PATEL HOUSE PTY LTD
+                Verified Australian business
               </div>
             </div>
           </div>
