@@ -20,10 +20,6 @@ export const CLEANER_ROLES = [
 
 const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'))
 
-const ForgotPasswordPage = React.lazy(() => import('./pages/auth/ForgotPasswordPage'))
-
-const ResetPasswordPage = React.lazy(() => import('./pages/auth/ResetPasswordPage'))
-
 const VerifyDocumentsPage = React.lazy(() => import('./pages/auth/VerifyDocumentsPage'))
 
 
