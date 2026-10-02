@@ -893,9 +893,9 @@ const PostNewJobPage = () => {
       <div className="space-y-4 bg-white rounded-2xl p-6 sm:p-8 shadow-custom">
         {/* Error Messaging */}
         {addressError && (
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-xl flex items-center justify-between">
+          <div className="bg-white border border-primary-200 text-gray-900 px-4 py-3 rounded-xl flex items-center justify-between">
             <span>{addressError}</span>
-            <Button onClick={handleGoToProfile} variant="warning" size="sm">Set Address</Button>
+            <Button onClick={handleGoToProfile} variant="primary" size="sm">Set Address</Button>
           </div>
         )}
 
@@ -951,21 +951,15 @@ const PostNewJobPage = () => {
 
           {/* Location Warning */}
           {(!selectedLocation.address || selectedLocation.address === 'Location not set') && (
-            <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-yellow-800 text-sm">
+            <div className="mb-3 p-3 bg-white border border-primary-200 rounded-lg">
+              <p className="text-gray-900 text-sm">
                 Please set your address in profile before posting jobs
               </p>
             </div>
           )}
 
-          <div className={`rounded-lg py-2 flex items-center ${(!selectedLocation.address || selectedLocation.address === 'Location not set')
-            ? 'bg-yellow-50 border border-yellow-200'
-            : 'bg-white'
-            }`}>
-            <div className={`mr-3 rounded-[8px] p-3 border ${(!selectedLocation.address || selectedLocation.address === 'Location not set')
-              ? 'border-yellow-300 bg-yellow-100'
-              : 'border-primary-200 bg-white'
-              }`}>
+          <div className="rounded-lg py-2 flex items-center bg-white border border-gray-100">
+            <div className="mr-3 rounded-[8px] p-3 border border-primary-200 bg-white">
               <img
                 src={MapPinIcon}
                 alt="Location"
@@ -973,24 +967,18 @@ const PostNewJobPage = () => {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <div className={`font-medium text-sm truncate ${(!selectedLocation.address || selectedLocation.address === 'Location not set')
-                ? 'text-yellow-800'
-                : 'text-gray-900'
-                }`}>
+              <div className="font-medium text-sm truncate text-gray-900">
                 {selectedLocation.fullAddress || selectedLocation.address}
               </div>
-              <div className={`text-xs truncate ${(!selectedLocation.address || selectedLocation.address === 'Location not set')
-                ? 'text-yellow-800'
-                : 'text-gray-600'
-                }`}>
+              <div className="text-xs truncate text-gray-600">
                 {selectedLocation.city}
               </div>
             </div>
             <Button
               onClick={handleChangeLocation}
-              variant={(!selectedLocation.address || selectedLocation.address === 'Location not set') ? 'warning' : 'secondary'}
+              variant={(!selectedLocation.address || selectedLocation.address === 'Location not set') ? 'primary' : 'secondary'}
               size="sm"
-              className="rounded-xl border-gray-200 text-[#1F6FEB]"
+              className="rounded-xl border-gray-200"
             >
               {(!selectedLocation.address || selectedLocation.address === 'Location not set') ? 'Set Address' : (isPickerOpen ? 'Hide' : 'Change')}
             </Button>
