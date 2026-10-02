@@ -16,14 +16,19 @@ const ConfirmationModal = ({
   centerTitle = true,
   centerMessage = true
 }) => {
-  if (!isOpen) return null;
-
+  // This hook must run on every render, before the `if (!isOpen)` early
+  // return below - otherwise toggling isOpen (the modal's whole purpose)
+  // changes how many hooks get called between renders of the same mounted
+  // instance, and React throws "Rendered more/fewer hooks than expected",
+  // crashing whatever page the modal is on.
   useEffect(() => {
     if (isOpen && errorMessage && autoCloseAfter > 0) {
       const t = setTimeout(onClose, autoCloseAfter);
       return () => clearTimeout(t);
     }
   }, [isOpen, errorMessage, autoCloseAfter, onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <div 

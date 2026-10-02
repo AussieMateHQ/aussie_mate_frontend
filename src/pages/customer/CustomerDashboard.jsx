@@ -39,15 +39,6 @@ const CustomerDashboard = () => {
   const { user } = useAuth();
   const isGuest = !user;
   const userRole = user?.role || user?.userType;
-  // This page is public (guests land here too), so it isn't behind
-  // ProtectedRoute's role check - a logged-in provider could otherwise
-  // land on the customer homepage/features, which is exactly the "profile
-  // mixed up" confusion reported before. Send them to their own dashboard
-  // instead; posting a job as a provider still works via the dedicated
-  // "Post a Job" entry point on the cleaner dashboard, not from here.
-  if (user && CLEANER_ROLES.includes(userRole)) {
-    return <Navigate to="/cleaner-dashboard" replace />;
-  }
   // Set by ProtectedRoute when it bounces someone here because they tried to
   // open a provider-only page while logged in as a customer - without this,
   // landing here looks like the app randomly swapped them to the wrong
@@ -197,6 +188,25 @@ const CustomerDashboard = () => {
 
     fetchJobs();
   }, [currentUserId]);
+
+  // This page is public (guests land here too), so it isn't behind
+  // ProtectedRoute's role check - a logged-in provider could otherwise
+  // land on the customer homepage/features, which is exactly the "profile
+  // mixed up" confusion reported before. Send them to their own dashboard
+  // instead; posting a job as a provider still works via the dedicated
+  // "Post a Job" entry point on the cleaner dashboard, not from here.
+  //
+  // This check must come AFTER every hook above it (and never before one),
+  // so every render of this component calls the exact same hooks in the
+  // exact same order. `user` loads in asynchronously from AuthContext, so
+  // the first render or two here has user === null (hooks run) and a later
+  // render can suddenly have a Cleaner-role user (early-return would skip
+  // them) - putting a conditional return before hook calls makes React
+  // throw "Rendered fewer hooks than expected" the moment that happens,
+  // which crashes this page instead of just redirecting it.
+  if (user && CLEANER_ROLES.includes(userRole)) {
+    return <Navigate to="/cleaner-dashboard" replace />;
+  }
 
   const serviceCategories = [
     {
