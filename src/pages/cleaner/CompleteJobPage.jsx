@@ -124,7 +124,7 @@ const CompleteJobPage = () => {
     }
     // If job goes back to accepted status, redirect to in-progress page
     else if (job.status === 'accepted') {
-      navigate(`/cleaner/in-progress-job/${jobId}`, { replace: true });
+      navigate(`/in-progress-job/${jobId}`, { replace: true });
     }
   }, [job?.status, jobId, navigate]);
 
@@ -153,20 +153,6 @@ const CompleteJobPage = () => {
   const handleAfterFileSelect = (event) => {
     const files = Array.from(event.target.files);
     setSelectedAfterFiles(files);
-  };
-
-  const handleUploadPhotos = () => {
-    if (selectedFiles.length > 0) {
-      // TODO: Upload files to server
-      const newPhotos = selectedFiles.map((file, index) => ({
-        id: Date.now() + index,
-        file,
-        url: URL.createObjectURL(file),
-        name: file.name,
-      }));
-      setUploadedPhotos(prev => [...prev, ...newPhotos]);
-      setSelectedFiles([]);
-    }
   };
 
   const handleSubmitPhoto = async () => {
@@ -243,19 +229,6 @@ const CompleteJobPage = () => {
       setTimeout(() => setUploadError(null), 5000);
     } finally {
       setCompletingJob(false);
-    }
-  };
-
-  const handleUploadAfterPhotos = () => {
-    if (selectedAfterFiles.length > 0) {
-      const newPhotos = selectedAfterFiles.map((file, index) => ({
-        id: Date.now() + index,
-        file,
-        url: URL.createObjectURL(file),
-        name: file.name,
-      }));
-      setAfterPhotos(prev => [...prev, ...newPhotos]);
-      setSelectedAfterFiles([]);
     }
   };
 

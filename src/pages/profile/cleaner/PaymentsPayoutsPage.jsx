@@ -165,9 +165,9 @@ const PaymentsPayoutsPage = () => {
                     <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl bg-yellow-50 border border-yellow-200 flex items-start gap-3">
                         <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0 mt-0.5" strokeWidth={2} />
                         <div className="flex-1">
-                            <h4 className="text-xs sm:text-sm font-medium text-yellow-800">Backend API Not Available</h4>
+                            <h4 className="text-xs sm:text-sm font-medium text-yellow-800">Payments Temporarily Unavailable</h4>
                             <p className="text-xs sm:text-sm text-yellow-600 mt-1">
-                                Payment backend is not running. Start your backend server on <code className="bg-yellow-100 px-1 rounded text-xs">localhost:3000</code> to enable Stripe Connect setup.
+                                We couldn't reach the payments service right now. Please try again in a few minutes, or contact support if this continues.
                             </p>
                         </div>
                     </div>

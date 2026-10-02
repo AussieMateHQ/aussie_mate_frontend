@@ -4,7 +4,7 @@ import { PageHeader, PhoneValidationAlert, Loader } from '../../components';
 import InfoIcon from '../../assets/info.svg';
 import MessageIcon from '../../assets/sendChat.svg';
 import UserIcon from '../../assets/user.svg';
-import AttachmentIcon from '../../assets/attachment.svg';
+import { Paperclip } from 'lucide-react';
 import { chatAPI } from '../../services/chatAPI';
 import { socketService } from '../../services/socketService';
 import { useAuth } from '../../contexts/AuthContext';
@@ -379,7 +379,7 @@ const AdminChatPage = () => {
                       >
                         {isFileMessage ? (
                           <div className="flex items-center space-x-2">
-                            <img src={AttachmentIcon} alt="File" className="w-4 h-4" />
+                            <Paperclip className="w-4 h-4 text-gray-500 shrink-0" />
                             <a
                               href={msg.fileData?.url || msg.fileUrl}
                               target="_blank"
@@ -424,7 +424,7 @@ const AdminChatPage = () => {
             <div className="px-3 sm:px-6 py-2 bg-gray-50 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <img src={AttachmentIcon} alt="File" className="w-4 h-4" />
+                  <Paperclip className="w-4 h-4 text-gray-500 shrink-0" />
                   <span className="text-sm text-gray-700 truncate">{selectedFile.name}</span>
                   <span className="text-xs text-gray-500">
                     ({(selectedFile.size / 1024).toFixed(1)} KB)
@@ -456,7 +456,7 @@ const AdminChatPage = () => {
                 className="p-2 sm:p-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Attach file"
               >
-                <img src={AttachmentIcon} alt="Attach" className="w-5 h-5 sm:w-6 sm:h-6" />
+                <Paperclip className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
               <input
                 type="text"

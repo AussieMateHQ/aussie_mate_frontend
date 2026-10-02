@@ -74,6 +74,12 @@ const NotificationSettingsPage = React.lazy(() => import('./pages/profile/Notifi
 
 const HelpSupportPage = React.lazy(() => import('./pages/profile/HelpSupportPage'))
 
+const MyTicketsPage = React.lazy(() => import('./pages/profile/MyTicketsPage'))
+
+const RaiseTicketPage = React.lazy(() => import('./pages/profile/RaiseTicketPage'))
+
+const SupportTicketDetailsPage = React.lazy(() => import('./pages/profile/SupportTicketDetailsPage'))
+
 const LiveChatPage = React.lazy(() => import('./pages/profile/LiveChatPage'))
 
 const VerificationStatusPage = React.lazy(() => import('./pages/profile/cleaner/VerificationStatusPage'))
@@ -116,6 +122,10 @@ const StripeSuccessPage = React.lazy(() => import('./pages/StripeSuccessPage'))
 // Admin pages
 
 const AdminCategoryPricingPage = React.lazy(() => import('./pages/admin/AdminCategoryPricingPage'))
+
+const AdminChatDashboard = React.lazy(() => import('./pages/admin/AdminChatDashboard'))
+
+const AdminChatPage = React.lazy(() => import('./pages/admin/AdminChatPage'))
 
 
 
@@ -180,6 +190,16 @@ export const customerRoutes = [
   { path: '/notifications-settings', component: NotificationSettingsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
   { path: '/help', component: HelpSupportPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
+
+  // Support-ticket flow reached from HelpSupportPage ("Contact Support" ->
+  // /my-tickets) and from within itself (raise a ticket, view one). These
+  // pages already existed on disk but had no registered route, so every
+  // link into this flow 404'd.
+  { path: '/my-tickets', component: MyTicketsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
+
+  { path: '/raise-ticket', component: RaiseTicketPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
+
+  { path: '/my-tickets/:id', component: SupportTicketDetailsPage, allowedRoles: ['Customer', ...CLEANER_ROLES] },
 
   { path: '/live-chat', component: LiveChatPage },
 
@@ -264,5 +284,13 @@ export const cleanerRoutes = [
 export const adminRoutes = [
 
   { path: '/admin/pricing', component: AdminCategoryPricingPage },
+
+  // Linked to from LiveChatPage (auto-redirects an admin account there) and
+  // from within AdminChatDashboard itself (open a specific room), but these
+  // pages had no registered route at all - any admin trying to use live
+  // chat support hit the 404 page.
+  { path: '/admin/chat-dashboard', component: AdminChatDashboard },
+
+  { path: '/admin/chat/:roomId', component: AdminChatPage },
 
 ]
