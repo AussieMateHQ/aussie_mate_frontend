@@ -19,7 +19,6 @@ import CleaningImage from "../../assets/Cleaning.png";
 import HandymanImage from "../../assets/Handyman.png";
 import HousekeepingImage from "../../assets/Housekeeping.png";
 import PetSittingImage from "../../assets/Pet Sitting.png";
-import NDISSupportImage from "../../assets/NDIS Support.png";
 import CommercialCleaningImage from "../../assets/commercialCleaning.svg";
 import OtherImg from "../../assets/cleaner/Clean.svg";
 import BondImg from "../../assets/cleaner/Cleaner.svg";
@@ -200,12 +199,6 @@ const CustomerDashboard = () => {
       name: "Housekeeping",
       image: HousekeepingImage,
       description: "Complete housekeeping solutions",
-    },
-    {
-      id: "supportServices",
-      name: "Support Services",
-      image: NDISSupportImage,
-      description: "Support services",
     },
     {
       id: "commercialCleaning",

@@ -726,45 +726,6 @@ export const userAPI = {
     });
   },
 
-  saveNdisPlanInfo: async (planData) => {
-    const token = getAuthToken();
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
-    const formData = new FormData();
-    Object.entries(planData).forEach(([key, value]) => {
-      if (value === null || value === undefined) return;
-      if (key === 'supportPlan' && value instanceof File) {
-        formData.append('supportPlan', value);
-      } else if (typeof value === 'boolean') {
-        formData.append(key, value ? 'true' : 'false');
-      } else {
-        formData.append(key, value);
-      }
-    });
-
-    const response = await fetch(`${API_BASE_URL}/auth/ndis-plan`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const errorMessage = data.message || data.error || 'Failed to save NDIS plan info';
-      const error = new Error(errorMessage);
-      error.status = response.status;
-      error.response = data;
-      throw error;
-    }
-
-    return data;
-  },
-
   // Payment Methods API
   // Get wallet balance
   getWalletBalance: async () => {

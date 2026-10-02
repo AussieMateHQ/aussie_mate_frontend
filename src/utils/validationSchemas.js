@@ -1,30 +1,5 @@
 import * as yup from 'yup';
 
-// NDIS Plan Info Validation Schema
-export const ndisPlanInfoSchema = yup.object().shape({
-  ndisNumber: yup.string()
-    .required('NDIS Number is required')
-    .matches(/^\d{9}$/, 'NDIS Number must be exactly 9 digits'),
-  planManagerName: yup.string()
-    .transform((value) => (value?.trim() === '' ? null : value.trim()))
-    .nullable(),
-  planManagerEmail: yup.string()
-    .transform((value) => (value?.trim() === '' ? null : value.trim()))
-    .nullable()
-    .email('Please enter a valid email address'),
-  phoneNumber: yup.string()
-    .transform((value) => (value?.trim() === '' ? null : value.trim()))
-    .nullable()
-    .matches(/^\+61\s?\d{9}$/, 'Please enter a valid phone number'),
-  planType: yup.string()
-    .oneOf(['Plan manager', 'Self - managed NDIS'], 'Invalid plan type')
-    .required('Plan type is required'),
-  agreeToTerms1: yup.boolean()
-    .oneOf([true], 'You must agree to the terms'),
-  agreeToTerms2: yup.boolean()
-    .oneOf([true], 'You must agree to the authorization')
-});
-
 // Signup Form Validation Schema
 export const signupSchema = yup.object().shape({
   firstName: yup.string()
@@ -134,14 +109,6 @@ export const housekeepingSchema = yup.object().shape({
 
 export const handymanSchema = yup.object().shape({
   handymanServiceType: yup.string().required('Please select a handyman service type')
-});
-
-export const ndisJobSchema = yup.object().shape({
-  ndisNumber: yup
-    .string()
-    .required('NDIS number is required')
-    .matches(/^\d{9}$/, 'NDIS number must be exactly 9 digits'),
-  supportType: yup.string().required('Please select an NDIS support type')
 });
 
 // Common Field Validations (reusable)

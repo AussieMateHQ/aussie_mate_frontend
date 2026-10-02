@@ -10,7 +10,6 @@ import {
   Sparkles,
   PawPrint,
   Wrench,
-  HelpingHand,
   Home,
   Droplets,
 } from 'lucide-react';
@@ -92,9 +91,6 @@ const JobOverviewCard = ({
       commercialcleaning: <Droplets className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
       handyman: <Wrench className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
       housekeeping: <Home className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
-      ndissupport: <HelpingHand className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
-      ndissupportworker: <HelpingHand className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
-      supportservices: <HelpingHand className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
       petsitting: <PawPrint className="w-3.5 h-3.5 text-primary-300" strokeWidth={2} />,
     };
 

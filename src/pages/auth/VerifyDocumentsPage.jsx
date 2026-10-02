@@ -297,7 +297,7 @@
         const res = await userAPI.uploadDocuments(fd);
         if (!res.success) throw new Error(res.message || "Upload failed.");
     
-        navigate(userRole === "NDIS Assistant" ? "/cleaner/compliance-quiz" : "/location");
+        navigate("/location");
       } 
       catch (err) {
         // Handle Yup validation errors
@@ -498,7 +498,7 @@
               <FileUploadArea
                 fieldName="trainingCertificates"
                 title="Training Certificates (Optional)"
-                description="NDIS/Other certifications if applicable."
+                description="Other certifications if applicable."
                 placeholder="to Upload Documents"
                 onFileSelect={handleFileUpload}
                 selectedFile={formData.trainingCertificates}
@@ -514,9 +514,7 @@
                   size="md"
                   className="px-2 sm:px-4"
                 >
-                  {userRole === 'NDIS Assistant'
-                    ? 'Submit Documents & Start Quiz'
-                    : 'Submit Documents & Set Availability'}
+                  Submit Documents & Set Availability
                 </Button>
               </div>
             </form>

@@ -1224,8 +1224,7 @@ const CustomerJobDetailsPage = () => {
                     job.serviceType === 'handyman' ? "Waiting for handymen to send quotes..." :
                       job.serviceType === 'housekeeping' ? "Waiting for housekeepers to send quotes..." :
                         job.serviceType === 'commercialCleaning' ? "Waiting for commercial cleaners to send quotes..." :
-                          job.serviceType === 'ndisSupport' ? "Waiting for NDIS support providers to send quotes..." :
-                            "Waiting for service providers to send quotes..."}
+                          "Waiting for service providers to send quotes..."}
               </div>
             </div>
           )}

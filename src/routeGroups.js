@@ -8,7 +8,6 @@ import PlatformPolicyPage from './pages/legal/PlatformPolicyPage'
 export const CLEANER_ROLES = [
   'Professional Cleaner',
   'Student Cleaner',
-  'NDIS Assistant',
   'Retail Auditor',
   'Pet Sitter',
   'Housekeeper',
@@ -20,12 +19,6 @@ export const CLEANER_ROLES = [
 // Auth pages
 
 const LoginPage = React.lazy(() => import('./pages/auth/LoginPage'))
-
-const RoleSelectionPage = React.lazy(() => import('./pages/auth/RoleSelectionPage'))
-
-const SignupPage = React.lazy(() => import('./pages/auth/SignupPage'))
-
-const NDISPlanInfoPage = React.lazy(() => import('./pages/auth/NDISPlanInfoPage'))
 
 const ForgotPasswordPage = React.lazy(() => import('./pages/auth/ForgotPasswordPage'))
 
@@ -107,8 +100,6 @@ const CleanerJobCompletedPage = React.lazy(() => import('./pages/cleaner/Cleaner
 
 const CompleteJobPage = React.lazy(() => import('./pages/cleaner/CompleteJobPage'))
 
-const ProviderComplianceQuizPage = React.lazy(() => import('./pages/cleaner/ProviderComplianceQuizPage'))
-
 const CleanerChatPage = React.lazy(() => import('./pages/cleaner/CleanerChatPage'))
 
 const EarningsPage = React.lazy(() => import('./pages/cleaner/EarningsPage'))
@@ -133,8 +124,6 @@ export const authRoutes = [
   { path: '/select-role', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
 
   { path: '/signup', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
-
-  { path: '/ndis-plan-info', component: NDISPlanInfoPage },
 
   { path: '/forgot-password', component: () => React.createElement(Navigate, { to: '/login', replace: true }) },
 
@@ -231,8 +220,6 @@ export const cleanerRoutes = [
   { path: '/cleaner-job-completed/:jobId', component: CleanerJobCompletedPage },
 
   { path: '/cleaner/complete-job/:jobId', component: CompleteJobPage },
-
-  { path: '/cleaner/compliance-quiz', component: ProviderComplianceQuizPage },
 
   { path: '/chat/:jobId', component: CleanerChatPage },
 

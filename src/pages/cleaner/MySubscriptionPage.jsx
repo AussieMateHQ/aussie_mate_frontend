@@ -430,7 +430,7 @@ const MySubscriptionPage = () => {
                 <FileUploadArea
                   fieldName="trainingCertificates"
                   title="Training Certificates (Optional)"
-                  description="NDIS/Other certifications if applicable."
+                  description="Other certifications if applicable."
                   placeholder="to Upload Documents"
                   onFileSelect={handleProviderFileChange}
                   selectedFile={providerDocs.trainingCertificates}
