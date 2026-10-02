@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -26,7 +26,21 @@ import BoldJobIcon from "../../assets/boldJob.svg";
 
 const CleanerDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  // Set by ProtectedRoute when it bounces someone here because they tried to
+  // open a customer-only page while logged in as a provider - without this,
+  // landing here looks like the app randomly swapped them to the wrong
+  // dashboard rather than explaining why.
+  const [roleRedirectReason, setRoleRedirectReason] = useState(
+    location.state?.roleRedirectReason || ""
+  );
+  useEffect(() => {
+    if (location.state?.roleRedirectReason) {
+      // Clear it from history so a refresh/back-nav doesn't keep showing it.
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
   const [isAvailable, setIsAvailable] = useState(true);
   const swiperRef = useRef(null);
   const [activeJobs, setActiveJobs] = useState([]);
@@ -448,6 +462,19 @@ const CleanerDashboard = () => {
   return (
     <div className="pb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {roleRedirectReason && (
+          <div className="mt-5 sm:mt-6 flex items-start justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-medium text-blue-900">
+            <span>{roleRedirectReason}</span>
+            <button
+              type="button"
+              onClick={() => setRoleRedirectReason("")}
+              className="shrink-0 text-blue-700 hover:text-blue-900"
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {/* Top Greeting + Availability */}
         <div className="flex flex-col mt-5 sm:mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 leading-tight">

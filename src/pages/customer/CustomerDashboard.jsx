@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -35,8 +35,22 @@ const CustomerDashboard = () => {
   const [currentUserId, setCurrentUserId] = useState(null);
   const swiperRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const isGuest = !user;
+  // Set by ProtectedRoute when it bounces someone here because they tried to
+  // open a provider-only page while logged in as a customer - without this,
+  // landing here looks like the app randomly swapped them to the wrong
+  // dashboard rather than explaining why.
+  const [roleRedirectReason, setRoleRedirectReason] = useState(
+    location.state?.roleRedirectReason || ""
+  );
+  useEffect(() => {
+    if (location.state?.roleRedirectReason) {
+      // Clear it from history so a refresh/back-nav doesn't keep showing it.
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
   const goToPrev = () => {
     if (swiperRef.current) {
       swiperRef.current.swiper.slidePrev();
@@ -217,6 +231,19 @@ const CustomerDashboard = () => {
     <>
       {/* Main Content Container */}
       <div className="max-w-7xl mx-auto py-1 px-4 sm:px-6 lg:px-8 pb-6">
+        {roleRedirectReason && (
+          <div className="mt-4 flex items-start justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-medium text-blue-900">
+            <span>{roleRedirectReason}</span>
+            <button
+              type="button"
+              onClick={() => setRoleRedirectReason("")}
+              className="shrink-0 text-blue-700 hover:text-blue-900"
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {/* Combined Search and Post Job Section */}
         <div className="mt-4 mb-4 sm:mb-6">
           {/* Search Bar */}
