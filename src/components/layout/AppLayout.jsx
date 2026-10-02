@@ -1,5 +1,10 @@
 import React from 'react';
-import { Header, PageLayout } from './index';
+// Direct imports, not the './index' barrel - see the comment in App.jsx on
+// why: this file is itself an eager (non-lazy) import of App.jsx, so going
+// through the barrel here would pull in MapWithPolyline's Google Maps
+// dependency (also re-exported from this same barrel) before first paint.
+import Header from './Header';
+import PageLayout from './PageLayout';
 
 /**
  * AppLayout Component

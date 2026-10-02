@@ -3,7 +3,17 @@ import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 const HomePage = React.lazy(() => import('./pages/HomePage'))
-import { ProtectedRoute, ScrollToTop, Loader, Footer } from './components'
+// Imported directly (not via the './components' barrel) so Rollup's
+// bundler doesn't pull every other component the barrel re-exports -
+// including Calendar.jsx (@mui/x-date-pickers) and MapWithPolyline.jsx
+// (@react-google-maps/api) - into this synchronously-loaded entry chunk.
+// Those are only used from already-lazy pages; importing the barrel here
+// was forcing their heavy dependencies into the critical-path bundle that
+// has to download before the very first paint.
+import ProtectedRoute from './components/layout/ProtectedRoute'
+import ScrollToTop from './components/common/ScrollToTop'
+import Loader from './components/common/Loader'
+import Footer from './components/layout/Footer'
 import AppLayout from './components/layout/AppLayout'
 import { authRoutes, customerRoutes, cleanerRoutes, adminRoutes, CLEANER_ROLES } from './routeGroups'
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'))
