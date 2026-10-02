@@ -26,7 +26,10 @@ const Button = ({
     ghost: 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     danger: 'bg-red-500 hover:text-[#B80A34] text-red-500',
     success: 'bg-green-500 hover:text-[#00832D] text-green-500',
-    warning: 'bg-yellow-500 hover:bg-yellow-600 text-white ',
+    // White text on yellow-500 has very weak contrast (looks washed out /
+    // "disappearing", reported on the Post Job page's "Set Address"
+    // button) - dark text reads clearly against this yellow instead.
+    warning: 'bg-yellow-500 hover:bg-yellow-600 text-gray-900 ',
     link: 'bg-transparent text-primary-600 hover:underline  p-0',
   };
 

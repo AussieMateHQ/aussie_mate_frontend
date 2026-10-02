@@ -988,7 +988,7 @@ const PostNewJobPage = () => {
                 {selectedLocation.fullAddress || selectedLocation.address}
               </div>
               <div className={`text-xs truncate ${(!selectedLocation.address || selectedLocation.address === 'Location not set')
-                ? 'text-yellow-600'
+                ? 'text-yellow-800'
                 : 'text-gray-600'
                 }`}>
                 {selectedLocation.city}
