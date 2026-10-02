@@ -60,9 +60,17 @@ const apiRequest = async (endpoint, options = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
+  // API_CONFIG.TIMEOUT previously existed but was never actually wired up -
+  // a slow/hanging backend meant the fetch would sit forever with no error
+  // and no feedback (a button spinner that never resolves looks exactly
+  // like a "frozen" page). Abort and surface a clear message instead.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+
   const config = {
     ...options,
     headers,
+    signal: options.signal || controller.signal,
   };
 
   try {
@@ -74,12 +82,17 @@ const apiRequest = async (endpoint, options = {}) => {
       throw new Error(`API endpoint not found: ${endpoint}. Backend server may not be running.`);
     }
 
+    // Read the body once as text, then try to parse it as JSON. The old
+    // code called response.json() a second time on failure, which always
+    // throws (the body stream is already consumed) and masked the real
+    // problem behind a generic "TypeError" that calling code then hid from
+    // the user entirely.
+    const rawBody = await response.text();
     let data;
     try {
-      data = await response.json();
+      data = rawBody ? JSON.parse(rawBody) : {};
     } catch (jsonError) {
-      const textResponse = await response.json();
-      throw new Error(`Invalid JSON response: ${textResponse}`);
+      throw new Error(`Unexpected response from server: ${rawBody.slice(0, 200) || '(empty)'}`);
     }
 
     if (!response.ok) {
@@ -92,7 +105,12 @@ const apiRequest = async (endpoint, options = {}) => {
 
     return data;
   } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };
 
