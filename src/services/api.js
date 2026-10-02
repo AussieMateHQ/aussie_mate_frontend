@@ -480,13 +480,6 @@ export const jobsAPI = {
     });
   },
 
-  // Assign cleaner to job
-  assignCleaner: async (jobId, cleanerId) => {
-    return apiRequest(`/jobs/${jobId}/assign/${cleanerId}`, {
-      method: 'POST',
-    });
-  },
-
   // Request extra time for a job (Cleaner)
   requestExtraTime: async (jobId, { time, amount, reason }) => {
     return apiRequest(`/jobs/${jobId}/extra-time-request`, {
@@ -710,19 +703,6 @@ export const userAPI = {
   deleteProfilePhoto: async () => {
     return apiRequest('/auth/profile/photo', {
       method: 'DELETE',
-    });
-  },
-
-  // Get search radius
-  getSearchRadius: async () => {
-    return apiRequest('/auth/search-radius');
-  },
-
-  // Update search radius
-  updateSearchRadius: async (radius) => {
-    return apiRequest('/auth/search-radius', {
-      method: 'PUT',
-      body: JSON.stringify({ searchRadius: radius }),
     });
   },
 

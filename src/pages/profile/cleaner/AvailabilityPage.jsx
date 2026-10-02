@@ -69,8 +69,8 @@ const AvailabilityPage = () => {
 
         navigator.geolocation.getCurrentPosition(
             async (position) => {
+                const { latitude, longitude } = position.coords;
                 try {
-                    const { latitude, longitude } = position.coords;
                     const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
 
                     const response = await fetch(
