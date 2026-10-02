@@ -5,7 +5,7 @@ import { AuthProvider } from './contexts/AuthContext'
 const HomePage = React.lazy(() => import('./pages/HomePage'))
 import { ProtectedRoute, ScrollToTop, Loader, Footer } from './components'
 import AppLayout from './components/layout/AppLayout'
-import { authRoutes, customerRoutes, cleanerRoutes, CLEANER_ROLES } from './routeGroups'
+import { authRoutes, customerRoutes, cleanerRoutes, adminRoutes, CLEANER_ROLES } from './routeGroups'
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'))
 
 const AboutPage = React.lazy(() => import('./pages/legal/AboutPage'))
@@ -78,6 +78,19 @@ function AppContent() {
               path={path}
               element={
                 <ProtectedRoute allowedRoles={allowedRoles || CLEANER_ROLES} showHeader={showHeader !== false}>
+                  <Component />
+                </ProtectedRoute>
+              }
+            />
+          ))}
+
+          {/* Admin protected */}
+          {adminRoutes.map(({ path, component: Component, showHeader }, i) => (
+            <Route
+              key={i}
+              path={path}
+              element={
+                <ProtectedRoute allowedRoles={['Admin']} showHeader={showHeader !== false}>
                   <Component />
                 </ProtectedRoute>
               }

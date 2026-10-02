@@ -1407,6 +1407,61 @@ export const jobDetailsAPI = {
   }
 };
 
+// Admin-only category & service-type management (requires an Admin-role
+// token - the backend gates every /admin/* route with authorize('Admin')).
+// Separate from the public categoriesAPI above because these can create,
+// edit and delete, including the per-service-type leadCreditCost override
+// that decides how many credits a cleaner is charged to unlock a lead.
+export const adminAPI = {
+  getCategories: async () => {
+    return apiRequest('/admin/categories');
+  },
+
+  createCategory: async (data) => {
+    return apiRequest('/admin/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateCategory: async (categoryId, data) => {
+    return apiRequest(`/admin/categories/${categoryId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteCategory: async (categoryId) => {
+    return apiRequest(`/admin/categories/${categoryId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  getServiceTypes: async (categoryId) => {
+    return apiRequest(`/admin/categories/${categoryId}/service-types`);
+  },
+
+  createServiceType: async (data) => {
+    return apiRequest('/admin/service-types', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateServiceType: async (serviceTypeId, data) => {
+    return apiRequest(`/admin/service-types/${serviceTypeId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteServiceType: async (serviceTypeId) => {
+    return apiRequest(`/admin/service-types/${serviceTypeId}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
 // Categories API
 export const categoriesAPI = {
   // Get all categories
@@ -1572,6 +1627,7 @@ export default {
   reviewsAPI,
   jobDetailsAPI,
   categoriesAPI,
+  adminAPI,
   subscriptionsAPI,
   notificationsAPI,
   faqsAPI,

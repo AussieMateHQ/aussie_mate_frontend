@@ -113,6 +113,12 @@ const StripeSuccessPage = React.lazy(() => import('./pages/StripeSuccessPage'))
 
 
 
+// Admin pages
+
+const AdminCategoryPricingPage = React.lazy(() => import('./pages/admin/AdminCategoryPricingPage'))
+
+
+
 export const authRoutes = [
 
   { path: '/login', component: LoginPage },
@@ -247,5 +253,16 @@ export const cleanerRoutes = [
   // an account exists. LocationPage itself still sends a signed-in-required
   // visitor to /login for every other entry point (header "Change location",
   // dashboards, etc.) — only the guest-from-post-new-job path is exempt.
+
+]
+
+
+
+// Admin-only. Separate from customerRoutes/cleanerRoutes since it needs its
+// own allowedRoles (Admin, not Customer/CLEANER_ROLES) — there's no admin
+// dashboard shell yet, so this is reached by its direct URL for now.
+export const adminRoutes = [
+
+  { path: '/admin/pricing', component: AdminCategoryPricingPage },
 
 ]
