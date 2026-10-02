@@ -326,6 +326,32 @@ const CustomerDashboard = () => {
           </div>
         </div>
 
+        {/* Become a Provider CTA - a guest landing here has to decide "am I
+            looking for help, or looking for work?" same as Airtasker's
+            two-button hero. This used to be a separate, prominent choice;
+            consolidating the landing page onto the customer dashboard left
+            only a generic "Login / Sign Up" link with no provider-specific
+            path, several steps before anyone even saw a role choice. */}
+        {isGuest && (
+          <div className="mb-4 sm:mb-6 rounded-2xl border border-gray-100 bg-white shadow-custom p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+            <div className="text-center sm:text-left">
+              <h3 className="text-base sm:text-lg font-semibold text-[#111827] mb-1">
+                Looking for work instead?
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-500">
+                Join as a cleaner, handyman or service provider and start receiving job leads.
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate("/login", { state: { intendedRole: "Cleaner" } })}
+              variant="outline"
+              size="sm"
+              className="w-full sm:w-auto rounded-full border-primary-500 text-primary-600 hover:bg-primary-50"
+            >
+              Become a Service Provider
+            </Button>
+          </div>
+        )}
 
         {/* Popular Services */}
         <div className="mb-6 sm:mb-8">

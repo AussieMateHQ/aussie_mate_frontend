@@ -30,7 +30,10 @@ const LoginPage = () => {
   const [verifiedSessionToken, setVerifiedSessionToken] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('Customer');
+  // A "Become a Service Provider" entry point (header, landing page) passes
+  // this via router state so a brand-new signup lands on the Cleaner toggle
+  // already selected instead of defaulting to Customer every time.
+  const [role, setRole] = useState(location.state?.intendedRole === 'Cleaner' ? 'Cleaner' : 'Customer');
   // Only used when role === 'Cleaner' — same details a provider gives when
   // signing up through the subscription page, so it's consistent no matter
   // which door they came in through.

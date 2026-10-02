@@ -197,6 +197,17 @@ const Header = () => {
             </div>
                    ) : (
             <div className="flex items-center space-x-2">
+              {/* Separate, one-click provider entry point - previously the
+                  only way in was the generic "Login / Sign Up" link, several
+                  steps before a new visitor even saw the Customer/Provider
+                  choice. Pre-selects the Cleaner role on the login page. */}
+              <Link
+                to="/login"
+                state={{ intendedRole: 'Cleaner' }}
+                className="hidden sm:block text-sm text-primary-600 px-3 py-1 rounded border border-primary-200 hover:bg-primary-50"
+              >
+                Become a Provider
+              </Link>
               <Link
                 to="/login"
                 className="text-sm bg-primary-500 text-white px-3 py-1 rounded hover:bg-primary-600"
