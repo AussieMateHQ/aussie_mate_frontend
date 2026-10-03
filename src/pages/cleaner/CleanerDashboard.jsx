@@ -489,26 +489,6 @@ const CleanerDashboard = () => {
           </div>
         </div>
 
-        {/* Provider accounts don't see the customer dashboard/features, but
-            they're still a person who might need a cleaner themselves - this
-            is the one deliberate door from here into the (guest-capable)
-            job-posting form, so posting a job never requires leaving this
-            dashboard to find it. */}
-        <div className="mt-4 sm:mt-5 rounded-2xl border border-gray-100 bg-white shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-center sm:text-left">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Need a job done yourself?</h3>
-            <p className="text-xs sm:text-sm text-gray-500">Post a job as a customer - it won't change anything about your provider account.</p>
-          </div>
-          <Button
-            onClick={() => navigate('/post-new-job')}
-            variant="outline"
-            size="sm"
-            className="w-full sm:w-auto rounded-full"
-          >
-            Post a Job
-          </Button>
-        </div>
-
         {/* Subscription / Credits Section */}
         {!loadingSubscription && (
           <div className="mt-4 sm:mt-5 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
