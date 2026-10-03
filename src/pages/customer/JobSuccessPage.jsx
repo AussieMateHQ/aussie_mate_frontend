@@ -5,24 +5,7 @@ import { Button, PageHeader } from '../../components';
 import JobLiveGif from '../../assets/joblive.gif';
 import CardBG6 from '../../assets/CardBG6.png';
 import CardBG7 from '../../assets/CardBG7.png';
-
-const APP_STORE_URL = 'https://apps.apple.com/au/app/aussie-mate/id6784121946';
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.patelhouseaussiemate';
-
-// Sends the visitor straight to whichever store matches the device they're
-// on, instead of a generic page they'd have to search from - iOS to the App
-// Store, Android to Google Play, anything else (desktop) falls back to the
-// App Store listing.
-const getAppDownloadLink = () => {
-  const ua = navigator.userAgent || navigator.vendor || '';
-  if (/android/i.test(ua)) {
-    return PLAY_STORE_URL;
-  }
-  if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-    return APP_STORE_URL;
-  }
-  return APP_STORE_URL;
-};
+import { getAppDownloadLink } from '../../constants/appLinks';
 
 const JobSuccessPage = () => {
   const navigate = useNavigate();

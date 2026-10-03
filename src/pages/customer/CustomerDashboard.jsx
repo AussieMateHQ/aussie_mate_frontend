@@ -5,12 +5,13 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { BriefcaseBusiness, ChevronLeft, ChevronRight } from "lucide-react";
+import { BriefcaseBusiness, ChevronLeft, ChevronRight, ClipboardList, Users2, ShieldCheck, Apple, PlayCircle } from "lucide-react";
 import { Button, Loader } from "../../components";
 import { jobsAPI, userAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { CLEANER_ROLES } from "../../routeGroups";
 import { getStatusChip } from "../../utils/statusUtils";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../../constants/appLinks";
 import RewardImage from "../../assets/Reward.jpg";
 import CalendarIcon from "../../assets/Calendar.svg";
 import PersonIcon from "../../assets/user-check.svg";
@@ -208,6 +209,24 @@ const CustomerDashboard = () => {
     return <Navigate to="/cleaner-dashboard" replace />;
   }
 
+  const howItWorksSteps = [
+    {
+      icon: ClipboardList,
+      title: "Tell us what you need",
+      description: "Answer a few quick questions about the job and your location.",
+    },
+    {
+      icon: Users2,
+      title: "Get matched with providers",
+      description: "We connect you with vetted local cleaners and service providers nearby.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Book and pay securely",
+      description: "Choose who you'd like, then track and pay for the job right in the app.",
+    },
+  ];
+
   const serviceCategories = [
     {
       id: "cleaning",
@@ -364,6 +383,40 @@ const CustomerDashboard = () => {
             >
               Become a Service Provider
             </Button>
+          </div>
+        )}
+
+        {/* How It Works - a first-time visitor landing here has no idea what
+            happens after they post a job; this walks them through the three
+            steps before asking them to commit to anything. Shown to guests
+            only - a returning customer with jobs already in progress doesn't
+            need the pitch repeated every time they open the dashboard. */}
+        {isGuest && (
+          <div className="mb-6 sm:mb-8">
+            <h3 className="text-[18px] sm:text-xl font-semibold text-[#111827] mb-4">
+              How Aussie Mate Works
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              {howItWorksSteps.map((step, index) => (
+                <div
+                  key={step.title}
+                  className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border border-[#E8EEFF] p-4 sm:p-6 shadow-sm"
+                >
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 bg-white rounded-full border border-[#F0F6FB] shadow-sm flex items-center justify-center mb-3">
+                    <step.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" strokeWidth={2} />
+                  </div>
+                  <div className="text-[11px] font-semibold text-primary-600 mb-1">
+                    STEP {index + 1}
+                  </div>
+                  <h4 className="font-semibold text-[#111827] text-sm sm:text-base mb-1.5">
+                    {step.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -689,6 +742,43 @@ const CustomerDashboard = () => {
                 Rated & Reviewed
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* Download App Banner - everyone benefits from the app, not just
+            new guests, so this shows regardless of login state. */}
+        <div className="mt-6 sm:mt-8 rounded-2xl border border-gray-100 bg-white shadow-custom p-5 sm:p-8 text-center">
+          <h3 className="text-base sm:text-xl font-semibold text-[#111827] mb-1.5">
+            Get the Aussie Mate app
+          </h3>
+          <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-5 max-w-md mx-auto">
+            Post jobs, chat with your provider, and track everything on the go.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href={APP_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 bg-[#111827] hover:bg-black text-white px-5 py-2.5 rounded-xl transition-colors w-full sm:w-auto justify-center"
+            >
+              <Apple className="w-6 h-6 flex-shrink-0" />
+              <span className="text-left leading-tight">
+                <span className="block text-[9px] text-gray-300">Download on the</span>
+                <span className="block text-sm font-semibold">App Store</span>
+              </span>
+            </a>
+            <a
+              href={PLAY_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 bg-[#111827] hover:bg-black text-white px-5 py-2.5 rounded-xl transition-colors w-full sm:w-auto justify-center"
+            >
+              <PlayCircle className="w-6 h-6 flex-shrink-0" />
+              <span className="text-left leading-tight">
+                <span className="block text-[9px] text-gray-300">GET IT ON</span>
+                <span className="block text-sm font-semibold">Google Play</span>
+              </span>
+            </a>
           </div>
         </div>
       </div>
