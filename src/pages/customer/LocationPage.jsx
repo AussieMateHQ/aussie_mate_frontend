@@ -431,9 +431,18 @@ const LocationPage = () => {
       // to one plain, friendly line; the real error is still logged above.
       const isServerMessage = typeof error?.message === 'string' &&
         !/^(Cannot|Uncaught|ReferenceError|TypeError|undefined is not|null is not)/i.test(error.message);
+      // This message alone can't tell a dropped mobile connection apart from
+      // a real code bug being masked below - both have looked identical to
+      // the person reporting it, which is why this exact complaint kept
+      // resurfacing without a clear way to confirm which one it actually is.
+      // A short, harmless error-type tag (e.g. "TypeError", "AbortError")
+      // costs nothing to a non-technical reader but is the one clue that
+      // tells us, from a screenshot alone, whether to look at the network or
+      // the code next time this happens.
+      const diagnosticTag = error?.name ? ` [${error.name}]` : '';
       setError(
         (isServerMessage && error.message) ||
-        "Could not save your location right now. Please check your connection and try again."
+        `Could not save your location right now. Please check your connection and try again.${diagnosticTag}`
       );
       return;
     } finally {
