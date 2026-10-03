@@ -46,6 +46,15 @@ const setMockBankAccounts = (accounts) => {
   localStorage.setItem('mock_bank_accounts', JSON.stringify(accounts));
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// A request that never reached the server at all - fetch() throws a plain
+// TypeError for that (dropped wifi, a dead zone on mobile data, DNS hiccup),
+// distinct from an AbortError (our own timeout firing). Both are worth a
+// retry; a real HTTP response (even an error one) is not - see below.
+const isTransientNetworkError = (error) =>
+  error.name === 'AbortError' || error instanceof TypeError;
+
 // Generic API request function
 const apiRequest = async (endpoint, options = {}) => {
   const token = getAuthToken();
@@ -60,58 +69,83 @@ const apiRequest = async (endpoint, options = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
-  // API_CONFIG.TIMEOUT previously existed but was never actually wired up -
-  // a slow/hanging backend meant the fetch would sit forever with no error
-  // and no feedback (a button spinner that never resolves looks exactly
-  // like a "frozen" page). Abort and surface a clear message instead.
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+  // Retrying is only safe when we own the abort signal - a caller-supplied
+  // signal usually means intentional cancellation (e.g. abandoning a
+  // search-as-you-type request), and retrying after that would be wrong.
+  const callerControlsSignal = Boolean(options.signal);
+  const maxAttempts = callerControlsSignal ? 1 : API_CONFIG.RETRY_ATTEMPTS;
 
-  const config = {
-    ...options,
-    headers,
-    signal: options.signal || controller.signal,
-  };
+  let lastError;
 
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // API_CONFIG.TIMEOUT previously existed but was never actually wired up -
+    // a slow/hanging backend meant the fetch would sit forever with no error
+    // and no feedback (a button spinner that never resolves looks exactly
+    // like a "frozen" page). Abort and surface a clear message instead.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
 
-    // Check if response is HTML (404 page) instead of JSON
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('text/html')) {
-      throw new Error(`API endpoint not found: ${endpoint}. Backend server may not be running.`);
-    }
+    const config = {
+      ...options,
+      headers,
+      signal: options.signal || controller.signal,
+    };
 
-    // Read the body once as text, then try to parse it as JSON. The old
-    // code called response.json() a second time on failure, which always
-    // throws (the body stream is already consumed) and masked the real
-    // problem behind a generic "TypeError" that calling code then hid from
-    // the user entirely.
-    const rawBody = await response.text();
-    let data;
     try {
-      data = rawBody ? JSON.parse(rawBody) : {};
-    } catch (jsonError) {
-      throw new Error(`Unexpected response from server: ${rawBody.slice(0, 200) || '(empty)'}`);
-    }
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-    if (!response.ok) {
-      const errorMessage = data.message || data.error || `API request failed with status ${response.status}`;
-      const error = new Error(errorMessage);
-      error.status = response.status;
-      error.response = data;
+      // Check if response is HTML (404 page) instead of JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error(`API endpoint not found: ${endpoint}. Backend server may not be running.`);
+      }
+
+      // Read the body once as text, then try to parse it as JSON. The old
+      // code called response.json() a second time on failure, which always
+      // throws (the body stream is already consumed) and masked the real
+      // problem behind a generic "TypeError" that calling code then hid from
+      // the user entirely.
+      const rawBody = await response.text();
+      let data;
+      try {
+        data = rawBody ? JSON.parse(rawBody) : {};
+      } catch (jsonError) {
+        throw new Error(`Unexpected response from server: ${rawBody.slice(0, 200) || '(empty)'}`);
+      }
+
+      if (!response.ok) {
+        const errorMessage = data.message || data.error || `API request failed with status ${response.status}`;
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        error.response = data;
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      lastError = error;
+
+      // Retry only a request that never got a server response at all. Once
+      // a response comes back - even a 4xx/5xx - error.status is set above,
+      // and retrying that blindly would just resend bad data or hammer a
+      // server that already answered.
+      const canRetry = isTransientNetworkError(error) && error.status === undefined && attempt < maxAttempts;
+      if (canRetry) {
+        clearTimeout(timeoutId);
+        await sleep(attempt * 800); // 800ms, then 1600ms between attempts
+        continue;
+      }
+
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your connection and try again.');
+      }
       throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    return data;
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.');
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
   }
+
+  throw lastError;
 };
 
 // Authentication API
