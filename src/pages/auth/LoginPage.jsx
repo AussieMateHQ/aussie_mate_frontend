@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNoIndex } from '../../hooks/useNoIndex';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.svg';
 import { Button, FloatingLabelInput, FileUploadArea } from '../../components';
 import { authAPI } from '../../services/api';
 import { CLEANER_ROLES } from '../../routeGroups';
