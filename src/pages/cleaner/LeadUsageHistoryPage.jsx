@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { X, History as HistoryIcon, Clock, Info, Calendar as CalendarIcon, MapPin } from "lucide-react";
 import { PageHeader, PaginationRanges, Loader, Button, Calendar, CustomSelect, DateRangePicker } from "../../components";
 import { subscriptionsAPI } from "../../services/api";
+import { formatSuburbPostcode } from "../../utils/addressUtils";
 import dayjs from "dayjs";
 
 const LeadUsageHistoryPage = () => {
@@ -269,7 +270,7 @@ const LeadUsageHistoryPage = () => {
                                         <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
                                           <MapPin className="w-3.5 h-3.5 opacity-60" />
                                           <span className="line-clamp-2">
-                                            {item.jobId.location.fullAddress || item.jobId.location.address || item.jobId.location.city}
+                                            {formatSuburbPostcode(item.jobId.location.fullAddress || item.jobId.location.address || item.jobId.location.city)}
                                           </span>
                                         </div>
                                       )}

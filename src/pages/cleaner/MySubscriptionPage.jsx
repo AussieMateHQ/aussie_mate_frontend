@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import dayjs from "dayjs";
 import { subscriptionsAPI, categoriesAPI, authAPI } from "../../services/api";
+import { formatSuburbPostcode } from "../../utils/addressUtils";
 import { Button, Loader, PageHeader, ConfirmationModal, FloatingLabelInput, FileUploadArea } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import BGVector from "../../assets/BG Vectorr.svg";
@@ -735,7 +736,7 @@ const MySubscriptionPage = () => {
                                           <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
                                             <MapPin className="w-3.5 h-3.5 opacity-60" />
                                             <span className="line-clamp-2">
-                                              {item.jobId.location.fullAddress || item.jobId.location.address || item.jobId.location.city}
+                                              {formatSuburbPostcode(item.jobId.location.fullAddress || item.jobId.location.address || item.jobId.location.city)}
                                             </span>
                                           </div>
                                         )}

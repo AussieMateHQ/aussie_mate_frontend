@@ -19,6 +19,7 @@ import {
 import { Button, Loader } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import { jobsAPI, authAPI, subscriptionsAPI } from "../../services/api";
+import { formatSuburbPostcode } from "../../utils/addressUtils";
 
 import CleanerBG from "../../assets/cleanerbg.svg";
 import CTABG from "../../assets/cta_bg.jpg";
@@ -155,16 +156,11 @@ const CleanerDashboard = () => {
       };
 
       const getJobLocation = (job) => {
-        if (job.location?.fullAddress) {
-          return job.location.fullAddress;
-        }
-        if (job.location?.address) {
-          return job.location.address;
-        }
-        if (job.address) {
-          return job.address;
-        }
-        return "Location not specified";
+        // Suburb + postcode only - never show a customer's full street
+        // address to a cleaner on job cards.
+        return formatSuburbPostcode(
+          job.location?.fullAddress || job.location?.address || job.address
+        );
       };
 
       const getJobDate = (job) => {
