@@ -305,7 +305,7 @@ const CustomerDashboard = () => {
                 Book a cleaner in minutes
               </h2>
               <p className="text-sm sm:text-base text-gray-400 font-medium">
-                Post job &rarr; Receive quotes &rarr; Choose &amp; pay securely
+                Post job &rarr; Receive quotes &rarr; Choose your pro
               </p>
             </div>
             <Button
@@ -341,8 +341,7 @@ const CustomerDashboard = () => {
                   Book a cleaner in minutes
                 </h3>
                 <p className="text-xs sm:text-sm md:text-base text-[#374151] mb-3 sm:mb-4">
-                  Post job &rarr; Receive quotes &rarr; Choose &amp; pay
-                  securely
+                  Post job &rarr; Receive quotes &rarr; Choose your pro
                 </p>
                 <Button
                   onClick={() => navigate("/post-new-job")}
