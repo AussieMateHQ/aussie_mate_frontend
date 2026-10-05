@@ -8,6 +8,7 @@ import MapPinIcon from '../../assets/map-pin 1.png';
 import CurrentLocationIcon from '../../assets/currentLocation.svg';
 import SearchIcon from '../../assets/search.svg';
 import { jobsAPI, userAPI, reviewsAPI, subscriptionsAPI } from '../../services/api';
+import { formatSuburbPostcode } from '../../utils/addressUtils';
 
 
 const CleanerJobsPage = () => {
@@ -299,7 +300,7 @@ const CleanerJobsPage = () => {
     return {
       id: job._id || job.jobId || job.id,
       title: job.serviceTypeId?.name || job.title || 'Cleaning Job',
-      location: job.location?.address || job.location?.fullAddress || 'Location not specified',
+      location: formatSuburbPostcode(job.location?.address || job.location?.fullAddress),
       date: job.scheduledDate ? new Date(job.scheduledDate).toLocaleDateString('en-AU', {
         day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
       }) : 'Date not specified',

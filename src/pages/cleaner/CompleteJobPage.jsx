@@ -7,6 +7,7 @@ import UploadIcon from '../../assets/upload.svg';
 import { jobPhotosAPI, jobsAPI } from '../../services/api';
 import { paymentService } from '../../services/paymentService';
 import { handleAPIError } from '../../services/api';
+import { formatSuburbPostcode } from '../../utils/addressUtils';
 import { useAuth } from '../../contexts/AuthContext';
 
 const CompleteJobPage = () => {
@@ -383,7 +384,7 @@ const CompleteJobPage = () => {
               minute: '2-digit'
             }) : ''}
             frequency={job?.frequency}
-            location={job?.location?.address || job?.location?.fullAddress || job?.address || job?.locationDescription}
+            location={formatSuburbPostcode(job?.location?.address || job?.location?.fullAddress || job?.address || job?.locationDescription)}
             photos={job?.photos?.map(p => typeof p === 'string' ? p : p.url || p.src) || []}
             viewerRole="cleaner"
             roomsNeedCleaning={job?.roomsNeedCleaning}

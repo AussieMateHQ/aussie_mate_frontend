@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { PageHeader, JobOverviewCard, ConfirmationModal } from '../../components';
 import ChatIcon from '../../assets/message2.svg';
 import { jobsAPI, subscriptionsAPI } from '../../services/api';
+import { formatSuburbPostcode } from '../../utils/addressUtils';
 import { Wallet, Clock3, Home as HomeIcon, Ruler, AlertTriangle, CalendarDays, Trash2, Info, CheckCircle2, Phone, Mail } from 'lucide-react';
 
 const JobDetailsPage = () => {
@@ -431,7 +432,7 @@ const JobDetailsPage = () => {
               }
               scheduledDate={scheduledDateLabel}
               frequency={jobFrequencyLabel}
-              location={job?.location?.address || job?.address || job?.locationDescription || 'Location not specified'}
+              location={formatSuburbPostcode(job?.location?.address || job?.address || job?.locationDescription)}
               photos={jobPhotos}
               viewerRole="cleaner"
               metaInfo={jobOverviewMeta}

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Check, UserRound, CalendarDays, MapPin, X, Phone, MessageSquare } from 'lucide-react';
 import { Button, PageHeader, Loader } from '../../components';
 import { jobsAPI, jobPhotosAPI, reviewsAPI } from '../../services/api';
+import { formatSuburbPostcode } from '../../utils/addressUtils';
 import RatingIcon from '../../assets/Rating1.svg';
 import RatingEmptyIcon from '../../assets/rating3.svg';
 
@@ -55,7 +56,7 @@ const CleanerJobCompletedPage = () => {
             serviceDetail: job.serviceTypeId?.name || job.serviceDetail || '',
             instructions: job.instructions || '',
             scheduledDate: job.scheduledDate || job.completedAt,
-            location: job.location?.address || job.location?.fullAddress || 'Location',
+            location: formatSuburbPostcode(job.location?.address || job.location?.fullAddress),
             photos: jobPhotos,
             status: job.status,
             customer: {
