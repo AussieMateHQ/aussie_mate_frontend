@@ -212,18 +212,18 @@ const CustomerDashboard = () => {
   const howItWorksSteps = [
     {
       icon: ClipboardList,
-      title: "Tell us what you need",
-      description: "Answer a few quick questions about the job and your location.",
+      title: "Post Your Job",
+      description: "Describe what you need.",
     },
     {
       icon: Users2,
-      title: "Get matched with providers",
-      description: "We connect you with vetted local cleaners and service providers nearby.",
+      title: "Compare Quotes",
+      description: "Review trusted local providers.",
     },
     {
       icon: ShieldCheck,
-      title: "Book and pay securely",
-      description: "Choose who you'd like, then track and pay for the job right in the app.",
+      title: "Book with Confidence",
+      description: "Hire the right professional.",
     },
   ];
 
@@ -386,15 +386,15 @@ const CustomerDashboard = () => {
           </div>
         )}
 
-        {/* How It Works - a first-time visitor landing here has no idea what
-            happens after they post a job; this walks them through the three
-            steps before asking them to commit to anything. Shown to guests
-            only - a returning customer with jobs already in progress doesn't
-            need the pitch repeated every time they open the dashboard. */}
-        {isGuest && (
-          <div className="mb-6 sm:mb-8">
+        {/* How It Works - walks everyone through the three steps, right
+            below the hero banner. Originally shown to guests only, but
+            Archit (logged in himself) couldn't see it when reviewing the
+            site, so this is now shown to every visitor regardless of login
+            state - a returning customer seeing it again each visit is a
+            smaller cost than the person asking for it never seeing it. */}
+        <div className="mb-6 sm:mb-8">
             <h3 className="text-[18px] sm:text-xl font-semibold text-[#111827] mb-4">
-              How Aussie Mate Works
+              Find the Right Pro in 3 Steps
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               {howItWorksSteps.map((step, index) => (
@@ -417,8 +417,7 @@ const CustomerDashboard = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+        </div>
 
         {/* Popular Services */}
         <div className="mb-6 sm:mb-8">
