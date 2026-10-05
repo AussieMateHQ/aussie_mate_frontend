@@ -142,7 +142,7 @@ const HomePage = () => {
               </div>
               <span className="hidden sm:inline">·</span>
               <div className="flex items-center">
-                Secure payments
+                ABN &amp; licence checked
               </div>
               <span className="hidden sm:inline">·</span>
               <div className="flex items-center">
@@ -281,8 +281,8 @@ const HomePage = () => {
                 <div className="w-14 h-14 bg-amber-400 rounded-xl flex items-center justify-center mb-5">
                   <Shield className="w-7 h-7 text-gray-900" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Secure payments</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">Pay safely through our platform</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">ABN &amp; licence checked</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">We verify ABNs and licences before providers join</p>
               </div>
 
               <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm text-center flex flex-col items-center">

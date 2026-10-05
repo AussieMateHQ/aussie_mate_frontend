@@ -211,10 +211,10 @@ const PaymentsPayoutsPage = () => {
                             </div>
                             <p className="text-xs sm:text-sm text-white/90 mb-3 sm:mb-4">
                                 {stripeAccountStatus?.accountId && stripeAccountStatus?.status === 'active'
-                                    ? 'Your Stripe account is verified and ready to receive payments. Customers can now book and pay for your services!'
+                                    ? 'Your Stripe account is verified and ready to go.'
                                     : stripeAccountStatus?.accountId
-                                        ? 'Your Stripe account is connected but still pending verification. Complete the onboarding process to start receiving payments.'
-                                        : 'Set up your Stripe account to receive instant payments from customers. Required to accept online payments for your services.'}
+                                        ? 'Your Stripe account is connected but still pending verification. Complete the onboarding process to finish setup.'
+                                        : 'Set up your Stripe account to manage your payouts.'}
                             </p>
 
                             {stripeAccountStatus?.accountId && stripeAccountStatus?.status === 'active' ? (
