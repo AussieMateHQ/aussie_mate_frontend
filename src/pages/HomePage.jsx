@@ -251,9 +251,9 @@ const HomePage = () => {
                 <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg mb-6">
                   3
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Book & pay securely</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Book with confidence</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Choose your preferred pro, confirm your booking, and pay safely through our platform.
+                  Choose your preferred pro and confirm your booking - pay them directly for the job.
                 </p>
               </div>
             </div>
