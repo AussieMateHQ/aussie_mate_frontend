@@ -677,7 +677,9 @@ const EditProfilePage = () => {
           </div>
         </div>
 
-        {/* Default Location */}
+        {/* Default Location - providers only. Customers don't have a profile
+            location; they enter the job's location after OTP while posting. */}
+        {!(user?.userType === 'Customer' || user?.role === 'Customer') && (
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6">
           <label className="block text-base font-medium text-primary-500 font-semibold mb-3">
             Your default location
@@ -702,6 +704,7 @@ const EditProfilePage = () => {
             </button>
           </div>
         </div>
+        )}
 
         {/* Save Button */}
         <div className="flex justify-end">
