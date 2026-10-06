@@ -617,8 +617,8 @@ const PostNewJobPage = () => {
     }
 
     if (!effectiveLocation?.address || effectiveLocation.address === 'Location not set') {
-      setError('Please set your address in profile or change it before posting the job');
-      setAddressError('Please set your address in profile before posting jobs');
+      setError('Please set the job location before posting the job');
+      setAddressError('Please set the job location before posting');
       setIsLoading(false);
       return;
     }
@@ -749,7 +749,7 @@ const PostNewJobPage = () => {
     }
     if (!selectedLocation?.address || selectedLocation.address === 'Location not set') {
       setError('Please set your job location before continuing');
-      setAddressError('Please set your address before posting jobs');
+      setAddressError('Please set the job location before posting');
       return;
     }
     if (!contactName.trim()) {
@@ -947,13 +947,13 @@ const PostNewJobPage = () => {
           {/* <h3 className="text-primary-500 text-lg font-medium mb-1">
             Select location you want to clean
           </h3> */}
-          <p className="text-gray-400 text-sm font-medium">Your default location</p>
+          <p className="text-gray-400 text-sm font-medium">Job location</p>
 
           {/* Location Warning */}
           {(!selectedLocation.address || selectedLocation.address === 'Location not set') && (
             <div className="mb-3 p-3 bg-white border border-primary-200 rounded-lg">
               <p className="text-gray-900 text-sm">
-                Please set your address in profile before posting jobs
+                Please set the job location before posting
               </p>
             </div>
           )}
