@@ -19,12 +19,18 @@ const Header = () => {
   });
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
+  // The profile location chip is for service providers only. Customers (and
+  // signed-out visitors, who are customers-to-be) never set a profile
+  // location - they enter the job's location after OTP while posting a job.
+  const isCustomerOrGuest = !user || user.userType === 'Customer' || user.role === 'Customer';
+  const showLocationChip = !isCustomerOrGuest;
+
   useEffect(() => {
     // Get user location from backend and localStorage
     const updateLocation = async () => {
       try {
-        // First try to get from backend
-        if (user) {
+        // First try to get from backend (providers only - customers have no profile location)
+        if (user && !isCustomerOrGuest) {
           const userProfile = await userAPI.getProfile();
           
           // Check different possible locations for user data
@@ -105,7 +111,7 @@ const Header = () => {
       socketService.off('chatNotification', handleSocketNotification);
       socketService.off('adminChatNotification', handleSocketNotification);
     };
-  }, [user]);
+  }, [user, isCustomerOrGuest]);
 
   const handleLogoClick = () => {
     const isCustomer = user && (
@@ -140,12 +146,14 @@ const Header = () => {
       </div>
       {/* Main Header */}
       <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 flex items-center">
-        {/* Left: Location */}
-        <div 
+        {/* Left: Location (providers only; empty spacer for customers/guests
+            so the logo stays centred) */}
+        {showLocationChip ? (
+        <div
           onClick={handleChangeLocation}
           className="flex-1 min-w-0 flex items-center space-x-2 sm:space-x-3 md:space-x-4 cursor-pointer group"
         >
-          <div className="flex items-center justify-center"> 
+          <div className="flex items-center justify-center">
               <img src={HeaderLocationIcon} alt="Location" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0" />
           </div>
           <div className="min-w-0">
@@ -157,10 +165,13 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="hidden sm:block text-xs sm:text-sm md:text-base font-medium text-primary-600"> 
+          <div className="hidden sm:block text-xs sm:text-sm md:text-base font-medium text-primary-600">
             Change
           </div>
         </div>
+        ) : (
+          <div className="flex-1" />
+        )}
 
         {/* Center: Logo */}
         <div className="flex-1 flex justify-center ">
