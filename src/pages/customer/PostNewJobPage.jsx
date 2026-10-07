@@ -704,10 +704,16 @@ const PostNewJobPage = () => {
         location: {
           address: effectiveLocation.fullAddress || effectiveLocation.address,
           city: effectiveLocation.city,
-          coordinates: {
-            lat: effectiveLocation.lat || (Array.isArray(effectiveLocation.coordinates) ? effectiveLocation.coordinates[1] : (typeof effectiveLocation.coordinates === 'object' ? effectiveLocation.coordinates.lat : 0)),
-            lng: effectiveLocation.lng || (Array.isArray(effectiveLocation.coordinates) ? effectiveLocation.coordinates[0] : (typeof effectiveLocation.coordinates === 'object' ? effectiveLocation.coordinates.lng : 0))
-          }
+          // The server reads coordinates as a [lng, lat] pair (it ignores a
+          // {lat, lng} object, which then looked like "no coordinates" and
+          // rejected perfectly valid addresses). lat/lng are also sent flat,
+          // which the server accepts as a second form.
+          coordinates: (() => {
+            const pos = readLatLng(effectiveLocation);
+            return pos ? [pos.lng, pos.lat] : [0, 0];
+          })(),
+          lat: readLatLng(effectiveLocation)?.lat,
+          lng: readLatLng(effectiveLocation)?.lng,
         },
         customerId,
         // Add dynamic fields dynamically based on category name
