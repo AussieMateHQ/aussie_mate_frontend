@@ -623,6 +623,65 @@ const PostNewJobPage = () => {
       return;
     }
 
+    // An address can be shown on screen without any map coordinates behind it
+    // (e.g. text saved without a geocoded pick). The server needs coordinates
+    // to find nearby cleaners and rejects the job otherwise, which used to
+    // surface as a confusing "select your address from the suggestions"
+    // error even though an address was visibly filled in. Resolve the
+    // coordinates here instead: look the address up automatically, and only
+    // if that fails, open the address picker pre-filled so one tap fixes it.
+    const readLatLng = (loc) => {
+      const c = loc?.coordinates;
+      let lat = loc?.lat;
+      let lng = loc?.lng;
+      if (!(Number(lat) && Number(lng))) {
+        if (Array.isArray(c)) { lng = c[0]; lat = c[1]; }
+        else if (c && typeof c === 'object') { lat = c.lat; lng = c.lng; }
+      }
+      lat = Number(lat);
+      lng = Number(lng);
+      return lat && lng && Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+    };
+
+    if (!readLatLng(effectiveLocation)) {
+      const addressText = effectiveLocation.fullAddress || effectiveLocation.address;
+      let resolved = null;
+      try {
+        if (window.google?.maps?.Geocoder) {
+          const geocoder = new window.google.maps.Geocoder();
+          const results = await new Promise((resolve) => {
+            geocoder.geocode(
+              { address: addressText, componentRestrictions: { country: 'AU' } },
+              (res, status) => resolve(status === 'OK' && res?.length ? res : null)
+            );
+          });
+          if (results) {
+            const loc = results[0].geometry.location;
+            resolved = { lat: loc.lat(), lng: loc.lng() };
+          }
+        }
+      } catch {
+        resolved = null;
+      }
+
+      if (resolved) {
+        effectiveLocation = {
+          ...effectiveLocation,
+          lat: resolved.lat,
+          lng: resolved.lng,
+          coordinates: [resolved.lng, resolved.lat],
+        };
+        setSelectedLocation((prev) => ({ ...prev, ...effectiveLocation }));
+      } else {
+        setSearchQuery(addressText || '');
+        setIsPickerOpen(true);
+        setError('Please pick your address from the suggestions so we can find cleaners near you');
+        setAddressError('Please pick your address from the suggestions');
+        setIsLoading(false);
+        return;
+      }
+    }
+
     try {
       const scheduledDate = selectedDate
         ? new Date(`${selectedDate}T00:00:00`).toISOString()
