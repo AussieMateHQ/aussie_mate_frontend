@@ -462,12 +462,18 @@ const LocationPage = () => {
       return navigate("/profile");
     }
 
+    // NOTE: must not be named `user` - a `const user` anywhere in this
+    // function shadows the logged-in `user` from useAuth() for the WHOLE
+    // function (temporal dead zone), so the `if (!user)` check near the top
+    // of this handler threw "Cannot access 'user' before initialization" on
+    // every save. That was the long-running "Could not save your location"
+    // error on every phone.
     const userStr = localStorage.getItem("user");
-    const user = userStr ? JSON.parse(userStr) : null;
+    const storedUser = userStr ? JSON.parse(userStr) : null;
 
-    if (!user) return navigate("/login");
+    if (!storedUser) return navigate("/login");
 
-    const userType = user?.userType || user?.role;
+    const userType = storedUser?.userType || storedUser?.role;
     const existingLocation = localStorage.getItem("userLocation");
 
     // First time user → Always go to customer dashboard
