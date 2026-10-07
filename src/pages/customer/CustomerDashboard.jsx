@@ -385,39 +385,6 @@ const CustomerDashboard = () => {
           </div>
         )}
 
-        {/* How It Works - walks everyone through the three steps, right
-            below the hero banner. Originally shown to guests only, but
-            Archit (logged in himself) couldn't see it when reviewing the
-            site, so this is now shown to every visitor regardless of login
-            state - a returning customer seeing it again each visit is a
-            smaller cost than the person asking for it never seeing it. */}
-        <div className="mb-6 sm:mb-8">
-            <h3 className="text-[18px] sm:text-xl font-semibold text-[#111827] mb-4">
-              Find the Right Pro in 3 Steps
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              {howItWorksSteps.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="relative overflow-hidden bg-[#FCFCFF] rounded-[16px] border border-[#E8EEFF] p-4 sm:p-6 shadow-sm"
-                >
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 bg-white rounded-full border border-[#F0F6FB] shadow-sm flex items-center justify-center mb-3">
-                    <step.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" strokeWidth={2} />
-                  </div>
-                  <div className="text-[11px] font-semibold text-primary-600 mb-1">
-                    STEP {index + 1}
-                  </div>
-                  <h4 className="font-semibold text-[#111827] text-sm sm:text-base mb-1.5">
-                    {step.title}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-gray-500">
-                    {step.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-        </div>
-
         {/* Popular Services */}
         <div className="mb-6 sm:mb-8">
           <h3 className="text-[18px] sm:text-xl font-semibold text-[#111827] mb-4">
@@ -692,6 +659,37 @@ const CustomerDashboard = () => {
               ))}
             </Swiper>
           )}
+        </div>
+
+        {/* How It Works - three steps in one horizontal row, placed below
+            My Jobs (per Archit). Shown to every visitor regardless of login
+            state: Archit (logged in himself) couldn't see it when it was
+            guest-only. */}
+        <div className="mt-6 sm:mt-8">
+          <h3 className="text-[18px] sm:text-xl font-semibold text-[#111827] mb-4">
+            Find the Right Pro in 3 Steps
+          </h3>
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            {howItWorksSteps.map((step, index) => (
+              <div
+                key={step.title}
+                className="relative overflow-hidden bg-[#FCFCFF] rounded-[12px] sm:rounded-[16px] border border-[#E8EEFF] p-2.5 sm:p-6 shadow-sm"
+              >
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full border border-[#F0F6FB] shadow-sm flex items-center justify-center mb-2 sm:mb-3">
+                  <step.icon className="w-4 h-4 sm:w-6 sm:h-6 text-primary-600" strokeWidth={2} />
+                </div>
+                <div className="text-[9px] sm:text-[11px] font-semibold text-primary-600 mb-0.5 sm:mb-1">
+                  STEP {index + 1}
+                </div>
+                <h4 className="font-semibold text-[#111827] text-[12px] sm:text-base leading-tight mb-1 sm:mb-1.5">
+                  {step.title}
+                </h4>
+                <p className="text-[10px] sm:text-sm leading-snug text-gray-500">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* 3 Features Cards */}
