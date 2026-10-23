@@ -14,6 +14,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import ScrollToTop from './components/common/ScrollToTop'
 import Loader from './components/common/Loader'
 import Footer from './components/layout/Footer'
+import usePageSeo from './hooks/usePageSeo'
 import AppLayout from './components/layout/AppLayout'
 import { authRoutes, customerRoutes, cleanerRoutes, adminRoutes, CLEANER_ROLES } from './routeGroups'
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'))
@@ -40,6 +41,7 @@ const CustomerDashboard = React.lazy(() => import('./pages/customer/CustomerDash
 
 function AppContent() {
   const location = useLocation()
+  usePageSeo()
   
   // Hide footer on chat pages (cleaner chat, customer chat, live chat)
   const isChatPage = location.pathname.toLowerCase().includes('chat')
@@ -50,11 +52,13 @@ function AppContent() {
         <Routes>
           {/* Public — the bare domain shows the "Book a cleaner" dashboard
               (CustomerDashboard) as the landing page, per client direction.
+              It is rendered AT "/" (no redirect) so Google can index the
+              homepage URL itself; /customer-dashboard still works as before.
               It renders correctly for guests (no login wall) and shows a
               logged-in customer's real data when there is one, so this
               covers both cases correctly. The marketing HomePage stays
               reachable at /home for anything still linking to it. */}
-          <Route path="/" element={<Navigate to="/customer-dashboard" replace />} />
+          <Route path="/" element={<AppLayout><CustomerDashboard /></AppLayout>} />
           <Route path="/customer-dashboard" element={<AppLayout><CustomerDashboard /></AppLayout>} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
