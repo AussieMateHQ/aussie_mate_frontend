@@ -83,7 +83,10 @@
   <link rel="shortcut icon" href="/favicon.svg" />
 
   <!-- ===== Fonts ===== -->
-  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap"></noscript>
 
   <!-- ===== Structured Data (JSON-LD) ===== -->
   <script type="application/ld+json">
