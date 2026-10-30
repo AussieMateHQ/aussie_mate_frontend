@@ -141,8 +141,8 @@ const Header = () => {
       {/* Decorative header backgrounds */}
       <div className="pointer-events-none select-none absolute inset-0">
         {/* Responsive sizing for decorative backgrounds */}
-        <img src={CardBG8} alt="CardBG8" aria-hidden className="absolute -top-6 -left-2 w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 lg:w-60 lg:h-60" />
-        <img src={CardBG9} alt="CardBG9" aria-hidden className="absolute -bottom-10 right-0 w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-72 lg:h-72" />
+        <img src={CardBG8} alt="" aria-hidden decoding="async" className="absolute -top-6 -left-2 w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 lg:w-60 lg:h-60" />
+        <img src={CardBG9} alt="" aria-hidden decoding="async" className="absolute -bottom-10 right-0 w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-72 lg:h-72" />
       </div>
       {/* Main Header */}
       <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 flex items-center">

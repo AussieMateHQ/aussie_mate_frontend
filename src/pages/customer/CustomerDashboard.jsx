@@ -327,8 +327,7 @@ const CustomerDashboard = () => {
           <div className="relative rounded-xl p-3 sm:p-4 md:p-6 overflow-hidden">
             {/* Background Image */}
             <div className="absolute inset-0">
-              <img
-                src={RewardImage}
+              <img loading="lazy" decoding="async" src={RewardImage}
                 alt="Reward Background"
                 className="w-full h-full object-cover"
               />
@@ -398,8 +397,7 @@ const CustomerDashboard = () => {
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -left-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
 
-              <img
-                src={GeneralImg}
+              <img loading="lazy" decoding="async" src={GeneralImg}
                 alt="General Cleaning"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3 relative z-10"
               />
@@ -415,8 +413,7 @@ const CustomerDashboard = () => {
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -left-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
-              <img
-                src={CommercialImg}
+              <img loading="lazy" decoding="async" src={CommercialImg}
                 alt="Commercial Cleaning"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
               />
@@ -431,8 +428,7 @@ const CustomerDashboard = () => {
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#FFD6FF] opacity-40 blur-[40px] rounded-full"></div>
-              <img
-                src={BondImg}
+              <img loading="lazy" decoding="async" src={BondImg}
                 alt="Bond Cleaning"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
               />
@@ -447,8 +443,7 @@ const CustomerDashboard = () => {
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#D6F5FF] opacity-40 blur-[40px] rounded-full"></div>
-              <img
-                src={HousekeepingImage}
+              <img loading="lazy" decoding="async" src={HousekeepingImage}
                 alt="Housekeeper"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
               />
@@ -463,8 +458,7 @@ const CustomerDashboard = () => {
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#FFE4D6] opacity-40 blur-[40px] rounded-full"></div>
-              <img
-                src={PetSittingImage}
+              <img loading="lazy" decoding="async" src={PetSittingImage}
                 alt="Pet Sitting"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
               />
@@ -479,8 +473,7 @@ const CustomerDashboard = () => {
             >
               {/* 🔵 Top-left glow */}
               <div className="absolute -top-10 -right-10 w-[120px] h-[120px] bg-[#E4FFD6] opacity-40 blur-[40px] rounded-full"></div>
-              <img
-                src={HandymanImage}
+              <img loading="lazy" decoding="async" src={HandymanImage}
                 alt="Handyman"
                 className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] object-contain mb-3"
               />
@@ -700,8 +693,7 @@ const CustomerDashboard = () => {
           <div className="grid grid-cols-3 bg-[#F9FAFB] rounded-[15px] py-5 px-1 sm:px-4">
             <div className="flex flex-col items-center justify-start gap-2.5 relative">
               <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
-                <img
-                  src={VerifiedImg}
+                <img loading="lazy" decoding="async" src={VerifiedImg}
                   alt="Verified Cleaner"
                   className="w-[30px] h-[30px] object-contain"
                 />
@@ -714,8 +706,7 @@ const CustomerDashboard = () => {
 
             <div className="flex flex-col items-center justify-start gap-2.5 relative">
               <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
-                <img
-                  src={LockImg}
+                <img loading="lazy" decoding="async" src={LockImg}
                   alt="User's Privacy"
                   className="w-[30px] h-[30px] object-contain"
                 />
@@ -728,8 +719,7 @@ const CustomerDashboard = () => {
 
             <div className="flex flex-col items-center justify-start gap-2.5">
               <div className="w-[60px] h-[60px] flex items-center justify-center bg-white rounded-full border border-[#F0F6FB] shadow-sm">
-                <img
-                  src={StarImg}
+                <img loading="lazy" decoding="async" src={StarImg}
                   alt="Rated & Reviewed"
                   className="w-[30px] h-[30px] object-contain"
                 />
