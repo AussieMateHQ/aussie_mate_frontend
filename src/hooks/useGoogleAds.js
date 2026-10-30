@@ -1,23 +1,23 @@
 /**
  * Google Ads Conversion Tracking — AussieMate
- * Conversion ID: AW-18249355297
+ * Conversion ID: AW-18173666946
  *
  * Usage:
  *   const { trackQuoteSubmitted, trackBookingCompleted } = useGoogleAds();
  */
 
-const GOOGLE_ADS_ID = 'AW-18249355297';
+const GOOGLE_ADS_ID = 'AW-18173666946';
 
 // Conversion labels — create these in Google Ads > Tools > Conversions
 // and paste the generated labels here.
 const CONVERSION_LABELS = {
-  QUOTE_FORM_SUBMITTED: 'quote_form_submitted',   // ← replace with label from Google Ads
-  BOOKING_COMPLETED: 'booking_completed',          // ← replace with label from Google Ads
+  QUOTE_FORM_SUBMITTED: 'LNNZCJTO7K4dEILN8NlD',   // "Aussie Mate - Quote submitted"
+  BOOKING_COMPLETED: null,                         // not created in Google Ads yet, so nothing is sent
 };
 
 /**
  * Fire a gtag conversion event safely (no-op if gtag is not loaded).
- * @param {string} conversionAction  - e.g. 'AW-18249355297/quote_form_submitted'
+ * @param {string} conversionAction  - e.g. 'AW-18173666946/quote_form_submitted'
  * @param {object} [params]          - optional extra params (value, currency, etc.)
  */
 function fireConversion(conversionAction, params = {}) {
@@ -49,6 +49,7 @@ export function useGoogleAds() {
    * Call this when the customer lands on the booking success page.
    */
   const trackBookingCompleted = (params = {}) => {
+    if (!CONVERSION_LABELS.BOOKING_COMPLETED) return;
     fireConversion(`${GOOGLE_ADS_ID}/${CONVERSION_LABELS.BOOKING_COMPLETED}`, params);
   };
 
