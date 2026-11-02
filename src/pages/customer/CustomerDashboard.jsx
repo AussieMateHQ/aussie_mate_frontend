@@ -264,6 +264,8 @@ const CustomerDashboard = () => {
     <>
       {/* Main Content Container */}
       <div className="max-w-7xl mx-auto py-1 px-4 sm:px-6 lg:px-8 pb-6">
+        {/* Page heading for search engines and screen readers (not shown on screen) */}
+        <h1 className="sr-only">Find cleaners in Brisbane: post a job and get quotes on Aussie Mate</h1>
         {roleRedirectReason && (
           <div className="mt-4 flex items-start justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-medium text-blue-900">
             <span>{roleRedirectReason}</span>

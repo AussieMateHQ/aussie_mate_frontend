@@ -12,6 +12,17 @@ const PAGES = {
     description:
       'Post your cleaning job on Aussie Mate and get quotes from local Brisbane cleaners. Bond cleaning, end of lease, house cleaning and more, on the website or the mobile app.',
   },
+  // Old marketing page still reachable at /home: tell Google the home page is the main one.
+  '/home': {
+    title: 'Aussie Mate | Find Cleaners in Brisbane - Post a Job, Get Quotes',
+    description:
+      'Post your cleaning job on Aussie Mate and get quotes from local Brisbane cleaners. Bond cleaning, end of lease, house cleaning and more, on the website or the mobile app.',
+    canonical: '/',
+  },
+  '/platform-policy': {
+    title: 'Platform Policy | Aussie Mate',
+    description: 'The rules for customers and cleaners using the Aussie Mate platform.',
+  },
   '/services': {
     title: 'Cleaning Services in Brisbane | Aussie Mate',
     description:
@@ -67,6 +78,7 @@ export default function usePageSeo() {
       l.setAttribute('rel', 'canonical')
       return l
     })
-    canonical.setAttribute('href', key === '/' ? `${SITE}/` : `${SITE}${key}`)
+    const target = page.canonical || key
+    canonical.setAttribute('href', target === '/' ? `${SITE}/` : `${SITE}${target}`)
   }, [pathname])
 }
