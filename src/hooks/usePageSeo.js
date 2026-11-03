@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { SERVICE_PAGES } from '../pages/seo/serviceContent'
 
 // Per-page title / description / canonical for the public pages, so each page
 // can show up in Google with its own text instead of one shared title.
@@ -46,6 +47,11 @@ const PAGES = {
     description: 'The terms for using the Aussie Mate website and mobile app.',
   },
 }
+
+// Brisbane service pages take their title and description from serviceContent.js
+SERVICE_PAGES.forEach((p) => {
+  PAGES[`/${p.slug}`] = { title: p.title, description: p.description }
+})
 
 const setMeta = (selector, create, value) => {
   let el = document.head.querySelector(selector)
