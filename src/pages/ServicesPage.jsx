@@ -220,6 +220,19 @@ const ServicesPage = () => {
         </div>
       </section>
 
+      {/* Brisbane service guides (SEO internal links) */}
+      <section className="pb-10 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Cleaning services in Brisbane</h2>
+          <ul className="flex flex-wrap gap-3">
+            <li><Link to="/house-cleaning-brisbane" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-[#1E5D88] font-medium hover:bg-gray-50">House cleaning Brisbane</Link></li>
+            <li><Link to="/bond-cleaning-brisbane" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-[#1E5D88] font-medium hover:bg-gray-50">Bond cleaning Brisbane</Link></li>
+            <li><Link to="/commercial-cleaning-brisbane" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-[#1E5D88] font-medium hover:bg-gray-50">Commercial cleaning Brisbane</Link></li>
+            <li><Link to="/office-cleaning-brisbane" className="inline-block px-4 py-2 border border-gray-300 rounded-full text-[#1E5D88] font-medium hover:bg-gray-50">Office cleaning Brisbane</Link></li>
+          </ul>
+        </div>
+      </section>
+
       {/* 6. The Aussiemate Difference */}
       <section className="py-15 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
