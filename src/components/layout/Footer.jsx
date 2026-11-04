@@ -64,9 +64,10 @@ const Footer = () => {
           <div className="md:col-span-4 lg:col-span-3">
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Services</h4>
             <ul className="space-y-4">
-              <li><p>Domestic cleaning</p></li>
-              <li><p>Commercial cleaning</p></li>
-              <li><p>Bond cleaning</p></li>
+              <li><Link to="/house-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Domestic cleaning</Link></li>
+              <li><Link to="/commercial-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Commercial cleaning</Link></li>
+              <li><Link to="/office-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Office cleaning</Link></li>
+              <li><Link to="/bond-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Bond cleaning</Link></li>
               <li><p>Handyman</p></li>
               <li><p>Pet sitting</p></li>
             </ul>
