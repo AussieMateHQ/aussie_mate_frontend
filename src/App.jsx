@@ -24,6 +24,7 @@ const ContactPage = React.lazy(() => import('./pages/legal/ContactPage'))
 const PrivacyPolicyPage = React.lazy(() => import('./pages/legal/PrivacyPolicyPage'))
 const TermsPage = React.lazy(() => import('./pages/legal/TermsPage'))
 const ServicesPage = React.lazy(() => import('./pages/ServicesPage'))
+const OpenAppPage = React.lazy(() => import('./pages/OpenAppPage'))
 const ServiceLandingPage = React.lazy(() => import('./pages/seo/ServiceLandingPage'))
 import { SERVICE_PAGES } from './pages/seo/serviceContent'
 
@@ -64,6 +65,7 @@ function AppContent() {
           <Route path="/customer-dashboard" element={<AppLayout><CustomerDashboard /></AppLayout>} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/open-app" element={<OpenAppPage />} />
           {/* Brisbane service pages (SEO) */}
           {SERVICE_PAGES.map((p) => (
             <Route key={p.slug} path={`/${p.slug}`} element={<ServiceLandingPage slug={p.slug} />} />
