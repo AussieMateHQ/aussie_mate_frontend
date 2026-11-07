@@ -389,8 +389,55 @@ const PostNewJobPage = () => {
     setIsBondCleaning(!isBondCleaning);
   };
 
+  // Looks up typed text (when the person did not tap a suggestion) so that
+  // "Confirm Location" always sets a real address, or says clearly what to do.
+  const geocodeTypedAddress = (text, { closeOnSuccess } = {}) => {
+    const query = (text || '').trim();
+    if (!query) {
+      setPickerError('Type your address, then tap it in the list.');
+      return;
+    }
+    if (!window.google?.maps?.Geocoder) {
+      setPickerError('The map is still loading. Please try again in a moment.');
+      return;
+    }
+    setIsLoadingPicker(true);
+    setPickerError('');
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode(
+      { address: query, componentRestrictions: { country: 'AU' } },
+      (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const loc = results[0].geometry.location;
+          const newLocation = {
+            fullAddress: results[0].formatted_address,
+            address: results[0].formatted_address,
+            lat: loc.lat(),
+            lng: loc.lng(),
+            coordinates: [loc.lng(), loc.lat()],
+          };
+          setSelectedLocation(newLocation);
+          setSearchQuery(results[0].formatted_address);
+          if (map) map.panTo({ lat: newLocation.lat, lng: newLocation.lng });
+          if (closeOnSuccess) setIsPickerOpen(false);
+        } else {
+          setPickerError("We couldn't find that address. Please tap one of the suggestions in the list.");
+        }
+        setIsLoadingPicker(false);
+      }
+    );
+  };
+
   const handlePickerConfirm = () => {
-    setIsPickerOpen(false);
+    const hasLocation =
+      selectedLocation?.address && selectedLocation.address !== 'Location not set';
+    if (hasLocation) {
+      setPickerError('');
+      setIsPickerOpen(false);
+      return;
+    }
+    // Nothing chosen yet: use what was typed in the search box, if anything.
+    geocodeTypedAddress(searchQuery, { closeOnSuccess: true });
   };
 
   const onAutocompleteLoad = (autocompleteInstance) => {
@@ -400,6 +447,11 @@ const PostNewJobPage = () => {
   const onPlaceChanged = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
+      // Enter pressed without choosing a suggestion: look up the typed text.
+      if (!place.geometry && place.name) {
+        geocodeTypedAddress(place.name);
+        return;
+      }
       if (place.geometry) {
         const newLocation = {
           fullAddress: place.formatted_address || place.name,
@@ -1057,6 +1109,7 @@ const PostNewJobPage = () => {
                   <Autocomplete
                     onLoad={onAutocompleteLoad}
                     onPlaceChanged={onPlaceChanged}
+                    options={{ componentRestrictions: { country: 'au' } }}
                   >
                     <div className="relative">
                       <input
