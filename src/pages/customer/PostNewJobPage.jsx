@@ -428,6 +428,22 @@ const PostNewJobPage = () => {
     );
   };
 
+  // Safety net for phones where tapping a suggestion does not register:
+  // once the customer stops typing for a moment, look the typed address up
+  // and set it, so they never depend on tapping the dropdown.
+  useEffect(() => {
+    if (!isPickerOpen) return undefined;
+    const text = searchQuery.trim();
+    if (text.length < 5) return undefined;
+    const current = selectedLocation?.fullAddress || selectedLocation?.address || '';
+    if (current && text === current.trim()) return undefined;
+    const timer = setTimeout(() => {
+      geocodeTypedAddress(text);
+    }, 1500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, isPickerOpen]);
+
   const handlePickerConfirm = () => {
     const hasLocation =
       selectedLocation?.address && selectedLocation.address !== 'Location not set';
