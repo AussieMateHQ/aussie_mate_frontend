@@ -668,6 +668,38 @@ const PostNewJobPage = () => {
     } catch (_) {
     }
 
+    // Nothing confirmed, but an address was typed in the search box (the
+    // customer typed a different place and went straight to Post). Look the
+    // typed text up instead of asking them to do it again.
+    if (
+      (!effectiveLocation?.address || effectiveLocation.address === 'Location not set') &&
+      searchQuery.trim() &&
+      window.google?.maps?.Geocoder
+    ) {
+      try {
+        const geocoder = new window.google.maps.Geocoder();
+        const results = await new Promise((resolve) => {
+          geocoder.geocode(
+            { address: searchQuery.trim(), componentRestrictions: { country: 'AU' } },
+            (res, status) => resolve(status === 'OK' && res?.length ? res : null)
+          );
+        });
+        if (results) {
+          const loc = results[0].geometry.location;
+          effectiveLocation = {
+            fullAddress: results[0].formatted_address,
+            address: results[0].formatted_address,
+            lat: loc.lat(),
+            lng: loc.lng(),
+            coordinates: [loc.lng(), loc.lat()],
+          };
+          setSelectedLocation(effectiveLocation);
+        }
+      } catch {
+        // fall through to the normal "set the location" message
+      }
+    }
+
     if (!effectiveLocation?.address || effectiveLocation.address === 'Location not set') {
       setError('Please set the job location before posting the job');
       setAddressError('Please set the job location before posting');
