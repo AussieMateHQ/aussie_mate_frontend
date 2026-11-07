@@ -734,6 +734,56 @@ const PostNewJobPage = () => {
       }
     }
 
+    // The server needs a suburb/city. A short saved address such as
+    // "3 Pett St" has none, and the old placeholders ("Location", "Please set
+    // your location") are not real suburbs. Work the suburb out from the
+    // address; if that fails, ask Google for it using the coordinates.
+    const placeholderCity = /^(unknown( city)?|location|please set your location)?$/i;
+    const cityFromAddress = (text) => {
+      const parts = String(text || '').split(',').map((p) => p.trim()).filter(Boolean)
+        .filter((p) => p.toLowerCase() !== 'australia');
+      if (parts.length < 2) return '';
+      const stateRe = /\b(NSW|VIC|QLD|SA|WA|TAS|NT|ACT)\b/i;
+      for (let i = parts.length - 1; i >= 1; i -= 1) {
+        if (stateRe.test(parts[i]) || /\b\d{4}\b/.test(parts[i])) {
+          const name = parts[i].replace(stateRe, '').replace(/\b\d{4}\b/g, '').trim();
+          if (name) return name;
+        }
+      }
+      return parts[parts.length - 1];
+    };
+
+    if (placeholderCity.test((effectiveLocation.city || '').trim())) {
+      let city = cityFromAddress(effectiveLocation.fullAddress || effectiveLocation.address);
+      let fullAddress = effectiveLocation.fullAddress;
+      if (!city) {
+        const pos = readLatLng(effectiveLocation);
+        try {
+          if (pos && window.google?.maps?.Geocoder) {
+            const geocoder = new window.google.maps.Geocoder();
+            const results = await new Promise((resolve) => {
+              geocoder.geocode(
+                { location: { lat: pos.lat, lng: pos.lng } },
+                (res, status) => resolve(status === 'OK' && res?.length ? res : null)
+              );
+            });
+            if (results) {
+              const comps = results[0].address_components || [];
+              const pick = (type) => comps.find((c) => c.types.includes(type))?.long_name;
+              city = pick('locality') || pick('postal_town') || pick('sublocality') || '';
+              fullAddress = results[0].formatted_address;
+            }
+          }
+        } catch {
+          city = '';
+        }
+      }
+      if (city) {
+        effectiveLocation = { ...effectiveLocation, city, fullAddress: fullAddress || effectiveLocation.fullAddress };
+        setSelectedLocation((prev) => ({ ...prev, city, fullAddress: effectiveLocation.fullAddress }));
+      }
+    }
+
     try {
       const scheduledDate = selectedDate
         ? new Date(`${selectedDate}T00:00:00`).toISOString()
