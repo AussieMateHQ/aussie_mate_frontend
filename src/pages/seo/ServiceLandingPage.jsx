@@ -52,7 +52,7 @@ export default function ServiceLandingPage({ slug }) {
     <div className="min-h-screen bg-white font-sans text-gray-900">
       <header className="px-6 py-4 flex items-center justify-between max-w-7xl mx-auto w-full bg-white relative">
         <Link to="/" className="flex items-center">
-          <img src={logo} alt="Aussiemate" className="h-10 sm:h-12 md:h-14 w-auto" />
+          <img src={logo} alt="Aussiemate" width="158" height="90" className="h-10 sm:h-12 md:h-14 w-auto" />
         </Link>
         <nav className="hidden md:flex items-center space-x-8 font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>

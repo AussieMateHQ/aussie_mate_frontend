@@ -20,7 +20,7 @@ const Footer = () => {
           {/* Column 1: Logo & Info */}
           <div className="md:col-span-5 lg:col-span-4">
             <Link to="/home" className="inline-block mb-6">
-              <img src={logo} alt="Aussiemate" className="h-10 sm:h-12 md:h-14 w-auto" />
+              <img src={logo} alt="Aussiemate" width="158" height="90" className="h-10 sm:h-12 md:h-14 w-auto" />
             </Link>
             <p className="mb-8 leading-relaxed">
               Australia's trusted home & business services platform.
