@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import { API_CONFIG } from '../config/api';
 import { validateMessageForPhoneNumbers } from '../utils/phoneValidator';
 
@@ -7,6 +6,8 @@ class SocketService {
     this.socket = null;
     this.isConnected = false;
     this.listeners = [];
+    this.connecting = false;
+    this.connectAttempt = 0;
   }
 
   connect(token) {
@@ -37,6 +38,30 @@ class SocketService {
     }
 
 
+    if (this.connecting) {
+      return;
+    }
+    this.connecting = true;
+    const attempt = ++this.connectAttempt;
+
+    // socket.io-client is loaded only when a chat connection is really needed,
+    // so pages without chat (like the landing pages) do not download it.
+    import('socket.io-client')
+      .then(({ default: io }) => {
+        this.connecting = false;
+        // disconnect() was called while the library was loading: do not connect.
+        if (attempt !== this.connectAttempt) {
+          return;
+        }
+        this.openSocket(io, backendURL, token);
+      })
+      .catch((error) => {
+        this.connecting = false;
+        console.error('❌ Could not load the chat library:', error);
+      });
+  }
+
+  openSocket(io, backendURL, token) {
     this.socket = io(backendURL, {
       auth: { token },
       transports: ["websocket"],
@@ -171,6 +196,8 @@ class SocketService {
   }
 
   disconnect() {
+    this.connectAttempt++;
+    this.connecting = false;
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
