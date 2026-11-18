@@ -167,12 +167,12 @@ export const SERVICE_PAGES = [
   {
     slug: 'office-cleaning-brisbane',
     shortName: 'Office cleaning',
-    title: 'Office Cleaning Brisbane | Quotes from Local Cleaners | Aussie Mate',
+    title: 'Office Cleaning Brisbane | Office Cleaners | Aussie Mate',
     description:
-      'Post your office cleaning job on Aussie Mate and compare quotes from local Brisbane cleaners. Daily, weekly or one-off cleans.',
-    h1: 'Office cleaning in Brisbane',
+      'Looking for office cleaning services in Brisbane? Post your job on Aussie Mate and compare quotes from local office cleaners. Daily, weekly or one-off cleans.',
+    h1: 'Office cleaning services in Brisbane',
     intro:
-      'A tidy office makes a better place to work and a better first impression for visitors. Tell us about your space and how often it needs cleaning, and local Brisbane cleaners send you quotes.',
+      'A tidy office makes a better place to work and a better first impression for visitors. Looking for office cleaners in Brisbane? Tell us about your space and how often it needs cleaning, and local cleaners send you quotes to compare. You choose the one that suits your office and your schedule.',
     includesTitle: 'What office cleaning can include',
     includes: [
       'Emptying bins and removing rubbish and recycling',
@@ -181,6 +181,7 @@ export const SERVICE_PAGES = [
       'Kitchenette: benchtops, sink, microwave and the outside of the fridge',
       'Toilets and handwash areas, including restocking items you supply',
       'Glass doors, internal windows and entrance areas',
+      'High-touch spots such as door handles, light switches and shared equipment',
     ],
     factorsTitle: 'What affects your quote',
     factors: [
@@ -188,6 +189,7 @@ export const SERVICE_PAGES = [
       'How often you want the clean, from daily to monthly',
       'Whether the clean takes place before or after working hours',
       'The number of bathrooms and kitchen areas',
+      'How the cleaner gets in, such as keys, security codes or an alarm',
       'Extras like carpet cleaning, internal windows or a one-off deep clean',
     ],
     tipsTitle: 'Making office cleaning run smoothly',
@@ -196,6 +198,7 @@ export const SERVICE_PAGES = [
       'Agree on how cleaning supplies and consumables are provided.',
       'Keep a short checklist in the chat so the cleaner and your team are on the same page.',
       'Review the arrangement after the first month and adjust the schedule if needed.',
+      'Write the tasks as a list in your job, so every quote covers the same work.',
     ],
     faqs: [
       {
@@ -209,6 +212,22 @@ export const SERVICE_PAGES = [
       {
         q: 'Do I have to sign a long contract?',
         a: 'Terms are agreed between you and the cleaner. Ask about notice periods in the chat before you book.',
+      },
+      {
+        q: 'What do office cleaning services usually include?',
+        a: 'Most office cleans cover rubbish removal, vacuuming and mopping, wiping desks and shared areas, the kitchenette and the toilets. List exactly what you need in the job, and each cleaner confirms what their quote covers.',
+      },
+      {
+        q: 'How much does office cleaning cost in Brisbane?',
+        a: 'It depends on the size of the office, how often it is cleaned, the hours and the extras. Post your job with those details and compare the quotes you receive.',
+      },
+      {
+        q: 'Can the office be cleaned after hours?',
+        a: 'Yes. Say in the job when the office is empty, for example early morning or evening, and cleaners tell you in their quote whether they can work to that time.',
+      },
+      {
+        q: 'Who provides the cleaning products?',
+        a: 'This is agreed between you and the cleaner. Ask in the chat before you book, so everyone knows what is supplied.',
       },
       {
         q: 'Can I book a one-off deep clean for my office?',
