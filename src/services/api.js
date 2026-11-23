@@ -364,6 +364,13 @@ export const jobsAPI = {
       });
     }
 
+    // Add documents (e.g. cleaning list file)
+    if (files.documents && files.documents.length > 0) {
+      files.documents.forEach((doc) => {
+        formData.append(`documents`, doc);
+      });
+    }
+
     const token = getAuthToken();
 
     try {

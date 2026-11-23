@@ -34,6 +34,17 @@ const defaultCenter = {
 const libraries = ['places'];
 
 
+// Document types customers can attach (e.g. a cleaning list file)
+const DOCUMENT_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/plain',
+  'text/csv'
+];
+
 const PostNewJobPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -296,8 +307,13 @@ const PostNewJobPage = () => {
     const maxSize = 50 * 1024 * 1024; // 50MB
     const supportedTypes = [
       'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-      'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm'
+      'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm',
+      ...DOCUMENT_TYPES
     ];
+
+    if (DOCUMENT_TYPES.includes(file.type) && file.size > 10 * 1024 * 1024) {
+      return { valid: false, error: `File ${file.name} is too large. Documents can be up to 10MB.` };
+    }
 
     if (file.size > maxSize) {
       return { valid: false, error: `File ${file.name} is too large. Maximum size is 50MB.` };
@@ -905,8 +921,9 @@ const PostNewJobPage = () => {
       };
 
       const files = {
-        photos: selectedFiles,
-        videos: []
+        photos: selectedFiles.filter(f => !DOCUMENT_TYPES.includes(f.type)),
+        videos: [],
+        documents: selectedFiles.filter(f => DOCUMENT_TYPES.includes(f.type))
       };
 
       const response = await jobsAPI.createJobWithFiles(jobData, files);

@@ -1031,16 +1031,16 @@ const CleaningJobDetailsForm = ({
       <ServiceCommonSections
         fileUploadProps={{
           fieldName: 'cleaning-photos',
-          title: 'Upload Photos',
-          description: 'Optional — add reference photos to help the cleaner prepare.',
-          placeholder: dragActive ? 'Drop files here' : 'Select photos to upload',
+          title: 'Upload Photos or Files',
+          description: 'Optional — add reference photos or a cleaning list file (PDF, Word, Excel) to help the cleaner prepare.',
+          placeholder: dragActive ? 'Drop files here' : 'Select photos or a cleaning list file',
           onFileSelect: (event) => {
             if (event?.target?.files?.length) {
               onFileInputChange(event);
             }
           },
           selectedFile: selectedFiles?.[0],
-          accept: 'image/*',
+          accept: 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv',
           multiple: true
         }}
         selectedFiles={selectedFiles}
@@ -1050,7 +1050,7 @@ const CleaningJobDetailsForm = ({
         instructionsValue={formData.instructions || ''}
         onInstructionsChange={(value) => onInputChange('instructions', value)}
         instructionsPlaceholder="Write your instructions here...."
-        fileUploadTitle="Upload Photos/Videos"
+        fileUploadTitle="Upload Photos or Cleaning List File"
         fileUploadSubtitle="(Optional)"
       />
     </div>
