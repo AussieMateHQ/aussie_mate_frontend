@@ -72,11 +72,17 @@ const ServiceCommonSections = ({
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-3">
                 {selectedFiles.map((file, index) => (
                   <div key={index} className="relative group">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full aspect-square object-cover rounded-lg border border-gray-200"
-                    />
+                    {(file.type || '').startsWith('image/') ? (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full aspect-square object-cover rounded-lg border border-gray-200"
+                      />
+                    ) : (
+                      <div className="w-full aspect-square rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center text-xs font-semibold text-gray-500 uppercase">
+                        {(file.name.split('.').pop() || 'file').slice(0, 5)}
+                      </div>
+                    )}
                     {onRemoveFile && (
                       <Button
                         type="button"
