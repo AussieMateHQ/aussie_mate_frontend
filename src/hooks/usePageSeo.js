@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { SERVICE_PAGES } from '../pages/seo/serviceContent'
+import { GUIDE_PAGES } from '../pages/seo/guideContent'
 
 // Per-page title / description / canonical for the public pages, so each page
 // can show up in Google with its own text instead of one shared title.
@@ -50,6 +51,11 @@ const PAGES = {
 
 // Brisbane service pages take their title and description from serviceContent.js
 SERVICE_PAGES.forEach((p) => {
+  PAGES[`/${p.slug}`] = { title: p.title, description: p.description }
+})
+
+// Guides take their title and description from guideContent.js
+GUIDE_PAGES.forEach((p) => {
   PAGES[`/${p.slug}`] = { title: p.title, description: p.description }
 })
 

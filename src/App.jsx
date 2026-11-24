@@ -26,7 +26,9 @@ const TermsPage = React.lazy(() => import('./pages/legal/TermsPage'))
 const ServicesPage = React.lazy(() => import('./pages/ServicesPage'))
 const OpenAppPage = React.lazy(() => import('./pages/OpenAppPage'))
 const ServiceLandingPage = React.lazy(() => import('./pages/seo/ServiceLandingPage'))
+const GuidePage = React.lazy(() => import('./pages/seo/GuidePage'))
 import { SERVICE_PAGES } from './pages/seo/serviceContent'
+import { GUIDE_PAGES } from './pages/seo/guideContent'
 
 // Public — no login/signup wall. Both already support being used without an
 // account: PostNewJobPage collects guest name/phone/email via OTP at the
@@ -69,6 +71,10 @@ function AppContent() {
           {/* Brisbane service pages (SEO) */}
           {SERVICE_PAGES.map((p) => (
             <Route key={p.slug} path={`/${p.slug}`} element={<ServiceLandingPage slug={p.slug} />} />
+          ))}
+          {/* Guides (SEO) */}
+          {GUIDE_PAGES.map((p) => (
+            <Route key={p.slug} path={`/${p.slug}`} element={<GuidePage slug={p.slug} />} />
           ))}
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
