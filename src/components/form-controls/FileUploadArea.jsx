@@ -9,6 +9,7 @@ import uploadIcon from '../../assets/upload.svg';
  * @param {string} fieldName - Unique identifier for the file input
  * @param {string} title - Main heading for the upload area
  * @param {string} description - Description text below the title
+ * @param {string} uploadText - Text shown above the Upload Here button
  * @param {string} placeholder - Placeholder text in the upload area
  * @param {function} onFileSelect - Callback function when file is selected
  * @param {object} selectedFile - Currently selected file object (with fileName or name property)
@@ -22,6 +23,7 @@ const FileUploadArea = ({
   title, 
   description, 
   placeholder = "to Upload PDF/JPEG",
+  uploadText = "Select photos/videos to upload",
   onFileSelect,
   selectedFile = null,
   accept = ".pdf,.jpg,.jpeg,.png",
@@ -58,7 +60,7 @@ const FileUploadArea = ({
           <div className="rounded-full p-4 sm:p-5 bg-[#EBF5FF] mb-4">
             <img src={UploadCloudIcon} alt="Upload" className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <p className="text-sm sm:text-base font-medium text-[#111827] mb-4">Select photos/videos to upload</p>
+          <p className="text-sm sm:text-base font-medium text-[#111827] mb-4">{uploadText}</p>
           <button
             type="button"
             className="inline-flex items-center gap-2 bg-[#1A73E8] text-white text-sm sm:text-base font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-sm hover:bg-[#1557B0] transition-colors cursor-pointer"
