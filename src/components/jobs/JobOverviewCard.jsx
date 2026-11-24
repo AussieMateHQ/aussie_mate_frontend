@@ -27,6 +27,7 @@ const JobOverviewCard = ({
   frequency,
   location,
   photos = [],
+  documents = [],
   onPhotoClick,
   viewerRole = 'customer',
   metaInfo = [],
@@ -308,6 +309,27 @@ const JobOverviewCard = ({
           </div>
         )}
 
+        {/* Cleaning list file(s) added by the customer */}
+        {documents && documents.length > 0 && (
+          <div className="mt-4">
+            <p className="text-sm font-semibold text-[#111827] mb-2">Cleaning list file</p>
+            <ul className="space-y-1">
+              {documents.map((doc, idx) => (
+                <li key={`${doc.url}-${idx}`}>
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary-500 underline break-all"
+                  >
+                    {doc.originalName || `File ${idx + 1}`}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Photos Grid */}
         {photos && photos.length > 0 && (
           <div className="space-y-3">
@@ -461,6 +483,9 @@ JobOverviewCard.propTypes = {
         ),
       }),
     ])
+  ),
+  documents: PropTypes.arrayOf(
+    PropTypes.shape({ url: PropTypes.string, originalName: PropTypes.string })
   ),
   roomsNeedCleaning: PropTypes.string,
   bathroomsNeedCleaning: PropTypes.string,

@@ -434,6 +434,7 @@ const JobDetailsPage = () => {
               frequency={jobFrequencyLabel}
               location={formatSuburbPostcode(job?.location?.address || job?.address || job?.locationDescription)}
               photos={jobPhotos}
+              documents={job?.documents || []}
               viewerRole="cleaner"
               metaInfo={jobOverviewMeta}
               roomsNeedCleaning={job?.roomsNeedCleaning}

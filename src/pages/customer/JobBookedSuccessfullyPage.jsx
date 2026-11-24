@@ -330,6 +330,7 @@ const JobBookedSuccessfullyPage = () => {
               frequency={getFrequencyDisplay(jobData)}
               location={jobData.location?.address || jobData.location?.fullAddress || jobData.address || 'Location not specified'}
               photos={jobPhotos}
+              documents={jobData?.documents || []}
               viewerRole="customer"
               showQuotePill={false}
               metaInfo={[
