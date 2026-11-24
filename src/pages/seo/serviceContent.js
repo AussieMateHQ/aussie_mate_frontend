@@ -109,6 +109,7 @@ export const SERVICE_PAGES = [
         a: 'As early as you can once you know your move-out date. Weekends and the end of the month tend to book up first.',
       },
     ],
+    guide: { slug: 'bond-cleaning-checklist-brisbane', label: 'Read the bond cleaning checklist for Brisbane renters' },
     related: ['house-cleaning-brisbane', 'commercial-cleaning-brisbane'],
   },
   {
