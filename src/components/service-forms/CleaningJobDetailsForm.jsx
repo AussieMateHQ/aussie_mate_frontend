@@ -1033,6 +1033,7 @@ const CleaningJobDetailsForm = ({
           fieldName: 'cleaning-photos',
           title: 'Upload Photos or Files',
           description: 'Optional — add reference photos or a cleaning list file (PDF, Word, Excel) to help the cleaner prepare.',
+          uploadText: 'Select photos or a cleaning list file to upload',
           placeholder: dragActive ? 'Drop files here' : 'Select photos or a cleaning list file',
           onFileSelect: (event) => {
             if (event?.target?.files?.length) {
