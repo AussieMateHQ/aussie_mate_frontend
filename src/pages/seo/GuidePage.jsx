@@ -77,7 +77,7 @@ export default function GuidePage({ slug }) {
               <span className="mx-2">/</span>
               <Link to="/bond-cleaning-brisbane" className="hover:text-white">Bond cleaning</Link>
               <span className="mx-2">/</span>
-              <span className="text-gray-300">Checklist</span>
+              <span className="text-gray-300">{page.crumb}</span>
             </nav>
             <h1 className="text-3xl md:text-5xl font-bold mb-5 leading-tight">{page.h1}</h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mb-8">{page.intro}</p>
@@ -139,6 +139,16 @@ export default function GuidePage({ slug }) {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold mb-4">Related Brisbane services</h2>
             <ul className="flex flex-wrap gap-3">
+              {(page.moreGuides || []).map((g) => (
+                <li key={g.slug}>
+                  <Link
+                    to={`/${g.slug}`}
+                    className="inline-block px-4 py-2 border border-gray-300 rounded-full text-[#1E5D88] font-medium hover:bg-white"
+                  >
+                    {g.label}
+                  </Link>
+                </li>
+              ))}
               {related.map((r) => (
                 <li key={r.slug}>
                   <Link
@@ -156,7 +166,7 @@ export default function GuidePage({ slug }) {
         <section className="py-16 px-6 bg-[#1B222C] text-center text-white">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold mb-4">Ready to get quotes?</h2>
-            <p className="text-gray-300 mb-8">Post your end of lease clean and local Brisbane cleaners will get back to you.</p>
+            <p className="text-gray-300 mb-8">{page.cta}</p>
             <button
               onClick={() => navigate('/post-new-job')}
               className="px-8 py-3 bg-[#E58B2E] text-white font-semibold rounded-full hover:opacity-90 transition-opacity"
