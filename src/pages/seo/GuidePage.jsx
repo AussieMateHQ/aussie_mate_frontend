@@ -17,8 +17,8 @@ export default function GuidePage({ slug }) {
     const data = [
       {
         '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: page.h1,
+        '@type': page.schemaType || 'Article',
+        [page.schemaType === 'WebPage' ? 'name' : 'headline']: page.h1,
         description: page.description,
         dateModified: page.updated,
         mainEntityOfPage: `${SITE}/${page.slug}`,
@@ -75,7 +75,7 @@ export default function GuidePage({ slug }) {
             <nav aria-label="Breadcrumb" className="text-sm text-[#6A8CA7] mb-4">
               <Link to="/" className="hover:text-white">Home</Link>
               <span className="mx-2">/</span>
-              <Link to="/bond-cleaning-brisbane" className="hover:text-white">Bond cleaning</Link>
+              <Link to={page.crumbParent ? page.crumbParent.to : '/bond-cleaning-brisbane'} className="hover:text-white">{page.crumbParent ? page.crumbParent.label : 'Bond cleaning'}</Link>
               <span className="mx-2">/</span>
               <span className="text-gray-300">{page.crumb}</span>
             </nav>
