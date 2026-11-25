@@ -203,6 +203,7 @@ export const GUIDE_PAGES = [
     moreGuides: [
       { slug: 'bond-cleaning-checklist-brisbane', label: 'Bond cleaning checklist' },
       { slug: 'end-of-lease-cleaning-guide-qld', label: 'End of lease cleaning guide' },
+      { slug: 'why-choose-aussie-mate', label: 'Why choose Aussie Mate' },
     ],
     note:
       'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
@@ -275,6 +276,94 @@ export const GUIDE_PAGES = [
       {
         q: 'Can I use the mobile app?',
         a: 'Yes. You can post jobs, chat with cleaners and follow your jobs on the Aussie Mate app for iPhone and Android, or on the website.',
+      },
+    ],
+    related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
+  },
+  {
+    slug: 'why-choose-aussie-mate',
+    title: 'Why Choose Aussie Mate | Compare Local Brisbane Cleaners',
+    description:
+      'Why choose Aussie Mate? Post one job, compare quotes from local Brisbane cleaners, check their profiles and ratings, and chat before you book.',
+    h1: 'Why choose Aussie Mate',
+    intro:
+      'Finding a cleaner in Brisbane usually means calling around and waiting for replies. With Aussie Mate you post your job once and local cleaners send you quotes, so you can compare and choose.',
+    updated: '2026-11-25',
+    schemaType: 'WebPage',
+    crumb: 'Why choose us',
+    crumbParent: { to: '/services', label: 'Services' },
+    cta: 'Post your job and compare quotes from local Brisbane cleaners.',
+    moreGuides: [
+      { slug: 'how-aussie-mate-works', label: 'How Aussie Mate works' },
+      { slug: 'bond-cleaning-checklist-brisbane', label: 'Bond cleaning checklist' },
+    ],
+    note:
+      'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
+    sections: [
+      {
+        title: 'One job post, several quotes',
+        items: [
+          'Describe your job once instead of calling around.',
+          'Local cleaners send quotes for your job.',
+          'Compare the quotes side by side and choose the one that suits you.',
+          'Add photos or a cleaning list file so quotes match your job.',
+        ],
+      },
+      {
+        title: 'Local Brisbane cleaners',
+        items: [
+          'Cleaners work in Brisbane and nearby areas such as Ipswich, Logan, Moreton Bay and Redlands.',
+          'Bond cleaning, house cleaning, deep cleaning, oven and window cleaning, and office cleaning.',
+          'Cleaners see jobs in their area, so you hear from people who work near you.',
+        ],
+      },
+      {
+        title: 'Know who you are choosing',
+        items: [
+          'Look at each cleaner\'s profile before you decide.',
+          'Cleaners can upload photo ID, a police check and work rights documents, which our team reviews.',
+          'Ratings and reviews from past customers appear on cleaner profiles.',
+        ],
+      },
+      {
+        title: 'Talk before you book',
+        items: [
+          'Chat with cleaners on the website or in the app.',
+          'Ask what is included, such as the oven, windows or carpet.',
+          'Agree the details first, then book the cleaner you like.',
+        ],
+      },
+    ],
+    oftenMissedTitle: 'Questions to ask any cleaner',
+    oftenMissed: [
+      'What is included in the quote?',
+      'Do you bring your own equipment and products?',
+      'Can you clean on my date and time?',
+      'What happens if something is missed?',
+    ],
+    timelineTitle: 'Getting started',
+    timeline: [
+      'Post your job with your suburb, date and any photos.',
+      'Wait for quotes from local cleaners.',
+      'Compare quotes and chat with the cleaners you like.',
+      'Choose a cleaner and book the job.',
+    ],
+    faqs: [
+      {
+        q: 'What is Aussie Mate?',
+        a: 'Aussie Mate is a Brisbane marketplace that connects customers with local cleaners. You post a job and cleaners send you quotes.',
+      },
+      {
+        q: 'Do I have to accept a quote?',
+        a: 'No. You can compare quotes, chat with cleaners and choose the one that suits you.',
+      },
+      {
+        q: 'What kinds of cleaning can I post?',
+        a: 'Bond and end of lease cleaning, house and deep cleaning, oven and window cleaning, and office cleaning.',
+      },
+      {
+        q: 'How do I know a cleaner is checked?',
+        a: 'Cleaners can upload photo ID, police check and work rights documents for our team to review. Cleaners with approved documents are marked as verified.',
       },
     ],
     related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
