@@ -187,6 +187,98 @@ export const GUIDE_PAGES = [
     ],
     related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
   },
+  {
+    slug: 'how-aussie-mate-works',
+    title: 'How Aussie Mate Works | Post a Job and Compare Quotes in Brisbane',
+    description:
+      'See how Aussie Mate works. Post your cleaning job, compare quotes from local Brisbane cleaners, chat, book and track your job on the website or the mobile app.',
+    h1: 'How Aussie Mate works',
+    intro:
+      'Aussie Mate is a Brisbane marketplace that connects customers with local cleaners. You post your job, local cleaners send quotes, and you choose the one that suits you. Here is how it works for customers and for cleaners.',
+    updated: '2026-11-25',
+    schemaType: 'WebPage',
+    crumb: 'How it works',
+    crumbParent: { to: '/services', label: 'Services' },
+    cta: 'Post your job and local Brisbane cleaners will get back to you.',
+    moreGuides: [
+      { slug: 'bond-cleaning-checklist-brisbane', label: 'Bond cleaning checklist' },
+      { slug: 'end-of-lease-cleaning-guide-qld', label: 'End of lease cleaning guide' },
+    ],
+    note:
+      'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
+    sections: [
+      {
+        title: 'For customers',
+        items: [
+          'Post your job: say what needs cleaning, your Brisbane suburb and the date you want.',
+          'Add photos or a cleaning list file to help cleaners quote accurately.',
+          'Local cleaners send you quotes. Compare them and look at each cleaner\'s profile.',
+          'Choose the cleaner that fits your job and your budget.',
+        ],
+      },
+      {
+        title: 'For cleaners',
+        items: [
+          'Create an account on the website or the mobile app.',
+          'Upload your documents, such as photo ID, a police check and work rights, for our team to review.',
+          'Browse jobs in your area and send quotes for the jobs that suit you.',
+          'Chat with customers to confirm the details and book the job.',
+        ],
+      },
+      {
+        title: 'Chat and booking',
+        items: [
+          'Chat with cleaners on the website or in the mobile app before you decide.',
+          'Confirm what is included in the quote, such as the oven, windows or carpet.',
+          'Once you book, follow the job from your account.',
+          'After the job, leave a rating and a review to help other customers.',
+        ],
+      },
+      {
+        title: 'On the website and the app',
+        items: [
+          'Use aussiemate.com.au on your computer or phone.',
+          'Or use the Aussie Mate app on iPhone and Android.',
+          'Your jobs, quotes and chats are in one place.',
+          'Cleaners get notified when a job is posted in their area.',
+        ],
+      },
+    ],
+    oftenMissedTitle: 'How cleaners are checked',
+    oftenMissed: [
+      'Cleaners can upload photo ID, a police check, work rights documents and training certificates.',
+      'Our team reviews the documents that cleaners upload.',
+      'Cleaners whose documents are approved are marked as verified.',
+      'Customer ratings and reviews are shown on cleaner profiles.',
+    ],
+    timelineTitle: 'Step by step for customers',
+    timeline: [
+      'Post your job with your suburb, the date and any photos or a cleaning list file.',
+      'Wait for quotes from local cleaners.',
+      'Compare quotes and chat with the cleaners you like.',
+      'Choose a cleaner and book the job.',
+      'Follow your job on the website or the app and leave a review afterwards.',
+    ],
+    faqs: [
+      {
+        q: 'Is Aussie Mate a cleaning company?',
+        a: 'No. Aussie Mate is a marketplace that connects customers with local cleaners. The cleaner you choose does the work.',
+      },
+      {
+        q: 'How are cleaners checked?',
+        a: 'Cleaners can upload their photo ID, police check and work rights documents, and our team reviews them. Cleaners whose documents are approved are marked as verified.',
+      },
+      {
+        q: 'Which areas does Aussie Mate cover?',
+        a: 'Aussie Mate focuses on Brisbane and the surrounding areas, including Ipswich, Logan, Moreton Bay and Redlands.',
+      },
+      {
+        q: 'Can I use the mobile app?',
+        a: 'Yes. You can post jobs, chat with cleaners and follow your jobs on the Aussie Mate app for iPhone and Android, or on the website.',
+      },
+    ],
+    related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
+  },
 ]
 
 export const getGuidePage = (slug) => GUIDE_PAGES.find((p) => p.slug === slug)
