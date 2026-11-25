@@ -132,6 +132,13 @@ export default function ServiceLandingPage({ slug }) {
             <ul className="space-y-3 text-gray-700 list-disc pl-5">
               {page.tips.map((item) => <li key={item}>{item}</li>)}
             </ul>
+            {page.guide2 && (
+              <p className="mt-3">
+                <Link to={`/${page.guide2.slug}`} className="text-[#1E5D88] font-semibold underline">
+                  {page.guide2.label}
+                </Link>
+              </p>
+            )}
             {page.guide && (
               <p className="mt-6">
                 <Link to={`/${page.guide.slug}`} className="text-[#1E5D88] font-semibold underline">

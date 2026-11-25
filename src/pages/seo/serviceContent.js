@@ -110,6 +110,7 @@ export const SERVICE_PAGES = [
       },
     ],
     guide: { slug: 'bond-cleaning-checklist-brisbane', label: 'Read the bond cleaning checklist for Brisbane renters' },
+    guide2: { slug: 'end-of-lease-cleaning-guide-qld', label: 'Read the end of lease cleaning guide for Queensland renters' },
     related: ['house-cleaning-brisbane', 'commercial-cleaning-brisbane'],
   },
   {
