@@ -90,7 +90,7 @@ const HomePage = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl">
-              Book verified professionals for cleaning, handyman work, pet sitting and more — fast, simple, and reliable.
+              Post your job and compare quotes from local professionals for cleaning, handyman work, pet sitting and more.
             </p>
 
             {/* Search bar — matches a category (fuzzy, same matching the job form
@@ -138,11 +138,11 @@ const HomePage = () => {
             <div className="flex flex-wrap items-center justify-center text-sm font-medium text-gray-500 gap-x-4 gap-y-2">
               <div className="flex items-center">
                 <Shield className="w-4 h-4 text-green-500 mr-1.5" />
-                Verified professionals
+                Local cleaners
               </div>
               <span className="hidden sm:inline">·</span>
               <div className="flex items-center">
-                ABN &amp; licence checked
+                Compare quotes
               </div>
               <span className="hidden sm:inline">·</span>
               <div className="flex items-center">
@@ -222,7 +222,7 @@ const HomePage = () => {
               <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">HOW IT WORKS</p>
               <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4">Book in 3 easy steps</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                No calls, no hassle. Post your job and get matched with verified local professionals instantly.
+                No calls, no hassle. Post your job and get quotes from local professionals.
               </p>
             </div>
 
@@ -243,7 +243,7 @@ const HomePage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">Receive quotes</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Verified professionals in your area send you competitive quotes to compare.
+                  Local professionals in your area send you quotes to compare.
                 </p>
               </div>
 
@@ -281,8 +281,8 @@ const HomePage = () => {
                 <div className="w-14 h-14 bg-amber-400 rounded-xl flex items-center justify-center mb-5">
                   <Shield className="w-7 h-7 text-gray-900" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">ABN &amp; licence checked</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">We verify ABNs and licences before providers join</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Reviewed by our team</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">Our team reviews the documents cleaners upload</p>
               </div>
 
               <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm text-center flex flex-col items-center">
@@ -299,8 +299,8 @@ const HomePage = () => {
                     <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Fast booking</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">Get quotes and book within minutes</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Compare quotes</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">Post once and compare quotes from local cleaners</p>
               </div>
             </div>
           </div>
@@ -316,7 +316,7 @@ const HomePage = () => {
               About Aussiemate
             </h2>
             <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-              Aussiemate is a digital service marketplace connecting customers with trusted, verified professionals for cleaning, handyman, pet sitting, and more — making booking services simple, fast, and reliable.
+              Aussiemate is a digital service marketplace connecting customers with local cleaners and service providers for cleaning, handyman, pet sitting, and more — making it simple to compare quotes and book.
             </p>
             <button
               onClick={() => navigate('/about')}
