@@ -71,6 +71,7 @@ const Footer = () => {
               <li><Link to="/commercial-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Commercial cleaning</Link></li>
               <li><Link to="/office-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Office cleaning</Link></li>
               <li><Link to="/bond-cleaning-brisbane" className="hover:text-blue-600 transition-colors">Bond cleaning</Link></li>
+              <li><Link to="/services" className="hover:text-blue-600 transition-colors">All services</Link></li>
               <li><p>Handyman</p></li>
               <li><p>Pet sitting</p></li>
             </ul>
