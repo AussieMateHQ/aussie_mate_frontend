@@ -163,8 +163,8 @@ const AboutPage = () => {
                 <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-5">
                   <Shield className="w-6 h-6" />
                 </div>
-                <h3 className="font-bold text-gray-900 text-lg mb-2">Verified pros</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">Every provider is verified before joining</p>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">Checked cleaners</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">Cleaners upload ID and police check for our team to review</p>
               </div>
 
               <div className="border border-gray-100 bg-white rounded-2xl p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col items-center">
