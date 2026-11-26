@@ -253,8 +253,8 @@ const ServicesPage = () => {
               <svg className="w-6 h-6 text-[#E58B2E] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Vetted professionals</h3>
-              <p className="text-gray-700">Every provider is screened and verified before joining our platform</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Checked cleaners</h3>
+              <p className="text-gray-700">Cleaners can upload photo ID, a police check and work rights documents for our team to review. Approved cleaners are marked as verified.</p>
             </div>
 
             <div className="bg-[#F6F5F0] p-8 rounded-[24px]">
@@ -282,7 +282,7 @@ const ServicesPage = () => {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to book?</h2>
           <p className="text-xl text-gray-300 mb-10">
-            Contact us today and we'll match you with the right professional.
+            Post your job and compare quotes from local Brisbane cleaners.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <a 

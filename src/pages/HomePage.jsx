@@ -273,8 +273,8 @@ const HomePage = () => {
                 <div className="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center mb-5">
                   <CheckSquare className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Verified pros</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">Every provider is vetted before joining</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Checked cleaners</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">Cleaners upload ID and police check for our team to review</p>
               </div>
 
               <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm text-center flex flex-col items-center">
