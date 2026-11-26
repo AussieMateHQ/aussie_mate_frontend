@@ -56,6 +56,7 @@ const Footer = () => {
               <li><Link to="/about" className="hover:text-blue-600 transition-colors">About us</Link></li>
               <li><Link to="/how-aussie-mate-works" className="hover:text-blue-600 transition-colors">How it works</Link></li>
               <li><Link to="/why-choose-aussie-mate" className="hover:text-blue-600 transition-colors">Why choose us</Link></li>
+              <li><Link to="/cleaner-verification-process" className="hover:text-blue-600 transition-colors">Cleaner verification</Link></li>
               <li><Link to="/contact" className="hover:text-blue-600 transition-colors">Contact</Link></li>
               <li><Link to="/privacy-policy" className="hover:text-blue-600 transition-colors">Privacy policy</Link></li>
               <li><Link to="/terms-and-conditions" className="hover:text-blue-600 transition-colors">Terms & conditions</Link></li>

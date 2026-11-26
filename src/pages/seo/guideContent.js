@@ -204,6 +204,7 @@ export const GUIDE_PAGES = [
       { slug: 'bond-cleaning-checklist-brisbane', label: 'Bond cleaning checklist' },
       { slug: 'end-of-lease-cleaning-guide-qld', label: 'End of lease cleaning guide' },
       { slug: 'why-choose-aussie-mate', label: 'Why choose Aussie Mate' },
+      { slug: 'cleaner-verification-process', label: 'Cleaner verification process' },
     ],
     note:
       'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
@@ -364,6 +365,96 @@ export const GUIDE_PAGES = [
       {
         q: 'How do I know a cleaner is checked?',
         a: 'Cleaners can upload photo ID, police check and work rights documents for our team to review. Cleaners with approved documents are marked as verified.',
+      },
+    ],
+    related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
+  },
+  {
+    slug: 'cleaner-verification-process',
+    title: 'Cleaner Verification Process | How Aussie Mate Checks Cleaners',
+    description:
+      'See how Aussie Mate reviews cleaners. Cleaners upload photo ID, a police check, work rights and training documents, and our team reviews them before they are marked verified.',
+    h1: 'Cleaner verification process',
+    intro:
+      'Choosing someone to clean your home is a trust decision. This page explains the documents Aussie Mate cleaners can upload, how our team reviews them, and what "verified" means on a cleaner profile.',
+    updated: '2026-11-26',
+    schemaType: 'WebPage',
+    crumb: 'Cleaner verification',
+    crumbParent: { to: '/services', label: 'Services' },
+    cta: 'Post your job and compare quotes from local Brisbane cleaners.',
+    moreGuides: [
+      { slug: 'how-aussie-mate-works', label: 'How Aussie Mate works' },
+      { slug: 'why-choose-aussie-mate', label: 'Why choose Aussie Mate' },
+    ],
+    note:
+      'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
+    sections: [
+      {
+        title: 'Documents cleaners can upload',
+        items: [
+          'Photo ID.',
+          'A police check.',
+          'Work rights documents, such as a visa.',
+          'Training certificates, where the cleaner has them.',
+        ],
+      },
+      {
+        title: 'How the review works',
+        items: [
+          'A cleaner uploads their documents in their account.',
+          'The documents wait in a review queue until our team looks at them.',
+          'Our team approves a document or rejects it if there is a problem.',
+          'Each document shows its own status in the cleaner\'s account.',
+        ],
+      },
+      {
+        title: 'What verified means',
+        items: [
+          'A cleaner whose documents are approved is marked as verified.',
+          'Cleaners who have not finished their documents are not marked as verified.',
+          'If a document expires, it needs to be uploaded again.',
+        ],
+      },
+      {
+        title: 'More ways to choose with confidence',
+        items: [
+          'Read the ratings and reviews on a cleaner\'s profile.',
+          'Chat with the cleaner before you book and ask what is included.',
+          'Compare several quotes instead of taking the first one.',
+        ],
+      },
+    ],
+    oftenMissedTitle: 'Document status in a cleaner account',
+    oftenMissed: [
+      'Pending review: uploaded and waiting for our team.',
+      'Approved: checked by our team.',
+      'Rejected: there was a problem, so the cleaner needs to upload it again.',
+      'Expired: the document is out of date and needs to be replaced.',
+    ],
+    timelineTitle: 'Step by step for a cleaner',
+    timeline: [
+      'Create a cleaner account.',
+      'Upload photo ID, a police check and work rights documents.',
+      'Our team reviews the documents.',
+      'Approved cleaners are marked as verified.',
+      'Verified cleaners send quotes to Brisbane customers.',
+    ],
+    faqs: [
+      {
+        q: 'What does verified mean on Aussie Mate?',
+        a: 'It means the cleaner has uploaded their documents and our team has approved them.',
+      },
+      {
+        q: 'Which documents do cleaners upload?',
+        a: 'Photo ID, a police check, work rights documents and training certificates where they have them.',
+      },
+      {
+        q: 'Can I still see cleaners who are not verified yet?',
+        a: 'Cleaners who have not finished their documents are not marked as verified, so check each profile and ask the cleaner questions before you book.',
+      },
+      {
+        q: 'Does verification replace checking the quote?',
+        a: 'No. Always check what is included in a quote and chat with the cleaner before you book.',
       },
     ],
     related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
