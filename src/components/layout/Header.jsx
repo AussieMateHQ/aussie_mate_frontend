@@ -170,7 +170,14 @@ const Header = () => {
           </div>
         </div>
         ) : (
-          <div className="flex-1" />
+          <div className="flex-1 flex items-center">
+            <Link
+              to="/services"
+              className="text-sm sm:text-base font-medium text-primary-600 hover:text-primary-700 hover:underline"
+            >
+              Services
+            </Link>
+          </div>
         )}
 
         {/* Center: Logo */}
