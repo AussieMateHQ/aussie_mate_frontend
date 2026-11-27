@@ -205,6 +205,7 @@ export const GUIDE_PAGES = [
       { slug: 'end-of-lease-cleaning-guide-qld', label: 'End of lease cleaning guide' },
       { slug: 'why-choose-aussie-mate', label: 'Why choose Aussie Mate' },
       { slug: 'cleaner-verification-process', label: 'Cleaner verification process' },
+      { slug: 'customer-safety-and-trust', label: 'Customer safety and trust' },
     ],
     note:
       'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
@@ -455,6 +456,98 @@ export const GUIDE_PAGES = [
       {
         q: 'Does verification replace checking the quote?',
         a: 'No. Always check what is included in a quote and chat with the cleaner before you book.',
+      },
+    ],
+    related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
+  },
+  {
+    slug: 'customer-safety-and-trust',
+    title: 'Customer Safety and Trust | Hiring a Cleaner Through Aussie Mate',
+    description:
+      'How to hire a cleaner with confidence in Brisbane. Learn what Aussie Mate does to help, from phone verification and reviewed cleaner documents to in-app chat, ratings and reviews.',
+    h1: 'Customer safety and trust',
+    intro:
+      'Letting a cleaner into your home is a trust decision. This page explains what Aussie Mate does to help you choose with confidence, and simple steps you can take yourself before you book.',
+    updated: '2026-11-27',
+    schemaType: 'WebPage',
+    crumb: 'Customer safety',
+    crumbParent: { to: '/services', label: 'Services' },
+    cta: 'Post your job and compare quotes from local Brisbane cleaners.',
+    moreGuides: [
+      { slug: 'cleaner-verification-process', label: 'Cleaner verification process' },
+      { slug: 'how-aussie-mate-works', label: 'How Aussie Mate works' },
+      { slug: 'why-choose-aussie-mate', label: 'Why choose Aussie Mate' },
+    ],
+    note:
+      'Aussie Mate is a marketplace. The cleaner you choose is responsible for the work, so always check what is included in a quote before you book.',
+    sections: [
+      {
+        title: 'What Aussie Mate does',
+        items: [
+          'Your phone number is confirmed with a one-time code when you sign in or post a job.',
+          'Cleaners can upload photo ID, a police check and work rights documents, and our team reviews them.',
+          'Cleaners whose documents are approved are marked as verified.',
+          'You can chat with a cleaner on the website or in the app before you book.',
+          'After a job you can leave a rating and a review, and our team can hide reviews that should not be shown.',
+        ],
+      },
+      {
+        title: 'Before you book',
+        items: [
+          'Compare several quotes instead of taking the first one.',
+          'Read the ratings and reviews on the cleaner\'s profile.',
+          'Check whether the cleaner is marked as verified.',
+          'Chat with the cleaner and ask what is included, such as the oven, windows or carpet.',
+        ],
+      },
+      {
+        title: 'On the day',
+        items: [
+          'Agree the start time, the access arrangements and the price before the job.',
+          'Keep your valuables and important papers put away.',
+          'Take photos of the home before and after the clean.',
+          'If something is not right, tell the cleaner straight away and keep your messages in the chat.',
+        ],
+      },
+      {
+        title: 'Need help?',
+        items: [
+          'Email support@aussiemate.com.au and tell us your job and what happened.',
+          'Keep your quote and chat messages, as they show what was agreed.',
+        ],
+      },
+    ],
+    oftenMissedTitle: 'Common questions to ask a cleaner',
+    oftenMissed: [
+      'What is included in the price, and what costs extra?',
+      'Do you bring your own equipment and products?',
+      'How long will the job take, and how many people will come?',
+      'What happens if I am not happy with part of the clean?',
+    ],
+    timelineTitle: 'Step by step for a safe booking',
+    timeline: [
+      'Post your job with your suburb, the date and any photos.',
+      'Compare the quotes you receive.',
+      'Check each cleaner\'s profile, ratings and verified status.',
+      'Chat with your favourite cleaner and confirm what is included.',
+      'Book the job, then leave a rating and a review afterwards.',
+    ],
+    faqs: [
+      {
+        q: 'Are all cleaners on Aussie Mate verified?',
+        a: 'No. Cleaners whose uploaded documents our team has approved are marked as verified. Check each profile before you book.',
+      },
+      {
+        q: 'Why do I need to confirm my phone number?',
+        a: 'We send a one-time code to your phone when you sign in or post a job, so that we know the number is yours.',
+      },
+      {
+        q: 'Can I talk to a cleaner before I book?',
+        a: 'Yes. You can chat with cleaners on the website or in the app and ask what is included before you decide.',
+      },
+      {
+        q: 'What should I do if I have a problem with a job?',
+        a: 'Talk to the cleaner first. If you still need help, email support@aussiemate.com.au with your job details.',
       },
     ],
     related: ['bond-cleaning-brisbane', 'house-cleaning-brisbane'],
